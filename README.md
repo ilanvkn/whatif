@@ -1,4 +1,4 @@
-# WhatIF V3.1 RC
+# WhatIF V3.1
 
 **Ask what could fail. Run the app. Challenge the evidence. Repair and replay.**
 
@@ -15,24 +15,29 @@ V3 has run this loop on pinned open-source applications. The original browser qu
 
 The **3.1.0-rc.1 backend qualification** adds Microblog API and a RealWorld Flask backend: **12 independent AI sessions, 4 epochs, 2 accepted repairs, 464 HTTP requests and 12 passing database reset/restart trials**. Healthy authentication and CRUD remain passing. [Backend proof](docs/BACKEND-RC-QUALIFICATION.md).
 
+The **3.1.0 PostgreSQL qualification** adds a real RealWorld backend and Procrastinate’s shipped queue demo: **12 AI sessions, 4 epochs, 2 accepted repairs and 282 HTTP requests**, with four-user overlap and passing post-repair database/worker restarts. [PostgreSQL and queue proof](docs/POSTGRES-QUALIFICATION.md).
+
 ## What you can use
 
 - **26 MCP tools**, a CLI, a WhatIF skill and a local JavaScript API.
 - Actual browser workflows, synthetic-account security checks and bounded local k6 workloads.
 - Adaptive scenario generation, repeated failure confirmation and exact regression replay.
 - Independent Codex red/blue/critic sessions with source patches, review gates and rollback.
-- Reusable static-web and Python/SQLite backend adapters with pinned source, runtimes and immutable application-specific tests.
-- Stateful API journeys with synthetic registration/login, ownership checks, fresh database resets and real process-restart persistence checks.
+- Reusable static-web and Python/SQLite/PostgreSQL backend adapters with pinned source, runtimes and immutable application-specific tests.
+- Stateful API journeys with synthetic registration/login, ownership checks, bounded concurrent users, synchronized steps and queue-completion polling.
+- Fresh database resets, real process-restart persistence checks and isolated PostgreSQL worker trials.
 - Cross-application reports that retain verified findings and usage without copying source or model-session identifiers into the public report.
 - Population/workload planning, loopback smoke tests and before/after comparison.
 
-Automatic repair supports **static web applications and reviewed Python/SQLite backends on macOS**, plus the legacy Node test fixture. Browser/load/security campaigns support reviewed loopback and authorized HTTPS targets. Other database engines, arbitrary build hooks, OAuth, mobile/native apps, distributed million-user loads and behavioral prediction remain separate work. A million modeled users is not a million measured users.
+Automatic repair supports **static web applications and reviewed Python/SQLite/PostgreSQL backends on macOS**, plus the legacy Node test fixture. Browser/load/security campaigns support reviewed loopback and authorized HTTPS targets. Unreviewed database engines, arbitrary build hooks, OAuth, mobile/native apps, distributed million-user loads and behavioral prediction remain separate work. A million modeled users is not a million measured users.
 
 ## Install
 
 Use a working Node22+ runtime and an authenticated compatible Codex CLI:
 
 ```sh
+git clone https://github.com/ilanvkn/whatif.git
+cd whatif
 node scripts/install.mjs
 ```
 
@@ -60,9 +65,15 @@ AI execution sends reviewed source and evidence to the configured Codex provider
 
 ## Run a backend team
 
-Use the [pinned backend recipes](examples/backends) for Microblog API or the RealWorld Flask reference backend. Review source, dependencies, authentication contracts and synthetic inputs before running. The same `app-plan`, `team-run` and `team-verify` commands accept `python-sqlite` manifests. The original checkout stays unchanged; prepared source runs in an isolated copy.
+Use the [pinned backend recipes](examples/backends) for Microblog API or the RealWorld Flask reference backend. Review source, dependencies, authentication contracts and synthetic inputs before running. The same `app-plan`, `team-run` and `team-verify` commands accept `python-sqlite` and `python-postgres` manifests. The original checkout stays unchanged; prepared source runs in an isolated copy.
 
 Each confirmation restores the same database seed. WhatIF executes real API requests, stops the server, restarts it against the committed database and checks persistence. A repair must pass both the API and restart assertions. Private databases and generated session secrets are removed afterward. [Backend RC evidence and limits](docs/BACKEND-RC-QUALIFICATION.md).
+
+PostgreSQL trials use a pinned PostgreSQL 17 runtime and a disposable cluster reached through a private Unix socket. They restore a checked cold seed, run declared API and worker workflows, restart processes, and remove the cluster, socket and generated secrets afterward. Application code uses a restricted database role. These controls do not qualify production databases or arbitrary queue brokers.
+
+API journeys support up to 20 independent users with separate cookies/captures and at most 100 total reserved requests per branch. Optional step barriers coordinate starts; bounded polling checks declared completion outcomes. Reports distinguish measured client-request overlap from server transaction concurrency. A worker starting is not proof a job completed: use application-specific completion and restart assertions. [Engine guide](docs/ENGINE-GUIDE.md)
+
+The 3.1.0 source is being prepared for release; a version string alone does not establish publication or a completed PostgreSQL AI qualification. Historical results above retain their original scope.
 
 ## Keep findings across apps
 

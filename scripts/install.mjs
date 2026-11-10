@@ -51,7 +51,7 @@ try{await fs.mkdir(lock);}catch(e){if(e.code==='EEXIST')throw Error('Another Wha
 let descriptorChanged=false,previousDescriptor=null,reusedStage=false;
 try{
  await fs.mkdir(path.dirname(dest),{recursive:true});await fs.mkdir(stage);
- for(const file of ['src','skills','commands','scripts','docs','examples','test','.codex-plugin','.claude-plugin','.mcp.json','package.json','README.md','LICENSE','CHANGELOG.md','SECURITY.md'])await fs.cp(path.join(root,file),path.join(stage,file),{recursive:true});
+ for(const file of ['src','skills','commands','scripts','docs','examples','test','.codex-plugin','.claude-plugin','.mcp.json','package.json','README.md','HANDOVER.md','LICENSE','CHANGELOG.md','SECURITY.md'])await fs.cp(path.join(root,file),path.join(stage,file),{recursive:true});
  manifest.mcpServers='./.codex-plugin/mcp.json';
  await fs.writeFile(path.join(stage,'.codex-plugin/plugin.json'),JSON.stringify(manifest,null,2));
  await fs.writeFile(path.join(stage,'.codex-plugin/mcp.json'),JSON.stringify({mcpServers:{whatif:{command:process.execPath,args:[path.join(dest,'src/mcp.mjs')]}}},null,2));

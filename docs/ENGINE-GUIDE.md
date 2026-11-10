@@ -71,10 +71,21 @@ Every run contains input/configuration identity, engine-file hashes, per-engine 
 
 `node scripts/integration-demo.mjs` launches a disposable app, reproduces a false-success checkout bug and cross-account read bug, corrects the fixture, reruns identical campaigns, verifies evidence in another process, and stops the fixture. `npm run test:engines` additionally tests browser redirect isolation and k6 failure/no-redirect behavior. These are real engines against a synthetic app, not proof that a user application has passed.
 
-## Stateful API journeys (3.1 RC)
+## Stateful API journeys (3.1)
 
 The built-in `api` engine uses real HTTP without an external browser dependency. Declare `allowRequests` method/path pairs, `maxRequests` (at most100), per-request `timeoutMs`, and ordered `steps`. Steps can register synthetic accounts, send JSON, capture response JSON pointers into temporary aliases, send Authorization headers, and assert status codes or JSON values/presence. Captures can be referenced as `{{alias}}`; `{{runId}}` supplies a synthetic run identifier. Only declared same-origin requests execute; redirects are refused. Headers are limited to Authorization and Content-Type.
 
 Response bodies, cookies and captured bearer tokens stay in memory; evidence records statuses and assertion outcomes. Do not put real passwords or long-lived tokens in manifests. API workflows stop at their first failed step, so later assertions in that branch are unexecuted, not passes. Request caps, body-size limits and deadlines remain enforced. This is explicit business-flow testing, not a crawler or automatic exploit scanner.
 
-A standalone campaign does not reset an application's database. The separate `python-sqlite` team runner provides reviewed seed restoration and restart verification for isolated prepared backends; see [backend recipes](../examples/backends). Healthy controls and security denials should use independent branches, so an expected defect does not prevent every positive control from running.
+A standalone campaign does not reset an application's database. The separate `python-sqlite` and `python-postgres` team runners provide reviewed seed restoration and restart verification for isolated prepared backends; see [backend recipes](../examples/backends). Healthy controls and security denials should use independent branches, so an expected defect does not prevent every positive control from running.
+
+
+### Concurrent users, step barriers and completion polling
+
+Set `users` and `concurrency` to integers from 1 to 20 (both default to 1). Each user gets separate captures and cookies; `{{userId}}` identifies that synthetic user and `{{runId}}` identifies the journey. `maxRequests` remains a **total** branch budget, at most 100, including every user and polling attempt. A user stops on its first failed step.
+
+Set `synchronizeSteps: true` to release each step only after all users arrive. It requires `users <= concurrency`; a failed user cancels waiting barriers. The evidence contains per-user status/assertion outcomes, barrier receipts and per-attempt intervals. Maximum in-flight requests and overlap are recomputed from those intervals. Client request overlap does not prove simultaneous database transactions, and a declared concurrency setting is not a measured result.
+
+A step can declare `poll: {maxAttempts: 10, intervalMs: 100, retryStatus: [202]}` with `expectStatus: [200]`. Polling is limited to 20 attempts and 500 milliseconds between attempts, within the absolute journey deadline. Only listed retry statuses cause another request; redirects never do. Exhaustion fails. The budget reserves `users × sum(step.poll.maxAttempts or 1)`. Use polling on reviewed repeat-safe endpoints; repeated mutation requests need explicit application semantics.
+
+The PostgreSQL team runner operates its own pinned PostgreSQL 17 cluster over a private Unix socket, with TCP disabled and a restricted application role. It checks cold seed copies, process restarts and cleanup. Declared workers run under the same reviewed source/runtime boundaries. Queue trials must assert job completion, ownership and persistence through application-specific API contracts. No arbitrary Redis, RabbitMQ, cloud queue or production database integration is implied.

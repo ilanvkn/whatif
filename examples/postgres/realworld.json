@@ -1,0 +1,887 @@
+{
+  "schemaVersion": 3,
+  "runner": "python-postgres",
+  "question": "RealWorld PostgreSQL article-scoped favorite state and concurrent idempotent mutation",
+  "app": {
+    "source": "/REVIEWED/PREPARED/APP",
+    "entry": "whatif_backend.py",
+    "files": [
+      "whatif_backend.py",
+      "conduit/articles/models.py",
+      "conduit/articles/views.py"
+    ],
+    "assets": [
+      "LICENSE",
+      "conduit/__init__.py",
+      "conduit/app.py",
+      "conduit/articles/__init__.py",
+      "conduit/articles/models.py",
+      "conduit/articles/serializers.py",
+      "conduit/articles/views.py",
+      "conduit/commands.py",
+      "conduit/compat.py",
+      "conduit/database.py",
+      "conduit/exceptions.py",
+      "conduit/extensions.py",
+      "conduit/profile/__init__.py",
+      "conduit/profile/models.py",
+      "conduit/profile/serializers.py",
+      "conduit/profile/views.py",
+      "conduit/security/__init__.py",
+      "conduit/security/views.py",
+      "conduit/security/vulnerabilities.py",
+      "conduit/settings.py",
+      "conduit/user/__init__.py",
+      "conduit/user/models.py",
+      "conduit/user/serializers.py",
+      "conduit/user/views.py",
+      "conduit/utils.py",
+      "requirements.lock",
+      "requirements/prod.txt",
+      "whatif_backend.py",
+      "wheel-manifest.json"
+    ],
+    "editable": [
+      "conduit/articles/models.py"
+    ],
+    "repeatSafe": true
+  },
+  "provenance": {
+    "repository": "https://github.com/DataDog/flask-realworld-example-app",
+    "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+    "license": "MIT",
+    "sourceBasis": "Pinned upstream plus previously accepted RC article-deletion patch; new trusted PostgreSQL threaded HTTP adapter; natural favorites logic unchanged"
+  },
+  "contract": "Fix genuine favorite state scope: favoriting one article must not mark another article favorited, skip its favorite insertion, or remove another article state. Preserve prior accepted authenticated deletion repair and all original auth/CRUD/deletion controls. On PostgreSQL four concurrent same-user same-article favorite requests must all succeed and leave exactly one association/count1. Use appropriate transactional locking/idempotency; baseline schema is reused so do not assume new model constraints are migrated automatically. Each positive response must reflect committed state, and another article must remain independent. Only conduit/articles/models.py editable. Do not weaken HTTP tests, fake response counts, modify trusted bootstrap or bypass real database operations.",
+  "backend": {
+    "python": "/REVIEWED/VENV/bin/python",
+    "postgres": {
+      "binDirectory": "/REVIEWED/POSTGRES/bin"
+    },
+    "workers": 0,
+    "reset": "seed-copy-per-confirmation",
+    "restartCampaign": {
+      "schemaVersion": 1,
+      "question": "RealWorld favorites and content persist across PG server restart",
+      "target": "http://127.0.0.1:8080/",
+      "budget": {
+        "maxRequests": 3,
+        "maxDurationMs": 60000
+      },
+      "branches": [
+        {
+          "id": "read-after-restart",
+          "engine": "api",
+          "hypothesis": "Read the committed retained article after process restart",
+          "config": {
+            "maxRequests": 1,
+            "timeoutMs": 5000,
+            "allowRequests": [
+              {
+                "method": "GET",
+                "path": "/api/articles/persistent-healthy-article"
+              }
+            ],
+            "steps": [
+              {
+                "method": "GET",
+                "path": "/api/articles/persistent-healthy-article",
+                "expectStatus": [
+                  200
+                ],
+                "assert": [
+                  {
+                    "pointer": "/article/body",
+                    "equals": "Preserve this record"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "favorite-persistence",
+          "engine": "api",
+          "hypothesis": "favorite persistence",
+          "config": {
+            "maxRequests": 2,
+            "timeoutMs": 5000,
+            "allowRequests": [
+              {
+                "method": "POST",
+                "path": "/api/users/login"
+              },
+              {
+                "method": "GET",
+                "path": "/api/articles/concurrent-article-c"
+              }
+            ],
+            "steps": [
+              {
+                "method": "POST",
+                "path": "/api/users/login",
+                "expectStatus": [
+                  200
+                ],
+                "json": {
+                  "user": {
+                    "email": "favorite-owner@example.invalid",
+                    "password": "synthetic-password"
+                  }
+                },
+                "capture": {
+                  "owner": "/user/token"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/api/articles/concurrent-article-c",
+                "expectStatus": [
+                  200
+                ],
+                "headers": {
+                  "Authorization": "Token {{owner}}"
+                },
+                "assert": [
+                  {
+                    "pointer": "/article/favoritesCount",
+                    "equals": 1
+                  },
+                  {
+                    "pointer": "/article/favorited",
+                    "equals": true
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "campaign": {
+    "schemaVersion": 1,
+    "question": "RealWorld PostgreSQL article-scoped favorite state and concurrent idempotent mutation",
+    "target": "http://127.0.0.1:8080/",
+    "budget": {
+      "maxRequests": 38,
+      "maxDurationMs": 60000
+    },
+    "branches": [
+      {
+        "id": "auth-crud",
+        "engine": "api",
+        "hypothesis": "JWT positive control, anonymous denial and owner CRUD remain correct",
+        "config": {
+          "maxRequests": 8,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "GET",
+              "path": "/api/user"
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles"
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}"
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "healthy-owner",
+                  "email": "healthy-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/user",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/user",
+              "expectStatus": [
+                401
+              ]
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Healthy transient article",
+                  "description": "Synthetic reviewed contract",
+                  "body": "Preserve this record",
+                  "tagList": []
+                }
+              },
+              "capture": {
+                "slug": "/article/slug"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                200
+              ],
+              "assert": [
+                {
+                  "pointer": "/article/body",
+                  "equals": "Preserve this record"
+                }
+              ]
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                404
+              ]
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Persistent healthy article",
+                  "description": "Synthetic reviewed contract",
+                  "body": "Preserve this record",
+                  "tagList": []
+                }
+              },
+              "capture": {
+                "retained": "/article/slug"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "anonymous-delete",
+        "engine": "api",
+        "hypothesis": "Anonymous deletion is denied and owner data retained",
+        "config": {
+          "maxRequests": 4,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles"
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}"
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "anonymous-owner",
+                  "email": "anonymous-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Anonymous boundary article",
+                  "description": "Synthetic reviewed contract",
+                  "body": "Preserve this record",
+                  "tagList": []
+                }
+              },
+              "capture": {
+                "slug": "/article/slug"
+              }
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                401
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                200
+              ],
+              "assert": [
+                {
+                  "pointer": "/article/body",
+                  "equals": "Preserve this record"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "nonowner-delete",
+        "engine": "api",
+        "hypothesis": "Other-user deletion is denied without server error or mutation",
+        "config": {
+          "maxRequests": 5,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles"
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}"
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "boundary-owner",
+                  "email": "boundary-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "boundary-other",
+                  "email": "boundary-other@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "other": "/user/token"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Other owner boundary article",
+                  "description": "Synthetic reviewed contract",
+                  "body": "Preserve this record",
+                  "tagList": []
+                }
+              },
+              "capture": {
+                "slug": "/article/slug"
+              }
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                403,
+                404
+              ],
+              "headers": {
+                "Authorization": "Token {{other}}"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                200
+              ],
+              "assert": [
+                {
+                  "pointer": "/article/body",
+                  "equals": "Preserve this record"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "missing-delete",
+        "engine": "api",
+        "hypothesis": "Authenticated missing article deletion returns404",
+        "config": {
+          "maxRequests": 2,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/missing-synthetic-article"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "missing-owner",
+                  "email": "missing-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/missing-synthetic-article",
+              "expectStatus": [
+                404
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "article-scoped-favorites",
+        "engine": "api",
+        "hypothesis": "article scoped favorites",
+        "config": {
+          "maxRequests": 9,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles"
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles/scoped-article-a/favorite"
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/scoped-article-b"
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles/scoped-article-b/favorite"
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/scoped-article-a/favorite"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "favorite-owner",
+                  "email": "favorite-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Scoped article A",
+                  "description": "Synthetic favorite scope",
+                  "body": "Persisted independent content",
+                  "tagList": []
+                }
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Scoped article B",
+                  "description": "Synthetic favorite scope",
+                  "body": "Persisted independent content",
+                  "tagList": []
+                }
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Concurrent article C",
+                  "description": "Synthetic favorite scope",
+                  "body": "Persisted independent content",
+                  "tagList": []
+                }
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles/scoped-article-a/favorite",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "assert": [
+                {
+                  "pointer": "/article/favoritesCount",
+                  "equals": 1
+                }
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/scoped-article-b",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "assert": [
+                {
+                  "pointer": "/article/favorited",
+                  "equals": false
+                },
+                {
+                  "pointer": "/article/favoritesCount",
+                  "equals": 0
+                }
+              ]
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles/scoped-article-b/favorite",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "assert": [
+                {
+                  "pointer": "/article/favoritesCount",
+                  "equals": 1
+                }
+              ]
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/scoped-article-a/favorite",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "assert": [
+                {
+                  "pointer": "/article/favoritesCount",
+                  "equals": 0
+                }
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/scoped-article-b",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "assert": [
+                {
+                  "pointer": "/article/favorited",
+                  "equals": true
+                },
+                {
+                  "pointer": "/article/favoritesCount",
+                  "equals": 1
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "concurrent-same-favorite",
+        "engine": "api",
+        "hypothesis": "concurrent same favorite",
+        "config": {
+          "maxRequests": 8,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users/login"
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles/concurrent-article-c/favorite"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users/login",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "email": "favorite-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles/concurrent-article-c/favorite",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "assert": [
+                {
+                  "pointer": "/article/favoritesCount",
+                  "equals": 1
+                }
+              ]
+            }
+          ],
+          "users": 4,
+          "concurrency": 4,
+          "synchronizeSteps": true
+        }
+      },
+      {
+        "id": "favorite-final-readback",
+        "engine": "api",
+        "hypothesis": "favorite final readback",
+        "config": {
+          "maxRequests": 2,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users/login"
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/concurrent-article-c"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users/login",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "email": "favorite-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/concurrent-article-c",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "assert": [
+                {
+                  "pointer": "/article/favoritesCount",
+                  "equals": 1
+                },
+                {
+                  "pointer": "/article/favorited",
+                  "equals": true
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "operators": {
+    "statuses": [],
+    "delaysMs": [],
+    "abort": false,
+    "viewports": [],
+    "locales": [],
+    "timezones": [],
+    "reducedMotion": [],
+    "vus": [],
+    "paceMs": [],
+    "repeatClicks": [],
+    "interactionDepth": 1
+  },
+  "budget": {
+    "maxEpochs": 2,
+    "maxCalls": 8,
+    "maxDurationMs": 1200000,
+    "callTimeoutMs": 180000,
+    "maxInputChars": 60000,
+    "maxOutputBytes": 131072,
+    "maxRequests": 3000,
+    "maxReportedTokens": 300000
+  }
+}

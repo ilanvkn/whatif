@@ -1,0 +1,807 @@
+{
+  "schemaVersion": 1,
+  "kind": "retrospective-cross-application-qualification",
+  "status": "qualified",
+  "qualificationComplete": true,
+  "crossApplicationEvidence": true,
+  "distinctApplications": 2,
+  "backendApplications": 2,
+  "postgresApplications": 2,
+  "concurrency": {
+    "journeys": 78,
+    "concurrentJourneys": 12,
+    "overlapJourneys": 12,
+    "maxInFlight": 4
+  },
+  "distinctUpstreamRevisions": 2,
+  "distinctUseCases": 2,
+  "teams": 2,
+  "totals": {
+    "roleAttempts": 12,
+    "actualModelCalls": 12,
+    "reportedTokens": 227021,
+    "observedRequests": 282,
+    "reservedRequests": 516,
+    "epochs": 4,
+    "acceptedPatches": 2
+  },
+  "usageComplete": true,
+  "apps": [
+    {
+      "runner": "python-postgres",
+      "backend": {
+        "verified": true,
+        "recordedTrials": 6,
+        "verifiedResetChecks": 6,
+        "restartChecks": 6,
+        "restartChecksPassed": 4,
+        "cleanupVerified": true,
+        "database": "PostgreSQL 17",
+        "runtimePinned": true,
+        "workerProcesses": 24
+      },
+      "concurrency": {
+        "journeys": 24,
+        "concurrentJourneys": 6,
+        "overlapJourneys": 6,
+        "maxInFlight": 4
+      },
+      "repository": "https://github.com/procrastinate-org/procrastinate",
+      "commit": "8b6398329d915b7299c0d936e567facaebea8903",
+      "sourceBasis": "Declared pinned upstream preparation; no upstream-source attestation",
+      "declaredSourceBasis": "Exact shipped demo_sync/tasks.py; trusted local PG HTTP/worker adapter adds explicit delivery fault and requested durable-effect contract; installed upstream wheel3.10.0",
+      "parentEvidenceSha256": null,
+      "license": "MIT",
+      "useCase": "Requested durable retry/idempotency enhancement of real Procrastinate sum demo",
+      "complete": true,
+      "realProvider": true,
+      "stopReason": "no-observed-failure",
+      "usageComplete": true,
+      "metrics": {
+        "roleAttempts": 6,
+        "actualModelCalls": 6,
+        "reportedTokens": 99738,
+        "observedRequests": 42,
+        "reservedRequests": 270,
+        "epochs": 2,
+        "acceptedPatches": 1
+      },
+      "evidence": {
+        "backendArtifacts": {
+          "runtime.json": "1a670f3e6f66f34b4f8faa6340384d4e0caa5b7798f4062c427815e9285e2ab8",
+          "database-seed.json": "f5f713b27436c288d354f74fc70c1bd1439a73ec91799564cf17351fb735d195",
+          "database-cleanup.json": "72670cdc90443e664ddce78d606c5a5be91ab7daae0b924ac17520002a06d711",
+          "postgres/owner.json": "45758a5edc4f275f3bc3ce585f301f81adfc131c77acf095602d47f8ec251f8f",
+          "postgres/seed.json": "5d18bf63183a0cc365e16b7e281f08ca37014dc9550f602e34f9f4620c00f227",
+          "postgres/init.json": "efb24946792e5a36a067d28f81db33d95bb1d6f0bc4004af5b01090ee381f76c",
+          "postgres/cleanup.json": "e0eec656b86b280beffdcee3c2ca3ec93c7beec78dac8521282c0675ebc1e1c2"
+        },
+        "teamManifestSha256": "4357a98d08fe943d06043793aa050c2e08f650b1abda15e46bc7c971a7899251",
+        "teamEvidenceSha256": "e22ff0507f840f647f564c631d7dfb00ce5393c7e633c3b6a24258d79965ddc1",
+        "initialSourceSnapshotSha256": "8d6510e213c256fd0813c7ed5ce31e40bce768d3b74a5c1ae7d45741658d4f50",
+        "finalSourceSnapshotSha256": "e5a3fb864bca40ab057bbf386bea3bc2124b24c911e9b928b8710fb38f0b9b62"
+      },
+      "transitions": [
+        {
+          "epoch": 1,
+          "caseId": "c-9eb583ca3bd65dbf",
+          "engine": "api",
+          "invariant": "auth control",
+          "before": [
+            true,
+            true
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "healthy-control-retained",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-dea629460d9ee194",
+          "engine": "api",
+          "invariant": "enqueue duplicate deliveries",
+          "before": [
+            true,
+            true
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "healthy-control-retained",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-a6c6959905ceedb2",
+          "engine": "api",
+          "invariant": "completed idempotent effects",
+          "before": [
+            false,
+            false
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "observed-failure-to-pass",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-9eb583ca3bd65dbf",
+          "engine": "api",
+          "invariant": "auth control",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-dea629460d9ee194",
+          "engine": "api",
+          "invariant": "enqueue duplicate deliveries",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-a6c6959905ceedb2",
+          "engine": "api",
+          "invariant": "completed idempotent effects",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        }
+      ]
+    },
+    {
+      "runner": "python-postgres",
+      "backend": {
+        "verified": true,
+        "recordedTrials": 6,
+        "verifiedResetChecks": 6,
+        "restartChecks": 6,
+        "restartChecksPassed": 4,
+        "cleanupVerified": true,
+        "database": "PostgreSQL 17",
+        "runtimePinned": true,
+        "workerProcesses": 0
+      },
+      "concurrency": {
+        "journeys": 54,
+        "concurrentJourneys": 6,
+        "overlapJourneys": 6,
+        "maxInFlight": 4
+      },
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "sourceBasis": "Declared pinned upstream preparation; no upstream-source attestation",
+      "declaredSourceBasis": "Pinned upstream plus previously accepted RC article-deletion patch; new trusted PostgreSQL threaded HTTP adapter; natural favorites logic unchanged",
+      "parentEvidenceSha256": null,
+      "license": "MIT",
+      "useCase": "RealWorld PostgreSQL article-scoped favorite state and concurrent idempotent mutation",
+      "complete": true,
+      "realProvider": true,
+      "stopReason": "no-observed-failure",
+      "usageComplete": true,
+      "metrics": {
+        "roleAttempts": 6,
+        "actualModelCalls": 6,
+        "reportedTokens": 127283,
+        "observedRequests": 240,
+        "reservedRequests": 246,
+        "epochs": 2,
+        "acceptedPatches": 1
+      },
+      "evidence": {
+        "backendArtifacts": {
+          "runtime.json": "eec8a5134db9b0eb82ac049455e1de37e956b91eb0179201f5ab63c07de7ca1c",
+          "database-seed.json": "f8c8d709d7bada887ea92baed8cacf640100da484a94fb2660adfc0e4b82e6be",
+          "database-cleanup.json": "9935c1c090291ec3cc4bff5d464e5a28d65c2b33a412f77cd81a86651ddf49df",
+          "postgres/owner.json": "d88e2c4002f5d3bbaef9bd782c44e63f941a2a413716e529e20b90704b3609f5",
+          "postgres/seed.json": "0266f720c15a090df0d01ee9e6b504956e389566c403c093fda53e752905122a",
+          "postgres/init.json": "efb24946792e5a36a067d28f81db33d95bb1d6f0bc4004af5b01090ee381f76c",
+          "postgres/cleanup.json": "e0eec656b86b280beffdcee3c2ca3ec93c7beec78dac8521282c0675ebc1e1c2"
+        },
+        "teamManifestSha256": "fd2636794295d8cd3e944f9926eab10e3deb412e8e52cc819f3d17ea93d4681a",
+        "teamEvidenceSha256": "7f20e9376b85facd7f3a7fb3be3afd64307fdb75515b2f680d2656ff06a7e148",
+        "initialSourceSnapshotSha256": "72a2603be3989544cc5686fb47f62684e8e62dc188d1154a224c4668fd76ec51",
+        "finalSourceSnapshotSha256": "165e9eb721b3a5a83cd45641e901caaee75c057c9f20dfc67ec39ec93f57bb57"
+      },
+      "transitions": [
+        {
+          "epoch": 1,
+          "caseId": "c-e470a2ccf859b41e",
+          "engine": "api",
+          "invariant": "JWT positive control, anonymous denial and owner CRUD remain correct",
+          "before": [
+            true,
+            true
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "healthy-control-retained",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-d5f66b1c1040d66f",
+          "engine": "api",
+          "invariant": "Anonymous deletion is denied and owner data retained",
+          "before": [
+            true,
+            true
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "healthy-control-retained",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-55e0729de653721b",
+          "engine": "api",
+          "invariant": "Other-user deletion is denied without server error or mutation",
+          "before": [
+            true,
+            true
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "healthy-control-retained",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-58c080ad5e595441",
+          "engine": "api",
+          "invariant": "Authenticated missing article deletion returns404",
+          "before": [
+            true,
+            true
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "healthy-control-retained",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-6b332d4135d7e9e5",
+          "engine": "api",
+          "invariant": "article scoped favorites",
+          "before": [
+            false,
+            false
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "observed-failure-to-pass",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-4ca471d3b0481680",
+          "engine": "api",
+          "invariant": "concurrent same favorite",
+          "before": [
+            false,
+            false
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "observed-failure-to-pass",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-3ec717ec4a875fe8",
+          "engine": "api",
+          "invariant": "favorite final readback",
+          "before": [
+            false,
+            false
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "observed-failure-to-pass",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-e470a2ccf859b41e",
+          "engine": "api",
+          "invariant": "JWT positive control, anonymous denial and owner CRUD remain correct",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-d5f66b1c1040d66f",
+          "engine": "api",
+          "invariant": "Anonymous deletion is denied and owner data retained",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-55e0729de653721b",
+          "engine": "api",
+          "invariant": "Other-user deletion is denied without server error or mutation",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-58c080ad5e595441",
+          "engine": "api",
+          "invariant": "Authenticated missing article deletion returns404",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-6b332d4135d7e9e5",
+          "engine": "api",
+          "invariant": "article scoped favorites",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-4ca471d3b0481680",
+          "engine": "api",
+          "invariant": "concurrent same favorite",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-3ec717ec4a875fe8",
+          "engine": "api",
+          "invariant": "favorite final readback",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        }
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "repository": "https://github.com/procrastinate-org/procrastinate",
+      "commit": "8b6398329d915b7299c0d936e567facaebea8903",
+      "observedInvariant": "auth control",
+      "observation": "healthy-control-retained",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-9eb583ca3bd65dbf",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/procrastinate-org/procrastinate",
+      "commit": "8b6398329d915b7299c0d936e567facaebea8903",
+      "observedInvariant": "enqueue duplicate deliveries",
+      "observation": "healthy-control-retained",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-dea629460d9ee194",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/procrastinate-org/procrastinate",
+      "commit": "8b6398329d915b7299c0d936e567facaebea8903",
+      "observedInvariant": "completed idempotent effects",
+      "observation": "observed-failure-to-pass",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-a6c6959905ceedb2",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "JWT positive control, anonymous denial and owner CRUD remain correct",
+      "observation": "healthy-control-retained",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-e470a2ccf859b41e",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "Anonymous deletion is denied and owner data retained",
+      "observation": "healthy-control-retained",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-d5f66b1c1040d66f",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "Other-user deletion is denied without server error or mutation",
+      "observation": "healthy-control-retained",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-55e0729de653721b",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "Authenticated missing article deletion returns404",
+      "observation": "healthy-control-retained",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-58c080ad5e595441",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "article scoped favorites",
+      "observation": "observed-failure-to-pass",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-6b332d4135d7e9e5",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "concurrent same favorite",
+      "observation": "observed-failure-to-pass",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-4ca471d3b0481680",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "favorite final readback",
+      "observation": "observed-failure-to-pass",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-3ec717ec4a875fe8",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "This is a retrospective record of finite observed trials, not a prediction of untested behavior.",
+    "Distinct role sessions use one provider and do not imply independent model weights or independent organizations.",
+    "No claim of 100x superiority, complete coverage, universal security, or production readiness follows from these runs.",
+    "Token usage is provider-reported; missing usage remains unknown. Tokens and dollars were not hard capped.",
+    "Evidence hashes establish internal consistency, not a signed execution or upstream-source attestation.",
+    "Backend qualification covers only declared HTTP workflows with reset SQLite or isolated PostgreSQL 17 fixtures; other databases and deployments remain unqualified.",
+    "Backend dependency runtimes are pinned and verified; these finite macOS runs do not qualify other runtimes or deployment environments.",
+    "Observed invariants are evidence data for human review, not automatic instructions or permission to change another application."
+  ]
+}

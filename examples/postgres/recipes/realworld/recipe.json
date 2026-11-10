@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "app": "realworld",
+  "repository": "https://github.com/DataDog/flask-realworld-example-app",
+  "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+  "license": "MIT",
+  "pythonVersion": "3.9.6",
+  "postgresVersion": "17.11",
+  "sourceBasis": "Pinned upstream plus previously accepted RC article-deletion patch; new trusted PostgreSQL threaded HTTP adapter; natural favorites logic unchanged",
+  "assets": [
+    {
+      "destination": "LICENSE",
+      "sha256": "719067f46c81157dc2d800d183ecd733b034aa936f425f94475d2f399db6bbe9",
+      "origin": "upstream",
+      "source": "LICENSE"
+    },
+    {
+      "destination": "conduit/__init__.py",
+      "sha256": "abd980cf9e20304b48fb9336fed374e4ee679fd0bf3e2ffdb96ef84a8c6cf2e8",
+      "origin": "upstream",
+      "source": "conduit/__init__.py"
+    },
+    {
+      "destination": "conduit/app.py",
+      "sha256": "d0443d7cb4841d554eea7f832c5385857a2d7dc185c47b07f2914be5422e548f",
+      "origin": "upstream",
+      "source": "conduit/app.py"
+    },
+    {
+      "destination": "conduit/articles/__init__.py",
+      "sha256": "4b27d794e062faf2196ba7d88abe07eece9628ba688e0d86e9ff59daf3c67cdb",
+      "origin": "upstream",
+      "source": "conduit/articles/__init__.py"
+    },
+    {
+      "destination": "conduit/articles/models.py",
+      "sha256": "dbe947d4197fa176890503e4be5bc24735738b2e833d60105dd3d53b80f6a121",
+      "origin": "upstream",
+      "source": "conduit/articles/models.py"
+    },
+    {
+      "destination": "conduit/articles/serializers.py",
+      "sha256": "d893a1cd71c9d46953beb1ee73ec710ebbe572624ddce2c9a87c41e170b13637",
+      "origin": "upstream",
+      "source": "conduit/articles/serializers.py"
+    },
+    {
+      "destination": "conduit/articles/views.py",
+      "sha256": "0c9b7bac9a8dbf573c6c2755a9a896a2f4b05a1585e389bbda570c2348577315",
+      "origin": "recipe",
+      "source": "conduit__articles__views.py",
+      "replacementOf": {
+        "path": "conduit/articles/views.py",
+        "sha256": "28970ccf9f0eb47d68da8353feecc82c0055518833561fe92b56a94cf6df6a3f",
+        "basis": "Previously accepted RC authenticated-deletion repair; exact exported patch examples/backends/patches/realworld.patch"
+      }
+    },
+    {
+      "destination": "conduit/commands.py",
+      "sha256": "d1939e2c728645d028c77eb7681438899831a4310648d60b76cb702317d0116f",
+      "origin": "upstream",
+      "source": "conduit/commands.py"
+    },
+    {
+      "destination": "conduit/compat.py",
+      "sha256": "883302da2f9ea9381c0ae5ceb052db59ef17771a6649c32ce8cc86bd871960f2",
+      "origin": "upstream",
+      "source": "conduit/compat.py"
+    },
+    {
+      "destination": "conduit/database.py",
+      "sha256": "c892f7a3f359689db95254ce10382d43219d5108324ca7a65b07a1bd3ddbee71",
+      "origin": "upstream",
+      "source": "conduit/database.py"
+    },
+    {
+      "destination": "conduit/exceptions.py",
+      "sha256": "33ab56e48f695dbc3c462ed6f22f2a697d6c4feb57f92a51695019553f04b051",
+      "origin": "upstream",
+      "source": "conduit/exceptions.py"
+    },
+    {
+      "destination": "conduit/extensions.py",
+      "sha256": "12a6b7141b388bef156941a52b6075e9b2c3d4d120b36132309fe300b4182589",
+      "origin": "upstream",
+      "source": "conduit/extensions.py"
+    },
+    {
+      "destination": "conduit/profile/__init__.py",
+      "sha256": "3ad6bbff92d791a053086c8e209c8bb6d6c74f9a6361c748c619433102cd135f",
+      "origin": "upstream",
+      "source": "conduit/profile/__init__.py"
+    },
+    {
+      "destination": "conduit/profile/models.py",
+      "sha256": "d358adbeddfd76ee05f12c7f3d73cf7cc12ce19f3c93cdb751d4f3cf6c349092",
+      "origin": "upstream",
+      "source": "conduit/profile/models.py"
+    },
+    {
+      "destination": "conduit/profile/serializers.py",
+      "sha256": "93a534ee79f0b614597c797ebce30202319db7631b165275a001faa122a48c00",
+      "origin": "upstream",
+      "source": "conduit/profile/serializers.py"
+    },
+    {
+      "destination": "conduit/profile/views.py",
+      "sha256": "bfaad655be806461565aa74cd0bc4ad0111429ad987f58c572cf513ed70fa2c1",
+      "origin": "upstream",
+      "source": "conduit/profile/views.py"
+    },
+    {
+      "destination": "conduit/security/__init__.py",
+      "sha256": "567e224dc41be1c98b34871adf54004a5f42058952f4a841e3d93a23a03f29b9",
+      "origin": "upstream",
+      "source": "conduit/security/__init__.py"
+    },
+    {
+      "destination": "conduit/security/views.py",
+      "sha256": "ad4355abd01018d95a6556d464da8d099ad151df3728ac94d627b89c0d7ebad8",
+      "origin": "upstream",
+      "source": "conduit/security/views.py"
+    },
+    {
+      "destination": "conduit/security/vulnerabilities.py",
+      "sha256": "380357b10c1ff4ec23236f1412532a244d0e8d6303a7d9a40bca283a0b53b5d0",
+      "origin": "upstream",
+      "source": "conduit/security/vulnerabilities.py"
+    },
+    {
+      "destination": "conduit/settings.py",
+      "sha256": "d8af671bcf5417f2abd60e5a79f2d51367ae2fa5e9f80d4c5ad6384019854ec1",
+      "origin": "upstream",
+      "source": "conduit/settings.py"
+    },
+    {
+      "destination": "conduit/user/__init__.py",
+      "sha256": "6cf23c507a9f35269849364d22913e8f812fe0b5230bb5facc509c702134ae80",
+      "origin": "upstream",
+      "source": "conduit/user/__init__.py"
+    },
+    {
+      "destination": "conduit/user/models.py",
+      "sha256": "e3d8ae2739367904f1afb98fda551e45d1e3d32419de767d1cd27c72fc072dcb",
+      "origin": "upstream",
+      "source": "conduit/user/models.py"
+    },
+    {
+      "destination": "conduit/user/serializers.py",
+      "sha256": "57cabd8cb9b4ec4beb383eca03d926eb020d803c0bb6c73ba712399566ec25bb",
+      "origin": "upstream",
+      "source": "conduit/user/serializers.py"
+    },
+    {
+      "destination": "conduit/user/views.py",
+      "sha256": "9b99e24d180bb8e87a5d304af6cb2970dd35d4ce75214abcad7634de3d3e667c",
+      "origin": "upstream",
+      "source": "conduit/user/views.py"
+    },
+    {
+      "destination": "conduit/utils.py",
+      "sha256": "a6c3acefdbf5857623c4b5ef9b5077cef42d8d099194c44697ff0e4e8df4892a",
+      "origin": "upstream",
+      "source": "conduit/utils.py"
+    },
+    {
+      "destination": "requirements.lock",
+      "sha256": "cb65e4d68c2a46aa8cf809ea8c6f65c37938b6d4e7c5c6432181a1ec0d595317",
+      "origin": "recipe",
+      "source": "app-requirements.lock"
+    },
+    {
+      "destination": "requirements/prod.txt",
+      "sha256": "0613cd4ece61f4981012e0b3853e15e0f286e15c13a1fe306c6555b1d9594f93",
+      "origin": "upstream",
+      "source": "requirements/prod.txt"
+    },
+    {
+      "destination": "whatif_backend.py",
+      "sha256": "1f2e5ccaeffaf007d902a90fdbd1064d493ff4bbce69dc8fb7dfe04a9d4a240e",
+      "origin": "recipe",
+      "source": "whatif_backend.py"
+    },
+    {
+      "destination": "wheel-manifest.json",
+      "sha256": "35619e361b502a07b9ad20a5ae12e5bf638f396279c719be765bc5d4821b08a3",
+      "origin": "recipe",
+      "source": "app-wheel-manifest.json"
+    }
+  ],
+  "wheelManifestSha256": "9963a564d7559812411e160625c006b912e5ad5976aff8840e04050caef43c0d",
+  "requirementsLockSha256": "09203dcd0fb8695c2ccfcb223aa9f2818b19f094f5f16e18069e96502839e6b8"
+}

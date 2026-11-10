@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "app": "queue",
+  "repository": "https://github.com/procrastinate-org/procrastinate",
+  "commit": "8b6398329d915b7299c0d936e567facaebea8903",
+  "license": "MIT",
+  "pythonVersion": "3.12.15",
+  "postgresVersion": "17.11",
+  "sourceBasis": "Exact shipped demo_sync/tasks.py; trusted local PG HTTP/worker adapter adds explicit delivery fault and requested durable-effect contract; installed upstream wheel3.10.0",
+  "assets": [
+    {
+      "destination": "LICENSE.md",
+      "sha256": "51ae5fb9f40ec3980959a1195d9b0a46a134008e54d6985e099399c24323074e",
+      "origin": "upstream",
+      "source": "LICENSE.md"
+    },
+    {
+      "destination": "demo/__init__.py",
+      "sha256": "74b6beec47db3cc39c2753453c519f38e9cded040d237ea94ccb521875c2cb39",
+      "origin": "recipe",
+      "source": "demo____init__.py"
+    },
+    {
+      "destination": "demo/app.py",
+      "sha256": "b81e491fe34382dea32dff3f01fedb042de6a7cf0fd2f4373c8ce1dd8b018d40",
+      "origin": "recipe",
+      "source": "demo__app.py"
+    },
+    {
+      "destination": "demo/tasks.py",
+      "sha256": "850c45f2b8d3c90c61d479307cdcfd697303ff3e8b8628ba3ea8ce7df43a2978",
+      "origin": "upstream",
+      "source": "procrastinate/demos/demo_sync/tasks.py"
+    },
+    {
+      "destination": "whatif_backend.py",
+      "sha256": "5ac856476852d1dd7b0b0d961e9ba4fa99d51c03157c0fd87a823f1239ce4e8b",
+      "origin": "recipe",
+      "source": "whatif_backend.py"
+    }
+  ],
+  "wheelManifestSha256": "668952a38c1647a387a8a2b3aa24dd9717984a521d343d2149b77ef3ee07383f",
+  "requirementsLockSha256": "618ba3d5504ce6af2940a4cce6f0b35d3d37aa01d902eae4735fac54d3dac385"
+}

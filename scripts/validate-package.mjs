@@ -22,5 +22,15 @@ for(const name of ['microblog','realworld']){
  for(const suffix of ['.patch','-LICENSE.txt'])assert.ok(fs.statSync(path.join(root,'examples/backends/patches',name+suffix)).size>0,'Missing backend patch/license');
 }
 for(const file of ['examples/backends/README.md','scripts/prepare-backend.mjs','docs/BACKEND-RC-QUALIFICATION.md','docs/evidence/backend-rc-qualification.json','src/agents/backend.mjs','src/engines/api.mjs'])assert.ok(fs.statSync(path.join(root,file)).isFile(),'Missing backend release artifact '+file);
+for(const name of ['realworld','queue']){
+ const prefix=path.join(root,'examples/postgres/recipes',name),recipe=JSON.parse(fs.readFileSync(path.join(prefix,'recipe.json'))),spec=JSON.parse(fs.readFileSync(path.join(root,'examples/postgres',name+'.json')));
+ validateTeam(spec);assert.equal(spec.runner,'python-postgres');assert.equal(recipe.repository,spec.provenance.repository);assert.equal(recipe.commit,spec.provenance.commit);assert.match(recipe.postgresVersion,/^17\./);assert.deepEqual(recipe.assets.map(a=>a.destination).sort(),[...spec.app.assets].sort());
+ for(const [file,key]of [['requirements.lock','requirementsLockSha256'],['wheel-manifest.json','wheelManifestSha256']])assert.equal(hash(fs.readFileSync(path.join(prefix,file))),recipe[key],'PostgreSQL recipe hash mismatch');
+ for(const asset of recipe.assets){assert.match(asset.sha256,/^[a-f0-9]{64}$/);if(asset.origin==='recipe'){assert.ok(!path.isAbsolute(asset.source)&&!asset.source.split('/').includes('..'));assert.equal(hash(fs.readFileSync(path.join(prefix,asset.source))),asset.sha256,'PostgreSQL reviewed source/adapter hash mismatch');}}
+ const wheels=JSON.parse(fs.readFileSync(path.join(prefix,'wheel-manifest.json'))),lock=fs.readFileSync(path.join(prefix,'requirements.lock'),'utf8');assert.ok(wheels.length>0);for(const wheel of wheels){assert.match(wheel.sha256,/^[a-f0-9]{64}$/);assert.ok(wheel.wheel.endsWith('.whl'));assert.ok(lock.split('\n').includes(wheel.name+'=='+wheel.version+' --hash=sha256:'+wheel.sha256),'PostgreSQL lock mismatch');}
+ assert.ok(fs.statSync(path.join(prefix,'UPSTREAM-LICENSE.txt')).size>0);
+}
+for(const file of ['HANDOVER.md','examples/postgres/README.md','scripts/prepare-postgres-app.mjs','src/agents/postgres.mjs','docs/POSTGRES-QUALIFICATION.md','docs/evidence/postgres-qualification.json','examples/postgres/patches/queue.patch','examples/postgres/patches/realworld.patch','examples/postgres/patches/README.md','examples/postgres/patches/queue-LICENSE.txt','examples/postgres/patches/realworld-LICENSE.txt'])assert.ok(fs.statSync(path.join(root,file)).isFile(),'Missing PostgreSQL artifact '+file);
 JSON.parse(fs.readFileSync(path.join(root,'docs/evidence/backend-rc-qualification.json')));
-console.log(JSON.stringify({validated:true,version:pkg.version,scope:'manifests, skills, static/backend recipes, pinned bootstrap/dependency hashes, patches, licenses and qualification artifacts'}));
+JSON.parse(fs.readFileSync(path.join(root,'docs/evidence/postgres-qualification.json')));
+console.log(JSON.stringify({validated:true,version:pkg.version,scope:'manifests, skills, static/backend/PostgreSQL recipes, pinned bootstrap/dependency hashes, patches, licenses and qualification artifacts'}));

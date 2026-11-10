@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-10",
+  "status": "passed",
+  "reviewer": "Independent red-team reviewer; no additional model calls",
+  "totalIndependentHttpRequests": 50,
+  "apps": [
+    {
+      "app": "queue",
+      "repository": "https://github.com/procrastinate-org/procrastinate",
+      "commit": "8b6398329d915b7299c0d936e567facaebea8903",
+      "sourceBasis": "Exact shipped demo_sync/tasks.py; trusted local PG HTTP/worker adapter adds explicit delivery fault and requested durable-effect contract; installed upstream wheel3.10.0",
+      "acceptedRepair": true,
+      "originalTeamVerified": true,
+      "finalSourceSha256": "a34c8b4f0e7dc917ec77092c98d388247434cd7fb33d944cc36ba18e9e302f31",
+      "editableSources": [
+        {
+          "path": "demo/tasks.py",
+          "sha256": "742ff9f37445947ff2c25c18926c8492a40736b0f146af42f35cde731f6f45f9"
+        }
+      ],
+      "patchSha256": "60c941702206e99be5677cfb23c8db602e59debd80faab199cc9c021b96a02ff",
+      "independentHoldout": {
+        "passed": true,
+        "requests": 12,
+        "restartPassed": true,
+        "campaignHashesVerified": true,
+        "branches": [
+          {
+            "id": "auth-denial",
+            "passed": true,
+            "requests": 1,
+            "concurrency": {
+              "users": 1,
+              "maxInFlight": 1,
+              "overlapObserved": false
+            }
+          },
+          {
+            "id": "different-operands-positive",
+            "passed": true,
+            "requests": 4,
+            "concurrency": {
+              "users": 4,
+              "maxInFlight": 4,
+              "overlapObserved": true
+            }
+          },
+          {
+            "id": "positive-result-and-retries",
+            "passed": true,
+            "requests": 1,
+            "concurrency": {
+              "users": 1,
+              "maxInFlight": 1,
+              "overlapObserved": false
+            }
+          },
+          {
+            "id": "different-key-negative",
+            "passed": true,
+            "requests": 4,
+            "concurrency": {
+              "users": 4,
+              "maxInFlight": 4,
+              "overlapObserved": true
+            }
+          },
+          {
+            "id": "two-durable-effects",
+            "passed": true,
+            "requests": 1,
+            "concurrency": {
+              "users": 1,
+              "maxInFlight": 1,
+              "overlapObserved": false
+            }
+          }
+        ],
+        "cleanup": {
+          "privateDataRemoved": true,
+          "postgresClustersRemoved": true,
+          "socketRemoved": true,
+          "adminSecretsRemoved": true,
+          "systemServicesTouched": false
+        }
+      }
+    },
+    {
+      "app": "realworld",
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "sourceBasis": "Pinned upstream plus previously accepted RC article-deletion patch; new trusted PostgreSQL threaded HTTP adapter; natural favorites logic unchanged",
+      "acceptedRepair": true,
+      "originalTeamVerified": true,
+      "finalSourceSha256": "e4db488aa3332284593a6a3caa17d180cdfe3399f2acceae48ff89a925af90f5",
+      "editableSources": [
+        {
+          "path": "conduit/articles/models.py",
+          "sha256": "b9b4ac2e27cc1bd35abb5b0320e9b38919c74a305635e6df467e408e4ab9770f"
+        }
+      ],
+      "patchSha256": "141878fa1e4d550a773cd071e9d4d5fffdfd832aa2e4eee4838cf5ebfcebd140",
+      "independentHoldout": {
+        "passed": true,
+        "requests": 38,
+        "restartPassed": true,
+        "campaignHashesVerified": true,
+        "branches": [
+          {
+            "id": "different-identities-and-articles",
+            "passed": true,
+            "requests": 16,
+            "concurrency": {
+              "users": 1,
+              "maxInFlight": 1,
+              "overlapObserved": false
+            }
+          },
+          {
+            "id": "concurrent-favorite",
+            "passed": true,
+            "requests": 8,
+            "concurrency": {
+              "users": 4,
+              "maxInFlight": 4,
+              "overlapObserved": true
+            }
+          },
+          {
+            "id": "concurrent-unfavorite",
+            "passed": true,
+            "requests": 8,
+            "concurrency": {
+              "users": 4,
+              "maxInFlight": 4,
+              "overlapObserved": true
+            }
+          },
+          {
+            "id": "unrelated-user-state-retained",
+            "passed": true,
+            "requests": 3,
+            "concurrency": {
+              "users": 1,
+              "maxInFlight": 1,
+              "overlapObserved": false
+            }
+          }
+        ],
+        "cleanup": {
+          "privateDataRemoved": true,
+          "postgresClustersRemoved": true,
+          "socketRemoved": true,
+          "adminSecretsRemoved": true,
+          "systemServicesTouched": false
+        }
+      }
+    }
+  ],
+  "retainedFailedControls": [
+    {
+      "app": "queue",
+      "kind": "requested-enhancement baseline",
+      "outcome": "Original shipped print-only task fails the declared durable-effect/retry contract; this is not a discovered Procrastinate vulnerability."
+    },
+    {
+      "app": "realworld",
+      "kind": "natural-defect baseline",
+      "outcome": "Original favorites logic fails article isolation and concurrent idempotency while existing authentication/CRUD/deletion regressions pass."
+    },
+    {
+      "app": "realworld",
+      "kind": "unsuccessful AI repair attempt",
+      "outcome": "Earlier attempt used 3 model calls and 158 HTTP requests, accepted no patch, and stopped before critic completion due prompt-size limits. Retained as failed, excluded from qualified repairs."
+    }
+  ],
+  "scope": [
+    "Fresh final-source copies, owned local PostgreSQL 17.11, synthetic users and jobs, actual HTTP, reset and real restart.",
+    "Queue holdout: two unseen operand keys, eight jobs, sixteen attempts, eight injected lost acknowledgments, two final business rows; exactly-once callback execution is not claimed.",
+    "RealWorld holdout: unseen users/articles, article/user isolation, repeated and four-client concurrent favorite/unfavorite, unaffected record retention and restart.",
+    "Observed overlapping client requests do not establish all database transactions overlapped. No million-user, production-load, universal security, or unrelated application claim.",
+    "Internal hashes and local receipts are reproducibility evidence, not signed remote execution attestations."
+  ]
+}

@@ -1,0 +1,28 @@
+--- a/procrastinate/demos/demo_sync/tasks.py
++++ b/procrastinate/demos/demo_sync/tasks.py
+@@ -1,11 +1,22 @@
+ from __future__ import annotations
+ 
+-from .app import app
++import procrastinate
++import psycopg
++
++from .app import app, connection_kwargs
+ 
+ 
+-@app.task(queue="sums")
++@app.task(queue="sums", retry=procrastinate.RetryStrategy(max_attempts=2))
+ def sum(a: int, b: int) -> None:
+-    print(f"{a} + {b} = {a + b}")
++    result = a + b
++    work_key = str(a) + ":" + str(b)
++    with psycopg.connect(**connection_kwargs) as connection:
++        connection.execute(
++            "INSERT INTO whatif_effects (work_key, result) VALUES (%s, %s) "
++            "ON CONFLICT (work_key) DO UPDATE SET result = EXCLUDED.result",
++            (work_key, result),
++        )
++    print(f"{a} + {b} = {result}")
+ 
+ 
+ @app.task(queue="defer")

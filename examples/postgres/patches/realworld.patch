@@ -1,0 +1,85 @@
+--- a/conduit/articles/models.py
++++ b/conduit/articles/models.py
+@@ -78,20 +78,57 @@
+             self, author=author, title=title, description=description, body=body, slug=slug or slugify(title), **kwargs
+         )
+ 
++    def _lock_favorites(self):
++        # Lock an existing row even when the association does not exist yet.
++        # The caller's save commits both the mutation and this transaction,
++        # releasing the lock before the HTTP response is serialized.
++        db.session.flush()
++        db.session.query(Article.id).filter(Article.id == self.id).with_for_update().one()
++
++    def _favorite_rows(self, profile):
++        return db.session.query(favoriter_assoc).filter(
++            favoriter_assoc.c.favorited_article == self.id,
++            favoriter_assoc.c.favoriter == profile.id,
++        )
++
+     def favourite(self, profile):
+-        if not self.is_favourite(profile):
+-            self.favoriters.append(profile)
+-            return True
+-        return False
++        self._lock_favorites()
++        count = self._favorite_rows(profile).count()
++        if count == 1:
++            return False
++        # Reused databases may contain duplicates from earlier unlocked writes.
++        # All mutations use the same article lock, so no uniqueness migration
++        # is needed for concurrent requests through these methods.
++        if count:
++            db.session.execute(
++                favoriter_assoc.delete().where(
++                    (favoriter_assoc.c.favorited_article == self.id)
++                    & (favoriter_assoc.c.favoriter == profile.id)
++                )
++            )
++        db.session.execute(
++            favoriter_assoc.insert().values(
++                favoriter=profile.id, favorited_article=self.id
++            )
++        )
++        db.session.expire(self, ["favoriters"])
++        db.session.expire(profile, ["favorites"])
++        return count == 0
+ 
+     def unfavourite(self, profile):
+-        if self.is_favourite(profile):
+-            self.favoriters.remove(profile)
+-            return True
+-        return False
++        self._lock_favorites()
++        result = db.session.execute(
++            favoriter_assoc.delete().where(
++                (favoriter_assoc.c.favorited_article == self.id)
++                & (favoriter_assoc.c.favoriter == profile.id)
++            )
++        )
++        db.session.expire(self, ["favoriters"])
++        db.session.expire(profile, ["favorites"])
++        return result.rowcount > 0
+ 
+     def is_favourite(self, profile):
+-        return bool(self.query.filter(favoriter_assoc.c.favoriter == profile.id).count())
++        return self._favorite_rows(profile).first() is not None
+ 
+     def add_tag(self, tag):
+         if tag not in self.tagList:
+@@ -107,11 +144,12 @@
+ 
+     @property
+     def favoritesCount(self):
+-        return len(self.favoriters.all())
++        return db.session.query(favoriter_assoc).filter(
++            favoriter_assoc.c.favorited_article == self.id
++        ).count()
+ 
+     @property
+     def favorited(self):
+         if current_user:
+-            profile = current_user.profile
+-            return self.query.join(Article.favoriters).filter(UserProfile.id == profile.id).count() == 1
++            return self.is_favourite(current_user.profile)
+         return False

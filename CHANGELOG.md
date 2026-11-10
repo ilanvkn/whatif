@@ -1,3 +1,11 @@
+# 3.1.0 — PostgreSQL, workers and concurrent API users
+
+- Private PostgreSQL17 clusters with restricted app roles, exact cold-seed resets, real restart checks and verified removal of data, sockets and generated administrator secrets.
+- Separately owned queue workers and real Procrastinate retry/idempotency trials using an explicitly declared delivery fault.
+- Concurrent API users with independent state, synchronized steps, bounded polling and measured overlap evidence.
+- PostgreSQL/worker/concurrency verification, portable pinned recipes and a durable maintenance handover.
+- Preserved startup failures and cleanup corrections; repeated cleanup now retains the original receipt and rejects unexpected remaining state.
+
 # 3.1.0-rc.1 — database-backed application teams
 
 - Built-in stateful API journeys with allowlisted methods, temporary token capture and status/JSON assertions.

@@ -1,9 +1,9 @@
 {
   "name": "whatif-plugin",
-  "version": "3.1.0-rc.1",
+  "version": "3.1.0",
   "private": true,
   "type": "module",
-  "description": "Evidence-led browser and API testing with isolated macOS static-web and SQLite repair trials",
+  "description": "Evidence-led browser and API testing with isolated macOS static-web, SQLite and PostgreSQL repair trials",
   "engines": {
     "node": ">=22"
   },
@@ -19,5 +19,9 @@
     "demo:lab": "node scripts/lab-demo.mjs"
   },
   "license": "MIT",
-  "exports": "./src/index.mjs"
+  "exports": "./src/index.mjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilanvkn/whatif.git"
+  }
 }

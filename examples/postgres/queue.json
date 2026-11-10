@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 3,
+  "runner": "python-postgres",
+  "question": "Requested durable retry/idempotency enhancement of real Procrastinate sum demo",
+  "contract": "This is an explicit requested enhancement of the unmodified upstream Procrastinate sum demo, NOT an upstream library vulnerability. Keep sum(a,b) callable and defer task working. Extend sum to persist the mathematical result in PostgreSQL whatif_effects(work_key TEXT PRIMARY KEY,result BIGINT NOT NULL), key str(a)+\":\"+str(b), using demo.app.connection_kwargs. Four duplicate jobs execute on two real workers. Immutable worker middleware injects one lost acknowledgment AFTER each job callback returns, stored in whatif_delivery_faults. Configure bounded retries so each job succeeds on its second attempt. A repeated or concurrent delivery must not duplicate or corrupt effects. Each distinct key has one durable correct sum. Do not touch fault records, Procrastinate internals/job states, trusted bootstrap, tests, or source outside demo/tasks.py. Do not hardcode a,b or oracle values. Preserve actual Procrastinate worker behavior; do not fabricate success.",
+  "provenance": {
+    "repository": "https://github.com/procrastinate-org/procrastinate",
+    "commit": "8b6398329d915b7299c0d936e567facaebea8903",
+    "license": "MIT",
+    "sourceBasis": "Exact shipped demo_sync/tasks.py; trusted local PG HTTP/worker adapter adds explicit delivery fault and requested durable-effect contract; installed upstream wheel3.10.0"
+  },
+  "app": {
+    "source": "/REVIEWED/PREPARED/APP",
+    "entry": "whatif_backend.py",
+    "files": [
+      "whatif_backend.py",
+      "demo/app.py",
+      "demo/tasks.py"
+    ],
+    "editable": [
+      "demo/tasks.py"
+    ],
+    "assets": [
+      "LICENSE.md",
+      "demo/__init__.py",
+      "demo/app.py",
+      "demo/tasks.py",
+      "whatif_backend.py"
+    ],
+    "repeatSafe": true
+  },
+  "backend": {
+    "python": "/REVIEWED/VENV/bin/python",
+    "postgres": {
+      "binDirectory": "/REVIEWED/POSTGRES/bin"
+    },
+    "workers": 2,
+    "reset": "seed-copy-per-confirmation",
+    "restartCampaign": {
+      "schemaVersion": 1,
+      "question": "Completed jobs and idempotent effect persist across process restart",
+      "target": "http://127.0.0.1:8080/",
+      "budget": {
+        "maxRequests": 20,
+        "maxDurationMs": 60000
+      },
+      "branches": [
+        {
+          "id": "persistent-effects",
+          "engine": "api",
+          "hypothesis": "persistent effects",
+          "config": {
+            "maxRequests": 20,
+            "timeoutMs": 5000,
+            "allowRequests": [
+              {
+                "method": "GET",
+                "path": "/state"
+              }
+            ],
+            "steps": [
+              {
+                "method": "GET",
+                "path": "/state",
+                "expectStatus": [
+                  200
+                ],
+                "headers": {
+                  "Authorization": "Bearer whatif-synthetic-owner"
+                },
+                "poll": {
+                  "maxAttempts": 20,
+                  "intervalMs": 500,
+                  "retryStatus": [
+                    202
+                  ]
+                },
+                "assert": [
+                  {
+                    "pointer": "/total",
+                    "equals": 4
+                  },
+                  {
+                    "pointer": "/succeeded",
+                    "equals": 4
+                  },
+                  {
+                    "pointer": "/failed",
+                    "equals": 0
+                  },
+                  {
+                    "pointer": "/attempts",
+                    "equals": 8
+                  },
+                  {
+                    "pointer": "/effectCount",
+                    "equals": 1
+                  },
+                  {
+                    "pointer": "/result",
+                    "equals": 3
+                  },
+                  {
+                    "pointer": "/faults",
+                    "equals": 4
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "campaign": {
+    "schemaVersion": 1,
+    "question": "Requested durable retry/idempotency enhancement of real Procrastinate sum demo",
+    "target": "http://127.0.0.1:8080/",
+    "budget": {
+      "maxRequests": 25,
+      "maxDurationMs": 60000
+    },
+    "branches": [
+      {
+        "id": "auth-control",
+        "engine": "api",
+        "hypothesis": "auth control",
+        "config": {
+          "maxRequests": 1,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "GET",
+              "path": "/state"
+            }
+          ],
+          "steps": [
+            {
+              "method": "GET",
+              "path": "/state",
+              "expectStatus": [
+                401
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "enqueue-duplicate-deliveries",
+        "engine": "api",
+        "hypothesis": "enqueue duplicate deliveries",
+        "config": {
+          "maxRequests": 4,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/jobs"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/jobs",
+              "expectStatus": [
+                202
+              ],
+              "headers": {
+                "Authorization": "Bearer whatif-synthetic-owner"
+              },
+              "json": {
+                "a": 1,
+                "b": 2
+              }
+            }
+          ],
+          "users": 4,
+          "concurrency": 4,
+          "synchronizeSteps": true
+        }
+      },
+      {
+        "id": "completed-idempotent-effects",
+        "engine": "api",
+        "hypothesis": "completed idempotent effects",
+        "config": {
+          "maxRequests": 20,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "GET",
+              "path": "/state"
+            }
+          ],
+          "steps": [
+            {
+              "method": "GET",
+              "path": "/state",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Bearer whatif-synthetic-owner"
+              },
+              "poll": {
+                "maxAttempts": 20,
+                "intervalMs": 500,
+                "retryStatus": [
+                  202
+                ]
+              },
+              "assert": [
+                {
+                  "pointer": "/total",
+                  "equals": 4
+                },
+                {
+                  "pointer": "/succeeded",
+                  "equals": 4
+                },
+                {
+                  "pointer": "/failed",
+                  "equals": 0
+                },
+                {
+                  "pointer": "/attempts",
+                  "equals": 8
+                },
+                {
+                  "pointer": "/effectCount",
+                  "equals": 1
+                },
+                {
+                  "pointer": "/result",
+                  "equals": 3
+                },
+                {
+                  "pointer": "/faults",
+                  "equals": 4
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "operators": {
+    "statuses": [],
+    "delaysMs": [],
+    "abort": false,
+    "viewports": [],
+    "locales": [],
+    "timezones": [],
+    "reducedMotion": [],
+    "vus": [],
+    "paceMs": [],
+    "repeatClicks": [],
+    "interactionDepth": 1
+  },
+  "budget": {
+    "maxEpochs": 2,
+    "maxCalls": 8,
+    "maxDurationMs": 1200000,
+    "callTimeoutMs": 180000,
+    "maxInputChars": 60000,
+    "maxOutputBytes": 131072,
+    "maxRequests": 3000,
+    "maxReportedTokens": 300000
+  }
+}
