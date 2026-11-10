@@ -1,0 +1,13 @@
+{
+  "name": "whatif",
+  "version": "0.1.0",
+  "description": "Evidence-led application scenarios, bounded testing and security review preparation.",
+  "skills": "./skills",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "WhatIF",
+    "shortDescription": "Explore scenarios. Test assumptions. Keep the evidence.",
+    "category": "Developer Tools",
+    "defaultPrompt": ["Use WhatIF to test this application for a million-user scenario and review its security boundaries."]
+  }
+}

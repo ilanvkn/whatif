@@ -1,0 +1,4 @@
+interface:
+  display_name: "WhatIF"
+  short_description: "Scenario tests with explicit limits and evidence"
+  default_prompt: "Use $whatif to test this application for a million-user scenario and review its security boundaries."

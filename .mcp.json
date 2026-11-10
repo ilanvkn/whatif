@@ -1,0 +1,1 @@
+{"mcpServers":{"whatif":{"command":"node","args":["${CLAUDE_PLUGIN_ROOT}/src/mcp.mjs"]}}}

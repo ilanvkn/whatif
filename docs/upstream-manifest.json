@@ -1,0 +1,620 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-11-07 Asia/Kuala_Lumpur",
+  "scope": "Commit and checkout inventory; not exhaustive source analysis or license clearance",
+  "repositories": [
+    {
+      "directory": "AgentSociety",
+      "remote": "https://github.com/tsinghua-fib-lab/AgentSociety.git",
+      "commit": "5fba40f175800c80679e81a65ac9962c11de73b2",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 1941,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "b65b784ed7e4318dc1c3e8944046d867edcc272c7f237ea99dcf0c0ce3a1e75d"
+        },
+        {
+          "file": "extension/LICENSE",
+          "sha256": "0ca566e1ad66e025d935b3e6c7d8939a0d5bfa8d59a8056580148814efa30a26"
+        },
+        {
+          "file": "packages/agentsociety-benchmark/LICENSE",
+          "sha256": "b65b784ed7e4318dc1c3e8944046d867edcc272c7f237ea99dcf0c0ce3a1e75d"
+        },
+        {
+          "file": "packages/agentsociety-community/LICENSE",
+          "sha256": "b65b784ed7e4318dc1c3e8944046d867edcc272c7f237ea99dcf0c0ce3a1e75d"
+        },
+        {
+          "file": "packages/agentsociety/LICENSE",
+          "sha256": "b65b784ed7e4318dc1c3e8944046d867edcc272c7f237ea99dcf0c0ce3a1e75d"
+        },
+        {
+          "file": "packages/agentsociety2/LICENSE",
+          "sha256": "b65b784ed7e4318dc1c3e8944046d867edcc272c7f237ea99dcf0c0ce3a1e75d"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "fa723c45231c5280d7665719b507ef7249020fffe80f5e5b311d64269cfb0a73"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "D4Vinci--Scrapling",
+      "remote": "https://github.com/D4Vinci/Scrapling.git",
+      "commit": "bc602488b44e978da3266841e913af17577ec0fd",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 697,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "5c782ef0346e4fbfe0dc76fd435f181a0f1e4a1a7a6b13c169c6e74314ff5964"
+        },
+        {
+          "file": "agent-skill/Scrapling-Skill/LICENSE.txt",
+          "sha256": "5c782ef0346e4fbfe0dc76fd435f181a0f1e4a1a7a6b13c169c6e74314ff5964"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "10c8b77189722e52a517f234a301e4964bb47992aaa907e3e20a917e951a3382"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "LearningCircuit--local-deep-research",
+      "remote": "https://github.com/LearningCircuit/local-deep-research.git",
+      "commit": "7f0df1e1172810788034030651f67470276b1a5b",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 5193,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "420d8269376ee925a74aa935fc9b6004fa7f0daf8b76a243853d55b75314739b"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "cf9fd9d11a65fa9969349d0d8c012085f86ca58f210e51095f43d32cbf41a218"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "Metaculus--forecasting-tools",
+      "remote": "https://github.com/Metaculus/forecasting-tools.git",
+      "commit": "91e6d1cd9d29f051efdf0ede85779fa927b5d1c5",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 369,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "381e7c01be4ef601bdcc0608a0b11d27ef9dfacb2feee7da658eb97e29c998ed"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "c655d365a7f1abe7a55bb246c76219f4a67d5639571673bf4e266f0d77850bcc"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "MiroFish",
+      "remote": "https://github.com/666ghj/MiroFish.git",
+      "commit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 128,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "5109feef87d494dd77c0eb225486d4278fe3eb61b303574600bcf8c3c339d034"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "Nixtla--neuralforecast",
+      "remote": "https://github.com/Nixtla/neuralforecast.git",
+      "commit": "27b953c51e93decebfa872a5f15ab4704b7829b4",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 407,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "d392f3d2969e354d7e6aef8fc6df5590ef5c20eea4b946191bd76a6138b4e81c"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "0360a4f3d8ebb24c880e8675a8a57cc325af32210d729b6f492608b102fdfe37"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "TinyTroupe",
+      "remote": "https://github.com/microsoft/TinyTroupe.git",
+      "commit": "7ce8be378a37ee73f9745d6781452712318afa04",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 2198,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "ec74ab62135d01df3d07c6e76f6b47ede43cbbd0635f5106193eb34dde0deca0"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "docling-project--docling",
+      "remote": "https://github.com/docling-project/docling.git",
+      "commit": "26cff4d67939ebd33f19594acdb53ad2c5a531dc",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 1980,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "edb765d1e3e60d0c7a7d5fba5f2bb2c3c29f7465cecb5c22cf1185c884954e4c"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "5f4d3e88629a998512892f89dca14dacc28006dae1440d3327409dfa601f7cc4"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "getzep--graphiti",
+      "remote": "https://github.com/getzep/graphiti.git",
+      "commit": "747b480ec6b12ecb718f1e2bc588b20ee36ea9c2",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 424,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "2825300b20d7b951209835a4a331f29e24725a39d65168e4b831df53aa372650"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "831ab734e5b6713741dbfc15712f01f78fff7e0d6b5be86c5c20acd17c4249e4"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "grafana--k6",
+      "remote": "https://github.com/grafana/k6.git",
+      "commit": "4ac4745707bcf432bca392f13c4248e9924a04ed",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 4137,
+      "licenseFiles": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "45bd5efa5e66840e253253f3cc172d07213cb812206cda7bb71cd5b9dbd5a985"
+        },
+        {
+          "file": "internal/dashboard/LICENSE",
+          "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "54f111f450700924b62026e08797e5ee386879d5304219c55a1df34cd94321ce"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "langfuse--langfuse",
+      "remote": "https://github.com/langfuse/langfuse.git",
+      "commit": "29d42306593369c7b4de2c53b2a63e6d0ad0daf9",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 7659,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "9ee6ca42e813fb58bcad18bed834438503bcc997da3b452d3f9ad4af4292b6b3"
+        },
+        {
+          "file": "ee/LICENSE",
+          "sha256": "760f5202be4f31f9f8ca43a3c558bebaa5187fa7d7eccad6a32de8392cdccee6"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "1dae4f71cec43ff4aa0b1309f450d019f1600ecc241d1374fad898a8b3c3abf0"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "linroger--DeepAgentForecast",
+      "remote": "https://github.com/linroger/DeepAgentForecast.git",
+      "commit": "ec29ab1d4b9a74ae9f0bea1b4644e4582a3a4d6f",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 654,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "6dbbef935ac0145a00afd52c1ab1f38b913cc9a2f34057a3bdbbc0c3769ccd20"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "locustio--locust",
+      "remote": "https://github.com/locustio/locust.git",
+      "commit": "aa571d25e13a9eb3964f1591fa73f5ecd6ea0390",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 431,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "00000d19eb1dd7fd07109865f51431bacf216548a2e334af71f348e6bc4192fc"
+        },
+        {
+          "file": "locust/webui/LICENSE",
+          "sha256": "f01f346e636262229b1a31fc4dfb08043c9321408601a3fb5b0937b18fd63c82"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "96b40d7ad1e168afc750cf820c5d2136202856e403af5214ce1f017eeebdd6bc"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "mesa--mesa",
+      "remote": "https://github.com/mesa/mesa.git",
+      "commit": "fe24c24ee34762de2ff85d487af14bfb5cd1dbb2",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 263,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "10e6054aab9ad8fdd86bc605f2b72d01503cd8d1ada4fd9aa39b031b9efc81e2"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "mirofish-cli",
+      "remote": "https://github.com/SCTY-Inc/mirofish-cli.git",
+      "commit": "6f8cc654b3204e20ff6ae4faf5606479ed8978d0",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 68,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "f9a8c9c63edc7b810a181ed417a86b9520cc765946adfa055b47cfe1fabeb17f"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "mirofish-workbench",
+      "remote": "https://github.com/fullTimeCode/mirofish.git",
+      "commit": "83edde657dea979773f702e5d83781e91036ca58",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 116,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "790a1fbf343e3b1546d7ff1542e3986cf0a6e134e20c73e5a2aaeec800a8e517"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "oasis",
+      "remote": "https://github.com/camel-ai/oasis.git",
+      "commit": "99e92df59ad834cb5ce1101249bffdd9ffcacadb",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 462,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "950deb34b1341a0ac95236fae92fe247c318c3a83a62c9ebacbe1882530ab1f6"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "e9b7ea323c7ae9f5475007008db411da18f98f4ad60edf35984a8a5e1054dacc"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "pbakaus--impeccable",
+      "remote": "https://github.com/pbakaus/impeccable.git",
+      "commit": "c3bb418ee38ee49a6b999b7752c1368f3123a2bd",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 4469,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "02bb8c3b4e70190e3986c0404ad2fd8d639b4f534252d82379cc1b502b6d1812"
+        },
+        {
+          "file": "cursor-plugin/LICENSE",
+          "sha256": "02bb8c3b4e70190e3986c0404ad2fd8d639b4f534252d82379cc1b502b6d1812"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "6c4a86424a12eac2a568e4cc3afa411d9f2acb08fce3e97b41c9d6e951ba8bdf"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "pingdotgg--t3code",
+      "remote": "https://github.com/pingdotgg/t3code.git",
+      "commit": "6577c6b6185167c0e502fa01f9e8e8f2dee6ff25",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 31748,
+      "licenseFiles": [
+        {
+          "file": ".repos/alchemy-effect/LICENSE",
+          "sha256": "50e6751797c50dedd75ef1b8a0d9e42f5f8472e9fbce91f34718e9f97b0c780a"
+        },
+        {
+          "file": ".repos/effect/LICENSE",
+          "sha256": "774c3bc5924ad8ae6c5a75f1c53db13feb238ade15989625c513d07b60dedf30"
+        },
+        {
+          "file": "LICENSE",
+          "sha256": "935d8f2af0c703f9c39517ee57cc4930b19d02d533be930b63f0e82f93614b43"
+        },
+        {
+          "file": "native/libghostty-vt/LICENSE",
+          "sha256": "386211873e5b7a02f663ae4d7adf96285999f91608f8f9f31fecfd0f4095e6f1"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "b03870d0c6d53e6401a07fd7abaf6a1e3830050926eb759c2406ec1aa0cf46ab"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "py-why--dowhy",
+      "remote": "https://github.com/py-why/dowhy.git",
+      "commit": "50d43ac9c04a9ba301349530fac0ef34db59c9ec",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 531,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "4be08a194b9c970bf9309ac19f09e7deaecb763957091bf08298bf0e897e7eab"
+        }
+      ],
+      "readme": null,
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "semgrep--semgrep",
+      "remote": "https://github.com/semgrep/semgrep.git",
+      "commit": "692bfae4ca1bf070f7e8b603037a19886fa36b4f",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 12764,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "20c17d8b8c48a600800dfd14f95d5cb9ff47066a9641ddeab48dc54aec96e331"
+        },
+        {
+          "file": "cli/LICENSE",
+          "sha256": "20c17d8b8c48a600800dfd14f95d5cb9ff47066a9641ddeab48dc54aec96e331"
+        },
+        {
+          "file": "libs/commons/license.txt",
+          "sha256": "360a184cf3ae270fe7c328addc89768925a445ca255852a82a20d57a26749862"
+        },
+        {
+          "file": "libs/lib_parsing/license.txt",
+          "sha256": "360a184cf3ae270fe7c328addc89768925a445ca255852a82a20d57a26749862"
+        },
+        {
+          "file": "libs/ocaml-tree-sitter-semgrep/LICENSE",
+          "sha256": "20c17d8b8c48a600800dfd14f95d5cb9ff47066a9641ddeab48dc54aec96e331"
+        },
+        {
+          "file": "libs/python-str-repr/LICENSE",
+          "sha256": "20c17d8b8c48a600800dfd14f95d5cb9ff47066a9641ddeab48dc54aec96e331"
+        },
+        {
+          "file": "tests/jsonnet/LICENSE.md",
+          "sha256": "ecc90a45ef6be1a6cf8548a8bb9346aa67b428f76b068073c39d4e615fd56a7b"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "4751611e81df6ea2e9ba234f5c20f154239c652f68bee70779dc9f8f35f90f8f"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "shiyu-coder--Kronos",
+      "remote": "https://github.com/shiyu-coder/Kronos.git",
+      "commit": "67b630e67f6a18c9e9be918d9b4337c960db1e9a",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 92,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "acb2d194d378204e5f2be4dcd24d39ecac437903620c790c3315a96dab388fdc"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "b815b608192afa4b805a11bcbb66268f3e3db55736218964944318da7865357e"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "temporalio--temporal",
+      "remote": "https://github.com/temporalio/temporal.git",
+      "commit": "7b43b87af0c18090ca33faa344c68e0f3d47b960",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 4156,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "6aab9afd99ceb1dcaf6a0d91386b46baef9bce17ae4006044e0f231e31430b69"
+        },
+        {
+          "file": "schema/sqlite/LICENSE",
+          "sha256": "fb65aa57b8a932ede6e6bfc2f8e034a69223f7a38cf4bacc4a59925ff26d18d3"
+        },
+        {
+          "file": "temporaltest/LICENSE",
+          "sha256": "fb65aa57b8a932ede6e6bfc2f8e034a69223f7a38cf4bacc4a59925ff26d18d3"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "269838d3de5da90d4c2c0b45bf7fc745b384a5a05c0932582e923638e8994189"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "thedotmack--claude-mem",
+      "remote": "https://github.com/thedotmack/claude-mem.git",
+      "commit": "51fb777fb68013e10e87180ba9795abcd0a5f9cc",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 3031,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "file": "docs/license.md",
+          "sha256": "bdcd2f4a5ea68a4ec8689af743ea412df004308a6d05a316ae780a2f8968d160"
+        },
+        {
+          "file": "dsh/LICENSE",
+          "sha256": "7f974a7ad78667d97bb540e6dea4e412d1dc1b1afb21562ebe5d12920a2c459e"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "3224bc5223b28eb02582f6749b0ee143c82ebac8fb85ae056f75cc2dd78386b3"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "unclecode--crawl4ai",
+      "remote": "https://github.com/unclecode/crawl4ai.git",
+      "commit": "cae74b203a33994f7e13b9052c3b0d5c93daa0e6",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 969,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "193fe32704bee15cd74f5153e569cdf830e26445e19798a55daee32da40758aa"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "cbe8e3075935cf988a04b48c799ef7f1aef05665260b391c8cd9a42b5a4ae7ec"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    },
+    {
+      "directory": "zaproxy--zaproxy",
+      "remote": "https://github.com/zaproxy/zaproxy.git",
+      "commit": "a1386d3e7bd9d1c7d2fb8d2eb6fee2ef855b728d",
+      "shallow": true,
+      "clean": true,
+      "trackedFiles": 2268,
+      "licenseFiles": [
+        {
+          "file": "LICENSE",
+          "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+        },
+        {
+          "file": "gradle/spotless/license.java",
+          "sha256": "696de0857d2356ece92e8fa2f38313b62ba5df3d1d34ba002ca57d4b13035bc2"
+        }
+      ],
+      "readme": {
+        "file": "README.md",
+        "sha256": "f87d291f30f22568f85b69f6bb4e4d28de77cf8053d7cd7813f2d27318e00891"
+      },
+      "submodulesInitialized": false,
+      "integrationStatus": "reference-only-not-bundled"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import readline from 'node:readline';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import http from 'node:http';
+test('MCP discovery and real plan/run/verify lifecycle',async t=>{
+ const root=await fs.mkdtemp(path.join(os.tmpdir(),'whatif-mcp-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));
+ const s=http.createServer((req,res)=>res.end('ok'));await new Promise(r=>s.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>{s.closeAllConnections();s.close(r);}));
+ const child=spawn(process.execPath,[process.env.WHATIF_MCP_ENTRY||'src/mcp.mjs'],{stdio:['pipe','pipe','pipe']});const pending=new Map();let id=0;
+ const rl=readline.createInterface({input:child.stdout});rl.on('line',l=>{const m=JSON.parse(l);pending.get(m.id)?.(m);pending.delete(m.id);});
+ t.after(async()=>{child.stdin.end();await new Promise(r=>child.once('exit',r));rl.close();});
+ const call=(method,params)=>new Promise((resolve,reject)=>{const next=++id;const timer=setTimeout(()=>reject(Error('MCP timeout')),10000);pending.set(next,m=>{clearTimeout(timer);resolve(m);});child.stdin.write(JSON.stringify({jsonrpc:'2.0',id:next,method,params})+'\n');});
+ const init=await call('initialize',{protocolVersion:'2024-11-05',capabilities:{},clientInfo:{name:'test',version:'1'}});assert.equal(init.result.serverInfo.name,'whatif');
+ const list=await call('tools/list');assert.equal(list.result.tools.length,4);
+ const tool=async(name,args)=>{const r=await call('tools/call',{name,arguments:args});assert.equal(r.result.isError,false);return JSON.parse(r.result.content[0].text);};
+ const target=`http://127.0.0.1:${s.address().port}/`,dir=path.join(root,'case');
+ await tool('whatif_plan',{question:'one million users',target,out:dir});
+ const run=await tool('whatif_run',{caseDirectory:dir,ackTarget:target});assert.equal(run.requests,20);assert.equal(run.capacityVerdict,'NOT_ESTABLISHED');
+ assert.equal((await tool('whatif_verify',{caseDirectory:dir})).verified,true);
+ const bad=await call('tools/call',{name:'whatif_run',arguments:{caseDirectory:dir,ackTarget:7}});assert.equal(bad.result.isError,true);
+});

@@ -1,0 +1,11 @@
+{
+  "name": "whatif-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Evidence-led application scenarios, bounded probes and load-test preparation",
+  "engines": {"node": ">=22"},
+  "bin": {"whatif": "./src/cli.mjs"},
+  "scripts": {"test": "node --test test/*.test.mjs", "demo": "node scripts/demo.mjs", "check": "node scripts/validate-package.mjs"},
+  "license": "MIT"
+}
