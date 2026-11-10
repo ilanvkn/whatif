@@ -1,20 +1,17 @@
-# V1 qualification
+# V1.0 qualification
 
-Date: 2026-11-07 (Asia/Kuala_Lumpur).
+Date: 2026-11-10 (Asia/Kuala_Lumpur).
 
-Executed on the local Mac with existing Node 22 runtime:
-- 12 Node tests passed: workload ambiguity/math, invalid plan domains, exclusive case creation, exact request budget, fresh-process verification and tamper detection, external-target/scope refusal, redirect refusal, expected authentication denial, deadline behavior, evidence-path rejection, source redaction/symlink skipping, and full MCP tool lifecycle.
-- Manifest/frontmatter/reference checks passed.
-- A self-owned loopback demo executed 20 probes across normal, protected and deliberately degraded routes. It observed a 30% expected-status failure rate and correctly failed its smoke criterion. Its evidence was verified in a separate process from another working directory.
+Executed locally with `/opt/homebrew/opt/node@22/bin/node`:
 
-This proves bounded plugin integration behavior. It does not establish production-app capacity, exploit resistance, full browser behavior, external engine integrations or a million-user test. The demo uses a synthetic HTTP fixture, not a supplied real application.
+- 22 tests passed, including all nine MCP tools exercised against a self-owned HTTP fixture, exact suite traffic counts, stop-on-failure, skipped stages, fresh-process verification, nested evidence tampering, external-target refusal, mixed-target and aggregate-budget rejection, verified SLO comparison, per-route error detection and reviewed k6 export limits.
+- Package manifests, skill frontmatter and linked references passed validation.
+- Demo executed 20 requests across normal, protected and deliberately degraded routes. Normal and expected-authentication-denial checks passed; the deliberately degraded route failed. Separate-process verification passed.
+- The previous four-tool MCP discovery assertion initially failed after adding five tools; updated discovery and added actual invocation coverage for all nine tools. Final suite passes.
+- Default Homebrew Node failed before execution because a simdjson dynamic library was missing. Used the existing independent Node 22 installation; did not change global Node or libraries.
 
-No target application has yet been supplied. No remote attack, distributed test, cloud provisioning or model inference was run. Node checks were executed locally; the configured KHC route supports specific Python tasks, not this JavaScript test suite.
+Scope: bounded local plugin integration. No production app, remote target, distributed load, exploit, browser journey, cloud job or behavioral simulation was executed. KHC supports specified Python checks, so these JavaScript checks ran locally.
 
-The generated k6 smoke script passed integration qualification using official k6 v2.3.0 on macOS arm64: exactly five requests observed on a disposable loopback fixture, exit code zero. Downloaded asset SHA-256 matched the GitHub release asset digest. The binary remains in the local research tools folder, outside the release package. Claude-host packaging is unqualified. Codex local installation is recorded in the local install receipt after completion. A host refresh/new chat may be needed to expose installed tools.
+The k6 export change is checked for honoring configured timeout/duration. Actual k6 execution was qualified for V0.1 only; V1 k6 execution has not been requalified. Claude host integration remains packaged but unqualified. Native tool discovery in an already-running chat may require a plugin refresh/new chat even after local installation.
 
-The standard Skill Creator validator initially could not import PyYAML from system Python. It passed using an isolated uv environment with PyYAML. That local YAML/artifact validation is outside the KHC source-only Python check contract.
-
-Local Codex installation completed as `whatif@whatif-local` version 0.1.0. The installed MCP entrypoint was exercised through discovery and actual plan/run/verify calls against a self-owned loopback fixture; that integration test passed. This verifies the installed process, not that this already-running chat has refreshed its tool catalog. Host refresh/new chat is required for normal discovery.
-
-The reference inventory completed with 26/26 clean Git working trees. Temporal's initial filtered checkout failed; bulk unfiltered refetch and checkout of the fetched revision repaired it. The final pinned revision is recorded in the manifest rather than inferred from the failed first attempt.
+V0.1 reports remain hash-verifiable. Their aggregate pass/fail semantics differ from V1 per-route checks; comparisons across evaluator versions are marked incomparable.

@@ -1,1 +1,6 @@
-{"name":"whatif","version":"0.1.0","description":"Evidence-led application scenarios and bounded test preparation","license":"MIT"}
+{
+  "name": "whatif",
+  "version": "1.0.0",
+  "description": "Evidence-led application scenarios and bounded test preparation",
+  "license": "MIT"
+}

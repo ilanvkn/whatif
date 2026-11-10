@@ -1,0 +1,30 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+import http from 'node:http';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
+import {makePlan,createCase,runCase,validatePlan,k6Script} from '../src/core.mjs';
+import {analyzePlan,compareCases} from '../src/analysis.mjs';
+import {createSuite,runSuite,verifySuite,validateSuite} from '../src/suite.mjs';
+const exec=promisify(execFile);
+async function fixture(t){
+ const root=await fs.mkdtemp(path.join(os.tmpdir(),'whatif-v1-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));
+ let fail=false,hits=0;
+ const server=http.createServer((req,res)=>{hits++;res.statusCode=fail||req.url==='/broken'?503:200;res.end('synthetic body not retained');});
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>{server.closeAllConnections();server.close(r);}));
+ const target=`http://127.0.0.1:${server.address().port}/`;
+ return {root,target,hits:()=>hits,fail:()=>{fail=true;},plan:()=>{const p=makePlan({question:'1 million users',target,kind:'daily-active'});p.budget.maxRequests=6;return p;}};
+}
+test('suite executes exact aggregate budget and verifies in fresh process',async t=>{const f=await fixture(t),d=path.join(f.root,'suite');await createSuite(f.plan(),d);const r=await runSuite(d,{ackTarget:f.target});assert.equal(r.requests,18);assert.equal(f.hits(),18);assert.equal(r.passed,true);assert.equal(r.results.length,3);const v=await exec(process.execPath,['src/cli.mjs','suite-verify','--suite',d]);assert.equal(JSON.parse(v.stdout).verified,true);await assert.rejects(runSuite(d,{ackTarget:f.target}),/EEXIST/);});
+test('suite stops after failed stage and preserves skipped stages',async t=>{const f=await fixture(t),d=path.join(f.root,'suite');await createSuite(f.plan(),d);f.fail();const r=await runSuite(d,{ackTarget:f.target});assert.equal(f.hits(),6);assert.deepEqual(r.skipped,['parallel','recovery']);assert.equal(r.passed,false);assert.equal((await verifySuite(d)).verified,true);});
+test('suite tampering and child tampering invalidate verification',async t=>{const f=await fixture(t),d=path.join(f.root,'suite');await createSuite(f.plan(),d);await runSuite(d,{ackTarget:f.target});await fs.appendFile(path.join(d,'run/baseline/run/observations.json'),' ');await assert.rejects(verifySuite(d),/integrity/);});
+test('suite scope, traversal, mixed target and aggregate limits fail before traffic',async t=>{const f=await fixture(t),d=path.join(f.root,'suite');await createSuite(f.plan(),d);await assert.rejects(runSuite(d,{ackTarget:'http://127.0.0.1/'}),/acknowledgement/);const s=JSON.parse(await fs.readFile(path.join(d,'suite.json')));for(const mutate of [s=>s.cases[0].name='../oops',s=>s.cases[1].name=s.cases[0].name,s=>s.cases[1].scenario.target='http://localhost/',s=>s.cases.forEach(c=>c.scenario.budget.maxRequests=200),s=>s.cases.forEach(c=>c.scenario.budget.maxDurationMs=60000)]){const x=structuredClone(s);mutate(x);assert.throws(()=>validateSuite(x));}assert.equal(f.hits(),0);});
+test('suite external target denied before run directory created',async t=>{const f=await fixture(t),d=path.join(f.root,'suite');const p=f.plan();p.target='http://example.com/';await createSuite(p,d);await assert.rejects(runSuite(d,{ackTarget:p.target}),/loopback/);await assert.rejects(fs.stat(path.join(d,'run')));});
+test('comparison detects SLO transition only with matching configuration',async t=>{const f=await fixture(t),a=path.join(f.root,'a'),b=path.join(f.root,'b'),c=path.join(f.root,'c');await createCase(f.plan(),a);await runCase(a,{ackTarget:f.target});f.fail();await createCase(f.plan(),b);await runCase(b,{ackTarget:f.target});const r=await compareCases(a,b);assert.equal(r.verdict,'SLO_REGRESSION');assert.equal(r.routes[0].errorRateDelta,1);const p=f.plan();p.budget.concurrency=1;await createCase(p,c);await runCase(c,{ackTarget:f.target});assert.equal((await compareCases(a,c)).verdict,'INCOMPARABLE');await fs.appendFile(path.join(a,'run/summary.json'),' ');await assert.rejects(compareCases(a,b),/integrity/);});
+test('per-route error target cannot be diluted by successful routes',async t=>{const f=await fixture(t),d=path.join(f.root,'case'),p=f.plan();p.endpoints=[{method:'GET',path:'/',expectedStatuses:[200]},{method:'GET',path:'/broken',expectedStatuses:[200]}];p.slo.maxErrorRate=.6;await createCase(p,d);const r=await runCase(d,{ackTarget:f.target});assert.equal(r.errorRate,.5);assert.equal(r.smokeSloPassed,false);assert.equal(r.routes[1].errorRate,1);assert.equal(r.routes[1].evidenceIds.length,3);});
+test('uncovered and duplicate endpoints are rejected',()=>{const p=makePlan({question:'test',target:'http://127.0.0.1'});p.endpoints.push({...p.endpoints[0]});assert.throws(()=>validatePlan(p),/Duplicate/);p.endpoints[1].path='/two';p.budget.maxRequests=1;p.budget.concurrency=1;assert.throws(()=>validatePlan(p),/cover/);});
+test('analysis preserves ambiguous semantics and labels hypothetical alternatives',()=>{const p=makePlan({question:'1 million users',target:'http://127.0.0.1'}),a=analyzePlan(p);assert.equal(a.selected.targetRps,null);assert.equal(a.populationAlternatives.length,3);assert.equal(a.capacityVerdict,'NOT_ESTABLISHED');assert.ok(a.populationAlternatives[2].targetRps>a.populationAlternatives[0].targetRps);assert.equal(p.population.kind,'unspecified');});
+test('k6 export honors reviewed timeout and duration budgets',()=>{const p=makePlan({question:'test',target:'http://127.0.0.1'});p.budget.timeoutMs=1234;p.budget.maxDurationMs=6789;const code=k6Script(p);assert.match(code,/timeout: '1234ms'/);assert.match(code,/maxDuration: '6789ms'/);});

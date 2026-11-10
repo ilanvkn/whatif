@@ -15,7 +15,7 @@ For application testing read [application workflow](references/application.md). 
 
 ## Execute through available tools
 
-Discover `whatif_plan`, `whatif_run`, `whatif_source_review`, and `whatif_verify`. If unavailable, use the dependency-free CLI at the plugin root `src/cli.mjs` with a working Node 22+ runtime. From this skill folder the plugin root is `../..`. Do not claim native tool attachment from a successful local CLI call.
+Discover `whatif_plan`, `whatif_run`, `whatif_source_review`, `whatif_verify`, `whatif_analyze`, `whatif_compare`, `whatif_suite_plan`, `whatif_suite_run`, and `whatif_suite_verify`. If unavailable, use the dependency-free CLI at the plugin root `src/cli.mjs` with a working Node 22+ runtime. From this skill folder the plugin root is `../..`. Do not claim native tool attachment from a successful local CLI call.
 
 1. `whatif_plan` creates an exclusive case directory, scenario.json, plan.json and k6-smoke.js. It does not send traffic. Prefer project-owned `.whatif/<case>` paths, with their parent created first.
 2. Inspect/edit scenario.json before running: real reviewed GET endpoints, expected statuses, explicit budgets, workload assumptions. Generated defaults are not knowledge of the app.
@@ -32,6 +32,16 @@ node <plugin-root>/src/cli.mjs verify --case <case-directory>
 ```
 
 Use current session authorization without repeatedly asking. External load, active security testing, production mutations and cloud spend require matching target/purpose/limits; when those details are absent, finish the reviewable plan first. Built-in loopback restriction is an implementation limit, not permission to silently launch a different tool against an external target.
+
+## Repeatable V1 workflows
+
+- Use whatif_analyze on a planned case to compare population interpretations and request-count sensitivity. This makes no requests; all numbers remain illustrative.
+- For repeated conditions use whatif_suite_plan. Review suite.json before running: baseline, parallel and recovery are sequential bounded GET measurements, not fault injection. The entire suite is limited to 500 requests and 120 seconds of probe budgets, at most 5 cases and one exact loopback target. stopOnFailure defaults to true. A skipped stage has no result.
+- Use whatif_suite_run with matching authorization and then whatif_suite_verify from a fresh process. Never restart a used suite directory.
+- Use whatif_compare with baseline and candidate case paths after a fix. Both are verified first. Target, population, assumptions, budgets, thresholds and endpoints must match for a comparable result. A single-sample SLO transition is not statistically established performance change. Retain application revision and environment identity separately.
+- Inspect per-route failures and evidence IDs; passing aggregate statistics cannot override a failing route. Tail quantiles from small samples are unstable.
+
+CLI: suite-plan uses the same options as plan; suite-run uses --suite DIRECTORY --ack-target URL; suite-verify uses --suite DIRECTORY; analyze uses --case DIRECTORY; compare uses --baseline CASE --candidate CASE; source-review uses --source DIRECTORY.
 
 ## Deliver the result
 

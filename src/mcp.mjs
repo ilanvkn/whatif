@@ -1,8 +1,16 @@
 #!/usr/bin/env node
+import fs from 'node:fs/promises';
+import {analyzePlan,compareCases} from './analysis.mjs';
+import {createSuite,runSuite,verifySuite} from './suite.mjs';
 import readline from 'node:readline';
 import path from 'node:path';
 import {makePlan,createCase,runCase,verifyCase,scanSource} from './core.mjs';
 const schemas={
+ whatif_analyze:{description:'Analyze workload semantics and sensitivity without sending traffic. Projections never establish capacity.',properties:{caseDirectory:{type:'string'}},required:['caseDirectory']},
+ whatif_compare:{description:'Verify and compare two completed cases. Rejects corrupted evidence; mismatched configurations are labeled incomparable.',properties:{baseline:{type:'string'},candidate:{type:'string'}},required:['baseline','candidate']},
+ whatif_suite_plan:{description:'Prepare baseline, parallel and recovery loopback cases. No traffic; review suite.json before execution.',properties:{question:{type:'string'},target:{type:'string'},out:{type:'string'},kind:{type:'string',enum:['unspecified','registered','daily-active','concurrent']},users:{type:'integer',minimum:1,maximum:1000000000}},required:['question','target','out']},
+ whatif_suite_run:{description:'Run reviewed sequential loopback cases with at most 500 total requests and 120 seconds of probe budgets. Stops on failure by default; never injects service faults.',properties:{suiteDirectory:{type:'string'},ackTarget:{type:'string'}},required:['suiteDirectory','ackTarget']},
+ whatif_suite_verify:{description:'Verify suite configuration, summary and all executed child evidence without sending traffic.',properties:{suiteDirectory:{type:'string'}},required:['suiteDirectory']},
  whatif_plan:{description:'Create a new scenario case and bounded k6 smoke script. Makes no network requests. Clarifies million-user workload semantics; never claims capacity.',properties:{question:{type:'string'},target:{type:'string'},out:{type:'string'},kind:{type:'string',enum:['unspecified','registered','daily-active','concurrent']},users:{type:'integer',minimum:1,maximum:1000000000}},required:['question','target','out']},
  whatif_run:{description:'Execute at most 200 GET probes against an explicitly acknowledged literal loopback target. No redirects, active exploitation, cloud calls or capacity claims.',properties:{caseDirectory:{type:'string'},ackTarget:{type:'string'},source:{type:'string'}},required:['caseDirectory','ackTarget']},
  whatif_verify:{description:'Verify a completed case and its evidence hashes. Does not re-execute requests or attest application correctness.',properties:{caseDirectory:{type:'string'}},required:['caseDirectory']},
@@ -12,7 +20,7 @@ const send=x=>process.stdout.write(JSON.stringify(x)+'\n');
 async function handle(m){
  if(m.method==='notifications/initialized'||m.id===undefined)return;
  const reply=result=>send({jsonrpc:'2.0',id:m.id,result});
- if(m.method==='initialize')return reply({protocolVersion:'2024-11-05',capabilities:{tools:{listChanged:false}},serverInfo:{name:'whatif',version:'0.1.0'}});
+ if(m.method==='initialize')return reply({protocolVersion:'2024-11-05',capabilities:{tools:{listChanged:false}},serverInfo:{name:'whatif',version:'1.0.0'}});
  if(m.method==='ping')return reply({});
  if(m.method==='tools/list')return reply({tools:Object.entries(schemas).map(([name,s])=>({name,description:s.description,inputSchema:{type:'object',properties:s.properties,required:s.required,additionalProperties:false}}))});
  if(m.method!=='tools/call')return send({jsonrpc:'2.0',id:m.id,error:{code:-32601,message:'Method not found'}});
@@ -22,6 +30,11 @@ async function handle(m){
  for(const k of s.required)if(args[k]===undefined)throw Error('Missing '+k);
  for(const [k,v]of Object.entries(args)){if(!s.properties[k])throw Error('Unknown argument '+k);const t=s.properties[k].type;if(t==='string'&&(typeof v!=='string'||!v.trim()))throw Error('Invalid '+k);if(t==='integer'&&!Number.isInteger(v))throw Error('Invalid '+k);}
  let result;
+ if(name==='whatif_analyze')result=analyzePlan(JSON.parse(await fs.readFile(path.join(args.caseDirectory,'scenario.json'))));
+ if(name==='whatif_compare')result=await compareCases(path.resolve(args.baseline),path.resolve(args.candidate));
+ if(name==='whatif_suite_plan')result=await createSuite(makePlan(args),path.resolve(args.out));
+ if(name==='whatif_suite_run')result=await runSuite(path.resolve(args.suiteDirectory),{ackTarget:args.ackTarget});
+ if(name==='whatif_suite_verify')result=await verifySuite(path.resolve(args.suiteDirectory));
  if(name==='whatif_plan')result=await createCase(makePlan(args),path.resolve(args.out));
  if(name==='whatif_run')result=await runCase(path.resolve(args.caseDirectory),{ackTarget:args.ackTarget,source:args.source&&path.resolve(args.source)});
  if(name==='whatif_verify')result=await verifyCase(path.resolve(args.caseDirectory));
