@@ -10,7 +10,7 @@ export async function runtimeConfig(){try{return JSON.parse(await fs.readFile(pa
 export async function engineDoctor(){
  const config=await runtimeConfig(),result={};
  for(const [key,location]of Object.entries(config)){if(key==='browserChannel')continue;try{const stat=await fs.stat(location);result[key]={available:stat.isFile(),path:location,sha256:sha(await fs.readFile(location))};}catch{result[key]={available:false};}}
- const adapterIdentity=await Promise.all(['campaign.mjs','core.mjs','engines/browser.mjs','engines/k6.mjs','engines/security.mjs','engines/process.mjs','engines/contracts.mjs','engines/worker.mjs'].map(async file=>({file,sha256:sha(await fs.readFile(new URL(file,import.meta.url)))})));
+ const adapterIdentity=await Promise.all(['campaign.mjs','core.mjs','engines/browser.mjs','engines/k6.mjs','engines/security.mjs','engines/process.mjs','engines/contracts.mjs','engines/worker.mjs','lab/space.mjs','lab/critic.mjs','lab/lab.mjs'].map(async file=>({file,sha256:sha(await fs.readFile(new URL(file,import.meta.url)))})));
  return {configuration:result,adapterIdentity,note:'Presence and file hash only; campaign execution records actual adapter results. Install optional engines explicitly.'};
 }
 export async function createCampaign({question,target,out}){
@@ -40,13 +40,13 @@ export async function runCampaign(dir,{ackTarget}={}){
  const browserProcess=path.join(dest,'browser-process.json');
  try{const owned=JSON.parse(await fs.readFile(browserProcess));if(!owned.closed&&Number.isInteger(owned.pid)&&owned.pid>1){try{process.kill(process.platform==='win32'?owned.pid:-owned.pid,'SIGKILL');}catch(e){if(e.code!=='ESRCH')throw e;}await fs.writeFile(browserProcess,json({...owned,cleanupRequested:true}));}}catch(e){if(e.code!=='ENOENT')throw e;}
  let result;try{result=JSON.parse(await fs.readFile(path.join(dest,'result.json')));}catch{result={engine:b.engine,passed:false,requests:null,status:'interrupted',reason:'Engine did not finalize. Traffic count unknown; do not replay automatically.'};await fs.writeFile(path.join(dest,'result.json'),json(result));}
- result={...result,passed:result.passed&&proc.code===0&&!proc.timedOut&&!proc.cancelled&&!proc.overflow};
+ result={...result,execution:{exitCode:proc.code,timedOut:proc.timedOut,cancelled:proc.cancelled,outputOverflow:proc.overflow},passed:result.passed&&proc.code===0&&!proc.timedOut&&!proc.cancelled&&!proc.overflow};
  results.push({id:b.id,hypothesis:b.hypothesis,...result});
  for(const name of await fs.readdir(dest))files.push(b.id+'/'+name);
  if(proc.timedOut||proc.cancelled||proc.overflow||result.status==='interrupted'||result.status==='engine-failed')break;
  }
  must(sha(await fs.readFile(path.join(dir,'campaign.json')))===sha(raw),'Campaign changed during execution');
- const summary={schemaVersion:1,version:'1.1.0',status:'completed',campaignSha256:sha(raw),elapsedMs:performance.now()-started,results,skipped:p.branches.slice(results.length).map(b=>b.id),requests:results.some(r=>r.requests===null)?null:results.reduce((n,r)=>n+r.requests,0),passed:results.length===p.branches.length&&results.every(r=>r.passed),capacityVerdict:'ONLY_MEASURED_WORKLOAD',securityVerdict:'ONLY_DECLARED_CHECKS'};
+ const summary={schemaVersion:1,version:'2.0.0',status:'completed',campaignSha256:sha(raw),elapsedMs:performance.now()-started,results,skipped:p.branches.slice(results.length).map(b=>b.id),requests:results.some(r=>r.requests===null)?null:results.reduce((n,r)=>n+r.requests,0),passed:results.length===p.branches.length&&results.every(r=>r.passed),capacityVerdict:'ONLY_MEASURED_WORKLOAD',securityVerdict:'ONLY_DECLARED_CHECKS'};
  await fs.writeFile(path.join(run,'summary.json'),json(summary));await fs.writeFile(path.join(run,'report.md'),campaignReport(summary));await fs.writeFile(path.join(run,'status.json'),json({status:'completed'}));files.push('summary.json','report.md','status.json');
  await fs.writeFile(path.join(run,'evidence.json'),json({schemaVersion:1,campaignSha256:sha(raw),files:await Promise.all(files.sort().map(async file=>({file,sha256:sha(await fs.readFile(path.join(run,file)))})))}));return summary;
  }catch(e){await fs.writeFile(path.join(run,'status.json'),json({status:'failed',error:e.message}));throw e;}

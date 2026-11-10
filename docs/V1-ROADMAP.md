@@ -1,17 +1,16 @@
-# WhatIF roadmap after 1.1
+# Roadmap after V2
 
-Delivered in 1.0: bounded smoke suites, per-route diagnostics, workload sensitivity, integrity verification and sample comparisons.
+Delivered: real browser/k6/security adapters; generated single and second-order mutation spaces; adaptive epochs; red/user/tester/critic/blue policy ledger; repeated-failure and flaky classifications; conservative budgets; exact regression replay; verified comparison and nested evidence.
 
-Delivered in 1.1: actual Playwright journeys, browser-local failure interventions, bounded k6 execution, synthetic-account authorization checks, branching campaigns, verified before/after campaign comparison and scenario exploration. Qualified against a disposable app with deliberately broken checkout and account isolation, then the corrected fixture.
+Next major work:
 
-Next useful integrations:
+1. Independent model-driven role deliberation with explicit model identity, disagreement, token/cost limits and proposal validation. Current roles are policies, not independent agents.
+2. Source-informed journey/oracle discovery, with reviewable confidence and no automatic execution of inferred routes.
+3. Verified application-state reset and transaction-ledger assertions for races, duplicate payments and idempotency.
+4. Failure shrinking that re-executes reductions and proves a smaller reproducer still fails.
+5. Durable continuation of a stopped frontier without replaying consumed work or silently expanding budgets.
+6. Concurrent browser/load orchestration, open-arrival and distributed generators, server telemetry and cost-limited shutdown.
+7. Pinned Semgrep/ZAP adapters and deeper source-to-sink security validation.
+8. Calibrated behavioral, causal and event simulation for business/operational hypotheses.
 
-1. Application discovery: infer routes/journeys from source/OpenAPI with confidence, while requiring review of effects and fixtures.
-2. Authenticated multi-origin browser flows: explicit origin/method limits, login fixture management, redirect accounting and isolated secrets.
-3. Open-arrival and distributed load: arrival profiles, dropped-work accounting, generator saturation, server metrics and cost-limited cancellation.
-4. Deep security: pinned Semgrep/ZAP adapters, source-to-sink review, synthetic mutation tests and redacted reproduction evidence.
-5. Transaction correctness: retries/races/idempotency, persistent-state invariants, verified cleanup and readback.
-6. Resilience: disposable server dependency faults and independent recovery observation.
-7. Behavioral/business scenarios: causal models, agent simulations and discrete-event systems calibrated against observations. Never present agent agreement as measured reality.
-
-Every integration needs a version/license record, install detection, data destinations, bounded execution/cancellation, a caught-failure fixture and a passing corrected fixture. Cloned references do not count as installed capabilities.
+More candidate combinations alone do not deliver these capabilities. Each requires caught-failure and corrected-fixture evidence, provenance, cancellation and scope controls.

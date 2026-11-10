@@ -18,3 +18,7 @@
 See [engine guide](ENGINE-GUIDE.md) for concrete schemas and limitations and [branching experiments](BRANCHING-EXPERIMENTS.md) for scenario design.
 
 Playwright and k6 remain separately installed tools with their own licenses. WhatIF's adapters are original code; neither upstream source nor browser executables are copied into this repository. Qualification uses the recorded local versions, not an assertion that all future releases work.
+
+## V2 adaptive layer
+
+V2 adds lab planning/inspection, multi-epoch execution, nested verification, exact regression-pack replay and verified lab comparison. The generator derives candidates from reviewed campaign contracts; the old cards are examples. Red/user/tester/critic/blue responsibilities are implemented as deterministic policies and artifacts. See [V2 lab guide](V2-LAB.md) for concrete limits and non-capabilities. There are now 21 MCP tools.

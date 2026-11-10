@@ -9,12 +9,16 @@ export async function browserJourney({target,config:c},runtime,dir){
  await fs.writeFile(processFile,JSON.stringify({pid:server.process().pid,closed:false}));
  let browser;
  try{browser=await chromium.connect(server.wsEndpoint());}catch(e){await server.close();throw e;}
- const origin=new URL(target).origin,steps=[],network={issued:0,blocked:0,intercepted:0},failures=[];
+ const origin=new URL(target).origin,steps=[],network={issued:0,blocked:0,intercepted:0,attempted:0,limitHits:0,attemptedByRoute:{}},failures=[];
  try{
  const context=await browser.newContext({serviceWorkers:'block',acceptDownloads:false,viewport:c.viewport,locale:c.locale,timezoneId:c.timezoneId,reducedMotion:c.reducedMotion});
  await context.routeWebSocket('**/*',ws=>{network.blocked++;ws.close();});
  await context.route('**/*',async route=>{
  const req=route.request();let u;try{u=new URL(req.url());}catch{network.blocked++;return route.abort();}
+ network.attempted++;
+ const reviewed=c.allowRequests.some(a=>a.method===req.method()&&a.path===u.pathname);
+ if(reviewed&&u.origin===origin){const key=req.method()+' '+u.pathname;network.attemptedByRoute[key]=(network.attemptedByRoute[key]||0)+1;}
+ if(network.attempted>c.maxRequests){network.blocked++;network.limitHits++;return route.abort();}
  if(u.origin!==origin||!c.allowRequests.some(a=>a.method===req.method()&&a.path===u.pathname)||network.issued>=c.maxRequests){network.blocked++;return route.abort();}
  const i=c.intervention;
  if(i&&u.pathname===i.path){network.intercepted++;if(i.type==='abort')return route.abort('failed');if(i.type==='status')return route.fulfill({status:i.status,contentType:'application/json',body:'{"error":"WhatIF synthetic dependency failure"}'});await new Promise(r=>setTimeout(r,i.delayMs));}

@@ -14,7 +14,7 @@ test('MCP discovery and real plan/run/verify lifecycle',async t=>{
  t.after(async()=>{child.stdin.end();await new Promise(r=>child.once('exit',r));rl.close();});
  const call=(method,params)=>new Promise((resolve,reject)=>{const next=++id;const timer=setTimeout(()=>reject(Error('MCP timeout')),10000);pending.set(next,m=>{clearTimeout(timer);resolve(m);});child.stdin.write(JSON.stringify({jsonrpc:'2.0',id:next,method,params})+'\n');});
  const init=await call('initialize',{protocolVersion:'2024-11-05',capabilities:{},clientInfo:{name:'test',version:'1'}});assert.equal(init.result.serverInfo.name,'whatif');
- const list=await call('tools/list');assert.equal(list.result.tools.length,15);
+ const list=await call('tools/list');assert.equal(list.result.tools.length,21);
  const tool=async(name,args)=>{const r=await call('tools/call',{name,arguments:args});assert.equal(r.result.isError,false);return JSON.parse(r.result.content[0].text);};
  const target=`http://127.0.0.1:${s.address().port}/`,dir=path.join(root,'case');
  await tool('whatif_plan',{question:'one million users',target,out:dir});
@@ -34,5 +34,11 @@ test('MCP discovery and real plan/run/verify lifecycle',async t=>{
  assert.equal((await tool('whatif_campaign_run',{campaignDirectory:campaign,ackTarget:target})).passed,false);
  assert.equal((await tool('whatif_campaign_verify',{campaignDirectory:campaign})).verified,true);
  assert.equal((await tool('whatif_campaign_compare',{baseline:campaign,candidate:campaign})).comparable,true);
+ const lab=path.join(root,'lab');await tool('whatif_lab_plan',{campaignDirectory:campaign,out:lab});assert.equal((await tool('whatif_lab_inspect',{labDirectory:lab})).ready,false);
+ const lp=JSON.parse(await fs.readFile(path.join(lab,'lab.json')));lp.fixture={repeatSafe:true,appRevision:'mcp-synthetic-v1',resetStrategy:'Read-only local fixture'};await fs.writeFile(path.join(lab,'lab.json'),JSON.stringify(lp));
+ assert.equal((await tool('whatif_lab_run',{labDirectory:lab,ackTarget:target})).reproducedFailures,1);
+ assert.equal((await tool('whatif_lab_verify',{labDirectory:lab})).verified,true);
+ assert.equal((await tool('whatif_lab_compare',{baseline:lab,candidate:lab})).compatible,true);
+ assert.equal((await tool('whatif_lab_replay',{labDirectory:lab,out:path.join(root,'lab-replay')})).candidates,1);
  const bad=await call('tools/call',{name:'whatif_run',arguments:{caseDirectory:dir,ackTarget:7}});assert.equal(bad.result.isError,true);
 });

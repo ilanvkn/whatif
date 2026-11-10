@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.0 — 2026-11-10
+
+- Generate bounded, deduplicated scenario spaces from reviewed campaigns, including second-order fault/context and load/pacing combinations.
+- Execute adaptive epochs with deterministic scheduling, separate-trial confirmation, conservative request reservations, stopping rules and a local role ledger.
+- Distinguish reproduced failure cases, symptom clusters, flaky outcomes, missing controls, unknown scope and interrupted execution.
+- Preserve exact regression cases and compare verified corrected-revision replays; unexecuted cases never count as fixed.
+- Record browser request attempts and cap injected-response retries as well as real network requests.
+- Propagate cancellation/deadline metadata to the lab so it never starts a subsequent trial after interruption.
+- Six new lab tools, 21 MCP tools total. Roles are policies, not separate LLMs; no automatic patching or model spend.
+
 ## 1.1.0 — 2026-11-10
 
 - Real optional Playwright and k6 adapters; original synthetic-account security runner.

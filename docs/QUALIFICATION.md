@@ -1,28 +1,26 @@
-# V1.1 qualification
+# WhatIF V2 qualification
 
-Date: 2026-11-10 (Asia/Kuala_Lumpur).
+Date: 2026-11-10 (Asia/Kuala_Lumpur). Local Node 22.23.3; existing optional Playwright 1.65.0, Chrome 157.0.8103.40 and k6 2.3.0. No remote app or company infrastructure tested.
 
-Local environment: Node 22.23.3, Playwright 1.65.0, isolated headless Chrome 157.0.8103.40, k6 2.3.0 on macOS arm64. Playwright was installed from the official npm package in a separate engine directory with lifecycle scripts disabled. Existing Chrome and the previously qualified official k6 binary were used. No upstream binaries are included in the plugin release.
+## Verified implementation
 
-## Executed evidence
+- 44 core/control/protocol tests passed, including the original core plus V2 generation, stable deduplication, unchanged assertions, candidate limits, baseline gating, scheduling, positive-control criticism, flaky classification, repeat-safety readiness, exact acknowledgement, actual security epochs, regression replay, comparison, nested tampering and cumulative reservations.
+- Seven explicit real-engine integration tests passed, including browser checkout/fault/correction, redirect isolation, actual k6 statuses and request counts, browser parallel request caps, generator cancellation, Chromium cleanup and a retrying page whose injected responses also hit the attempt cap.
+- Total distinct passing tests: 51. The default suite skips the seven optional-engine cases; those were separately executed with WHATIF_ENGINE_TESTS=1. Final lab/protocol checks additionally cover the completeness gate after the last control change.
+- All 21 MCP tools are exercised through discovery and actual calls. The final installed entrypoint is tested separately after installation.
 
-- 31 core/control/protocol tests passed. These include original V1 behavior, all 15 MCP tools, campaign contracts, exact acknowledgement, missing credentials, security positive controls, canary leakage in a denial response, evidence tampering, deadline behavior, process-tree cleanup and interruption handling.
-- Six explicit real-engine integration tests passed: browser failure/correction plus actual k6/security, foreign-origin redirect blocking, k6 unexpected-status/no-redirect behavior, concurrent browser request caps, deadline termination of the nested k6 generator, and cleanup of Chromium’s separate process group after a browser interruption.
-- The default test command skips the six optional-engine tests; they were then explicitly executed with WHATIF_ENGINE_TESTS=1. Total distinct passing tests: 37.
-- Self-test campaign: a disposable checkout app with a false-success-on-payment-error bug and cross-account record-read bug. Both failed their declared invariants, then passed after fixture corrections. Unchanged healthy checkout/load branches also passed. The two campaigns were compatible and comparison reported RECOVERY.
-- Fixture counted 252 application requests across before/after runs, including exactly 240 k6 GETs (120 per run, 8 VUs). Browser-local synthetic 503 responses did not reach the payment route. Evidence verification passed in a fresh process.
-- Manifests, skill frontmatter and references validated. Local source and installed MCP entrypoint qualification receipts are retained in the project-owned checkpoint folder after installation.
+## Multi-epoch demo
 
-## Bugs found while building WhatIF
+The owned disposable app has four reviewed seeds: healthy checkout, payment-failure handling, a bounded read-load route, and synthetic account isolation. Default V2 operators generate 89 concrete candidates.
 
-- Initial browser routing allowed an HTTP redirect to bypass the first request's scope check. A two-server fixture observed one disallowed request. Fixed using response fetch with maxRedirects=0/maxRetries=0, rejecting 3xx before delivery. Corrected test observes zero foreign-origin requests. This is why routing was tested with adversarial fixtures rather than assumed safe.
-- Chromium also launches in a separate process group. The adapter records the exact owned browser PID and cleans that group after abnormal worker exit; the browser-interruption test checks the PID has exited.
-- Nested k6 originally created its own process group. Updated it to remain in the worker group so campaign deadlines terminate the generator too; actual generator cessation verified.
-- Initial CLI import insertion displaced the shebang and broke fresh-process verification. Corrected before final validation.
-- Anonymous 403 containing the owner's synthetic marker was initially considered a denial. Updated the object-isolation check to reject canary leakage even with a denial status, and added regression coverage.
+The vulnerable-revision lab executes nine trials over three epochs and covers six unique candidates. It reproduces three failure cases across two symptom groups. One additional observed failure remains unconfirmed, and 83 generated candidates remain unexecuted. This is not a claim of 89 tests or three independent bugs.
 
-## Limits
+After correcting the fixture, its exact regression pack executes six trials over two epochs. All three previously reproduced cases become repeated passes. Comparison labels the others untested. The app observes 143 requests overall, including 120 actual k6 requests. Nested evidence is verified from a fresh process. Raw run paths and receipts are recorded in the project-owned checkpoint after the final run.
 
-These are real engines against a synthetic fixture and tests of WhatIF itself, as requested. No company app, production account, external website, cloud load or unrelated infrastructure was tested. HTTPS staging support is implemented but has not been qualified against a remote deployment. Windows process-tree cancellation and Claude host are unqualified. Browser context options and delay/abort interventions are available; qualification focuses on the status-failure journey and network boundaries, not every possible app/context combination.
+## Corrections and limits
 
-No distributed million-user execution, open-arrival RPS guarantee, server telemetry, database rollback, arbitrary exploitation, Semgrep/ZAP invocation, social simulation or calibrated forecasting is claimed. Node tests ran locally because KHC's available supervised tasks are Python-only. The broken default Homebrew Node remains unchanged; a working Node 22 runtime is pinned by the installer.
+V2 caps browser attempts including synthetic interventions, preventing an endless stream of intercepted retries from bypassing the attempt count. It propagates cancellation/deadline metadata so the lab does not launch another trial after interruption. The critic leaves unresolved actions, blocked scope, failed positive controls and unexercised interventions inconclusive. A fixture baseline that is inconclusive blocks its mutations. A single pass below the required confirmation count is incomplete.
+
+Roles are deterministic policies and local artifacts, not independent LLM agents. No automatic application patch, independent user simulation, model training, statistical confidence guarantee, root-cause proof, distributed load, arbitrary exploit generation, failure shrinking or mid-run continuation is claimed. Fixture revision/reset safety remains an operator declaration. Browser intervention is local to the browser. Production/remote HTTPS and Windows cancellation remain unqualified.
+
+Earlier V1.1 corrections remain regression-tested: redirect scope escape, nested k6/Chromium process cleanup, anonymous-denial canary leakage and CLI shebang ordering. Node tests run locally because the available KHC supervised jobs support Python, not these JavaScript checks. The working Node 22 runtime is pinned; the broken default Homebrew Node was not changed.

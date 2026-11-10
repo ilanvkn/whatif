@@ -2,21 +2,23 @@
 
 **Explore scenarios. Test assumptions. Keep the evidence.**
 
-WhatIF is a V1 plugin for turning an application question into a scoped test and a traceable report. Start with:
+WhatIF is a V2 plugin for turning an application question into a scoped test and a traceable report. Start with:
 
 > Test this application with 1 million users, including an attacker's perspective.
 
 WhatIF separates population assumptions from traffic actually measured. It helps define user journeys, capacity and security boundaries, runs bounded local checks, and prepares the next tests. It never turns a small test into a million-user capacity claim.
 
-## V1.1 ships
+## V2 ships
 
 - A WhatIF skill and Claude-compatible `/whatif:whatif` command (the exact shortcut shown depends on the host).
-- Fifteen MCP tools covering planning, actual engine campaigns, branching experiments, comparison and verification.
+- Twenty-one MCP tools covering planning, actual engine campaigns, branching experiments, comparison and verification.
 - A dependency-free Node 22+ core CLI with separately installed Playwright and k6 engines.
 - Real browser form/click/assertion journeys and browser-local dependency failures.
 - Actual bounded k6 execution with route metrics and request-count verification.
 - Owner/other/anonymous synthetic-account security checks.
-- Branching campaigns, verified before/after transitions and 16 scenario cards.
+- Adaptive multi-epoch labs generated from reviewed application contracts, with failure confirmation, symptom grouping and exact regression replay.
+- Red/user/tester/critic/blue policy artifacts, conservative budgets, flaky/inconclusive classification and verified lab comparison.
+- Branching campaigns plus 16 starter cards; scenario generation is not limited to those examples.
 - Registered/DAU/concurrent population models with explicit illustrative assumptions.
 - Bounded HTTP GET probes, per-route latency/error diagnostics and failure evidence IDs.
 - Sequential baseline/parallel/recovery suites with aggregate budgets and stop-on-failure.
@@ -78,6 +80,22 @@ npm run demo
 ```
 
 The demo starts and stops its own loopback HTTP fixture. It includes a protected endpoint and a deliberately unavailable dependency; success means WhatIF detects the failing route, not that all routes pass. A fresh process verifies the resulting evidence. This is integration evidence for the plugin, not a benchmark of a production application.
+
+## Adaptive V2 labs
+
+[Read the V2 lab guide](docs/V2-LAB.md). Plan from a reviewed campaign, inspect generated experiments, record repeat-safe fixtures, run bounded epochs, and replay exact reproduced failures after a correction.
+
+```sh
+node src/cli.mjs lab-plan --campaign /path/to/campaign --out /tmp/new-lab
+node src/cli.mjs lab-inspect --lab /tmp/new-lab
+# Review lab.json and record actual fixture readiness/revision.
+node src/cli.mjs lab-run --lab /tmp/new-lab --ack-target EXACT_TARGET
+node src/cli.mjs lab-verify --lab /tmp/new-lab
+node src/cli.mjs lab-replay --lab /tmp/new-lab --out /tmp/replay
+node scripts/lab-demo.mjs
+```
+
+Roles currently use deterministic policies. Independent LLM teams, automated application repair, failure shrinking and durable mid-run continuation are not implemented. More generated cases do not equal more executed tests or proven coverage.
 
 ## Real journeys, load and security
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {planLab,inspectLab,runLab,verifyLab,replayLab,compareLabs} from './lab/lab.mjs';
 import {explore} from './explore.mjs';
 import {createCampaign,runCampaign,verifyCampaign,compareCampaigns,engineDoctor} from './campaign.mjs';
 import fs from 'node:fs/promises';
@@ -8,6 +9,12 @@ import readline from 'node:readline';
 import path from 'node:path';
 import {makePlan,createCase,runCase,verifyCase,scanSource} from './core.mjs';
 const schemas={
+ whatif_lab_plan:{description:'Prepare a V2 adaptive trial lab from a reviewed campaign; generates mutations without traffic. Repeat safety and revision must be recorded before running.',properties:{campaignDirectory:{type:'string'},out:{type:'string'}},required:['campaignDirectory','out']},
+ whatif_lab_inspect:{description:'Compile bounded scenario space and inspect readiness without executing. Counts generated candidates separately from covered trials.',properties:{labDirectory:{type:'string'}},required:['labDirectory']},
+ whatif_lab_run:{description:'Run bounded adaptive epochs, replay failures, classify evidence and produce regression packs. Requires repeat-safe fixtures, exact target acknowledgement and explicit budgets. Roles are deterministic policies, not independent LLMs.',properties:{labDirectory:{type:'string'},ackTarget:{type:'string'}},required:['labDirectory','ackTarget']},
+ whatif_lab_verify:{description:'Verify the lab manifest, role ledger and every nested executed campaign.',properties:{labDirectory:{type:'string'}},required:['labDirectory']},
+ whatif_lab_replay:{description:'Prepare exact reproduced failures for a new corrected-revision lab without traffic. Preserves oracles and requires renewed fixture readiness.',properties:{labDirectory:{type:'string'},out:{type:'string'}},required:['labDirectory','out']},
+ whatif_lab_compare:{description:'Compare verified labs by exact concrete candidate identity; unexecuted cases never count as fixed.',properties:{baseline:{type:'string'},candidate:{type:'string'}},required:['baseline','candidate']},
  whatif_campaign_compare:{description:'Verify and compare complete branching campaigns with identical configuration and engine identity; report per-branch pass transitions.',properties:{baseline:{type:'string'},candidate:{type:'string'}},required:['baseline','candidate']},
  whatif_explore:{description:'Explore branching what-if experiments with explicit invariants and executable versus planning-only capability labels.',properties:{},required:[]},
  whatif_campaign_plan:{description:'Prepare a branching browser/load campaign without traffic. Review real selectors, request allowlists and security fixtures before running.',properties:{question:{type:'string'},target:{type:'string'},out:{type:'string'}},required:['question','target','out']},
@@ -28,7 +35,7 @@ const send=x=>process.stdout.write(JSON.stringify(x)+'\n');
 async function handle(m){
  if(m.method==='notifications/initialized'||m.id===undefined)return;
  const reply=result=>send({jsonrpc:'2.0',id:m.id,result});
- if(m.method==='initialize')return reply({protocolVersion:'2024-11-05',capabilities:{tools:{listChanged:false}},serverInfo:{name:'whatif',version:'1.1.0'}});
+ if(m.method==='initialize')return reply({protocolVersion:'2024-11-05',capabilities:{tools:{listChanged:false}},serverInfo:{name:'whatif',version:'2.0.0'}});
  if(m.method==='ping')return reply({});
  if(m.method==='tools/list')return reply({tools:Object.entries(schemas).map(([name,s])=>({name,description:s.description,inputSchema:{type:'object',properties:s.properties,required:s.required,additionalProperties:false}}))});
  if(m.method!=='tools/call')return send({jsonrpc:'2.0',id:m.id,error:{code:-32601,message:'Method not found'}});
@@ -38,6 +45,12 @@ async function handle(m){
  for(const k of s.required)if(args[k]===undefined)throw Error('Missing '+k);
  for(const [k,v]of Object.entries(args)){if(!s.properties[k])throw Error('Unknown argument '+k);const t=s.properties[k].type;if(t==='string'&&(typeof v!=='string'||!v.trim()))throw Error('Invalid '+k);if(t==='integer'&&!Number.isInteger(v))throw Error('Invalid '+k);}
  let result;
+ if(name==='whatif_lab_plan')result=await planLab({campaignDirectory:path.resolve(args.campaignDirectory),out:path.resolve(args.out)});
+ if(name==='whatif_lab_inspect')result=await inspectLab(path.resolve(args.labDirectory));
+ if(name==='whatif_lab_run')result=await runLab(path.resolve(args.labDirectory),{ackTarget:args.ackTarget});
+ if(name==='whatif_lab_verify')result=await verifyLab(path.resolve(args.labDirectory));
+ if(name==='whatif_lab_replay')result=await replayLab({labDirectory:path.resolve(args.labDirectory),out:path.resolve(args.out)});
+ if(name==='whatif_lab_compare')result=await compareLabs(path.resolve(args.baseline),path.resolve(args.candidate));
  if(name==='whatif_campaign_compare')result=await compareCampaigns(path.resolve(args.baseline),path.resolve(args.candidate));
  if(name==='whatif_explore')result=explore();
  if(name==='whatif_campaign_plan')result=await createCampaign({...args,out:path.resolve(args.out)});
