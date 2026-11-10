@@ -21,4 +21,4 @@ Use defect precision/recall against an independently held defect inventory; acce
 
 Run multiple seeds with matched budgets, preserve every trial and report uncertainty and distribution, not only the best example. Have reviewers score anonymized evidence before revealing the product. Publish raw synthetic fixtures, immutable oracle identities, commands and aggregate results without credentials or provider account identifiers.
 
-The current two-defect fixture qualifies integration behavior. It is too small and known to the implementers to establish a comparative product advantage. No “100× better” claim is supported yet.
+V3 adds two pinned real applications and an independently discovered regression in an AI repair to the earlier synthetic fixture. This remains a small, selected sample without a matched competing-product trial; it does not establish comparative product advantage. No “100× better” claim is supported yet.

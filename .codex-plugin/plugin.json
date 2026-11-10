@@ -1,6 +1,6 @@
 {
   "name": "whatif",
-  "version": "2.1.0",
+  "version": "3.0.2",
   "description": "Evidence-led application scenarios, bounded testing and security review preparation.",
   "skills": "./skills",
   "mcpServers": "./.mcp.json",

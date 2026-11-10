@@ -1,4 +1,6 @@
-# Independent AI teams (2.1)
+# Independent AI teams (legacy fixture)
+
+For V3 static web apps, use [the real-app workflow](real-apps.md). This page documents the earlier fixture adapter.
 
 The optional team runner uses fresh Codex CLI sessions for red, blue and critic roles. Separate session identity and context do not imply different models or independent model weights. The existing adaptive lab still uses deterministic policies.
 

@@ -1,0 +1,638 @@
+{
+  "schemaVersion": 3,
+  "runner": "static-web",
+  "question": "What if task changes must survive reload without losing identity or usability?",
+  "app": {
+    "source": "REPLACE_WITH_PREPARED_APP_PATH",
+    "files": [
+      "index.html",
+      "store.js",
+      "app.js"
+    ],
+    "editable": [
+      "store.js"
+    ],
+    "assets": [
+      "index.html",
+      "base.css",
+      "index.css",
+      "base.js",
+      "helpers.js",
+      "store.js",
+      "model.js",
+      "template.js",
+      "view.js",
+      "controller.js",
+      "app.js",
+      "LICENSE"
+    ],
+    "entry": "index.html",
+    "repeatSafe": true
+  },
+  "provenance": {
+    "repository": "https://github.com/tastejs/todomvc",
+    "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+    "license": "MIT",
+    "upstreamApp": "examples/javascript-es5/dist"
+  },
+  "contract": "This upstream variant intentionally uses memory-only storage. Implement a requested durability improvement, not a claimed undisclosed upstream vulnerability: persist task creation, edits, completion and deletion across same-origin reload using localStorage under the constructor name javascript-es5. Newly created tasks after reload must have unique IDs. Preserve existing callbacks/public API and healthy UI. Malformed persisted JSON must not crash normal task creation. Do not hardcode test text, weaken tests or modify noneditable assets. Browser tests exercise full actual upstream UI; all baseline cases are mandatory regression oracles. When localStorage writes throw quota errors, preserve current-session in-memory task creation and completion; do not promise persistence when the browser refuses writes. The persistence requirements apply when storage is writable.",
+  "campaign": {
+    "schemaVersion": 1,
+    "question": "What if task changes must survive reload without losing identity or usability?",
+    "target": "http://127.0.0.1:8080/",
+    "budget": {
+      "maxRequests": 1000,
+      "maxDurationMs": 60000
+    },
+    "branches": [
+      {
+        "id": "healthy-create-complete",
+        "engine": "browser",
+        "hypothesis": "Ordinary create and completion remain usable",
+        "config": {
+          "maxRequests": 50,
+          "timeoutMs": 3000,
+          "allowRequests": [
+            {
+              "method": "GET",
+              "path": "/"
+            },
+            {
+              "method": "GET",
+              "path": "/index.html"
+            },
+            {
+              "method": "GET",
+              "path": "/base.css"
+            },
+            {
+              "method": "GET",
+              "path": "/index.css"
+            },
+            {
+              "method": "GET",
+              "path": "/base.js"
+            },
+            {
+              "method": "GET",
+              "path": "/helpers.js"
+            },
+            {
+              "method": "GET",
+              "path": "/store.js"
+            },
+            {
+              "method": "GET",
+              "path": "/model.js"
+            },
+            {
+              "method": "GET",
+              "path": "/template.js"
+            },
+            {
+              "method": "GET",
+              "path": "/view.js"
+            },
+            {
+              "method": "GET",
+              "path": "/controller.js"
+            },
+            {
+              "method": "GET",
+              "path": "/app.js"
+            },
+            {
+              "method": "GET",
+              "path": "/LICENSE"
+            },
+            {
+              "method": "GET",
+              "path": "/learn.json"
+            }
+          ],
+          "steps": [
+            {
+              "action": "goto",
+              "path": "/"
+            },
+            {
+              "action": "fill",
+              "selector": ".new-todo",
+              "value": "Healthy task"
+            },
+            {
+              "action": "click",
+              "selector": "h1"
+            },
+            {
+              "action": "text",
+              "selector": ".todo-list li label",
+              "expected": "Healthy task"
+            },
+            {
+              "action": "click",
+              "selector": ".todo-list .toggle"
+            },
+            {
+              "action": "text",
+              "selector": ".todo-count",
+              "expected": "0 items left"
+            }
+          ]
+        }
+      },
+      {
+        "id": "durable-completion-identity",
+        "engine": "browser",
+        "hypothesis": "Completion survives reload and new tasks do not collide",
+        "config": {
+          "maxRequests": 50,
+          "timeoutMs": 3000,
+          "allowRequests": [
+            {
+              "method": "GET",
+              "path": "/"
+            },
+            {
+              "method": "GET",
+              "path": "/index.html"
+            },
+            {
+              "method": "GET",
+              "path": "/base.css"
+            },
+            {
+              "method": "GET",
+              "path": "/index.css"
+            },
+            {
+              "method": "GET",
+              "path": "/base.js"
+            },
+            {
+              "method": "GET",
+              "path": "/helpers.js"
+            },
+            {
+              "method": "GET",
+              "path": "/store.js"
+            },
+            {
+              "method": "GET",
+              "path": "/model.js"
+            },
+            {
+              "method": "GET",
+              "path": "/template.js"
+            },
+            {
+              "method": "GET",
+              "path": "/view.js"
+            },
+            {
+              "method": "GET",
+              "path": "/controller.js"
+            },
+            {
+              "method": "GET",
+              "path": "/app.js"
+            },
+            {
+              "method": "GET",
+              "path": "/LICENSE"
+            },
+            {
+              "method": "GET",
+              "path": "/learn.json"
+            }
+          ],
+          "steps": [
+            {
+              "action": "goto",
+              "path": "/"
+            },
+            {
+              "action": "fill",
+              "selector": ".new-todo",
+              "value": "Durable task"
+            },
+            {
+              "action": "click",
+              "selector": "h1"
+            },
+            {
+              "action": "text",
+              "selector": ".todo-list li label",
+              "expected": "Durable task"
+            },
+            {
+              "action": "click",
+              "selector": ".todo-list .toggle"
+            },
+            {
+              "action": "reload"
+            },
+            {
+              "action": "text",
+              "selector": ".todo-list li label",
+              "expected": "Durable task"
+            },
+            {
+              "action": "count",
+              "selector": ".todo-list li.completed",
+              "expected": 1
+            },
+            {
+              "action": "fill",
+              "selector": ".new-todo",
+              "value": "Second task"
+            },
+            {
+              "action": "click",
+              "selector": "h1"
+            },
+            {
+              "action": "count",
+              "selector": ".todo-list li",
+              "expected": 2
+            },
+            {
+              "action": "text",
+              "selector": ".todo-count",
+              "expected": "1 item left"
+            },
+            {
+              "action": "click",
+              "selector": ".todo-list li:not(.completed) .toggle"
+            },
+            {
+              "action": "text",
+              "selector": ".todo-count",
+              "expected": "0 items left"
+            }
+          ]
+        }
+      },
+      {
+        "id": "durable-edit-delete",
+        "engine": "browser",
+        "hypothesis": "Edited titles survive and deleted tasks do not resurrect",
+        "config": {
+          "maxRequests": 50,
+          "timeoutMs": 3000,
+          "allowRequests": [
+            {
+              "method": "GET",
+              "path": "/"
+            },
+            {
+              "method": "GET",
+              "path": "/index.html"
+            },
+            {
+              "method": "GET",
+              "path": "/base.css"
+            },
+            {
+              "method": "GET",
+              "path": "/index.css"
+            },
+            {
+              "method": "GET",
+              "path": "/base.js"
+            },
+            {
+              "method": "GET",
+              "path": "/helpers.js"
+            },
+            {
+              "method": "GET",
+              "path": "/store.js"
+            },
+            {
+              "method": "GET",
+              "path": "/model.js"
+            },
+            {
+              "method": "GET",
+              "path": "/template.js"
+            },
+            {
+              "method": "GET",
+              "path": "/view.js"
+            },
+            {
+              "method": "GET",
+              "path": "/controller.js"
+            },
+            {
+              "method": "GET",
+              "path": "/app.js"
+            },
+            {
+              "method": "GET",
+              "path": "/LICENSE"
+            },
+            {
+              "method": "GET",
+              "path": "/learn.json"
+            }
+          ],
+          "steps": [
+            {
+              "action": "goto",
+              "path": "/"
+            },
+            {
+              "action": "fill",
+              "selector": ".new-todo",
+              "value": "Original task"
+            },
+            {
+              "action": "click",
+              "selector": "h1"
+            },
+            {
+              "action": "text",
+              "selector": ".todo-list li label",
+              "expected": "Original task"
+            },
+            {
+              "action": "dblclick",
+              "selector": ".todo-list li label"
+            },
+            {
+              "action": "fill",
+              "selector": ".todo-list .edit",
+              "value": "Renamed task"
+            },
+            {
+              "action": "press",
+              "selector": ".todo-list .edit",
+              "key": "Enter"
+            },
+            {
+              "action": "reload"
+            },
+            {
+              "action": "text",
+              "selector": ".todo-list li label",
+              "expected": "Renamed task"
+            },
+            {
+              "action": "dblclick",
+              "selector": ".todo-list li label"
+            },
+            {
+              "action": "fill",
+              "selector": ".todo-list .edit",
+              "value": ""
+            },
+            {
+              "action": "press",
+              "selector": ".todo-list .edit",
+              "key": "Enter"
+            },
+            {
+              "action": "count",
+              "selector": ".todo-list li",
+              "expected": 0
+            },
+            {
+              "action": "reload"
+            },
+            {
+              "action": "count",
+              "selector": ".todo-list li",
+              "expected": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "malformed-storage",
+        "engine": "browser",
+        "hypothesis": "Malformed persisted storage leaves task creation usable",
+        "config": {
+          "maxRequests": 50,
+          "timeoutMs": 3000,
+          "allowRequests": [
+            {
+              "method": "GET",
+              "path": "/"
+            },
+            {
+              "method": "GET",
+              "path": "/index.html"
+            },
+            {
+              "method": "GET",
+              "path": "/base.css"
+            },
+            {
+              "method": "GET",
+              "path": "/index.css"
+            },
+            {
+              "method": "GET",
+              "path": "/base.js"
+            },
+            {
+              "method": "GET",
+              "path": "/helpers.js"
+            },
+            {
+              "method": "GET",
+              "path": "/store.js"
+            },
+            {
+              "method": "GET",
+              "path": "/model.js"
+            },
+            {
+              "method": "GET",
+              "path": "/template.js"
+            },
+            {
+              "method": "GET",
+              "path": "/view.js"
+            },
+            {
+              "method": "GET",
+              "path": "/controller.js"
+            },
+            {
+              "method": "GET",
+              "path": "/app.js"
+            },
+            {
+              "method": "GET",
+              "path": "/LICENSE"
+            },
+            {
+              "method": "GET",
+              "path": "/learn.json"
+            }
+          ],
+          "steps": [
+            {
+              "action": "goto",
+              "path": "/"
+            },
+            {
+              "action": "fill",
+              "selector": ".new-todo",
+              "value": "Recovered task"
+            },
+            {
+              "action": "click",
+              "selector": "h1"
+            },
+            {
+              "action": "text",
+              "selector": ".todo-list li label",
+              "expected": "Recovered task"
+            }
+          ],
+          "storage": {
+            "javascript-es5": "{"
+          }
+        }
+      },
+      {
+        "id": "quota-write-failure",
+        "engine": "browser",
+        "hypothesis": "When storage rejects writes, current-session task creation and completion remain usable",
+        "config": {
+          "maxRequests": 50,
+          "timeoutMs": 3000,
+          "allowRequests": [
+            {
+              "method": "GET",
+              "path": "/"
+            },
+            {
+              "method": "GET",
+              "path": "/index.html"
+            },
+            {
+              "method": "GET",
+              "path": "/base.css"
+            },
+            {
+              "method": "GET",
+              "path": "/index.css"
+            },
+            {
+              "method": "GET",
+              "path": "/base.js"
+            },
+            {
+              "method": "GET",
+              "path": "/helpers.js"
+            },
+            {
+              "method": "GET",
+              "path": "/store.js"
+            },
+            {
+              "method": "GET",
+              "path": "/model.js"
+            },
+            {
+              "method": "GET",
+              "path": "/template.js"
+            },
+            {
+              "method": "GET",
+              "path": "/view.js"
+            },
+            {
+              "method": "GET",
+              "path": "/controller.js"
+            },
+            {
+              "method": "GET",
+              "path": "/app.js"
+            },
+            {
+              "method": "GET",
+              "path": "/LICENSE"
+            },
+            {
+              "method": "GET",
+              "path": "/learn.json"
+            }
+          ],
+          "steps": [
+            {
+              "action": "goto",
+              "path": "/"
+            },
+            {
+              "action": "fill",
+              "selector": ".new-todo",
+              "value": "Healthy task"
+            },
+            {
+              "action": "click",
+              "selector": "h1"
+            },
+            {
+              "action": "text",
+              "selector": ".todo-list li label",
+              "expected": "Healthy task"
+            },
+            {
+              "action": "click",
+              "selector": ".todo-list .toggle"
+            },
+            {
+              "action": "text",
+              "selector": ".todo-count",
+              "expected": "0 items left"
+            }
+          ],
+          "storageFault": "quota-exceeded"
+        }
+      }
+    ]
+  },
+  "operators": {
+    "statuses": [],
+    "delaysMs": [],
+    "abort": false,
+    "viewports": [
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "locales": [],
+    "timezones": [],
+    "reducedMotion": [],
+    "vus": [
+      1,
+      5,
+      20,
+      50
+    ],
+    "paceMs": [
+      0,
+      50,
+      200
+    ],
+    "repeatClicks": [],
+    "interactionDepth": 1
+  },
+  "budget": {
+    "maxEpochs": 2,
+    "maxCalls": 8,
+    "maxDurationMs": 600000,
+    "callTimeoutMs": 120000,
+    "maxInputChars": 100000,
+    "maxOutputBytes": 262144,
+    "maxRequests": 5000,
+    "maxReportedTokens": 350000
+  }
+}

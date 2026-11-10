@@ -1,0 +1,947 @@
+{
+  "sourceReportSha256": "f7209b461f8b12796973ac53078133c3f9d614894bc49645204f3bc957cf4750",
+  "note": "Public derivative of the verified local report; absolute evidence directories omitted. Reproduce using pinned recipes. Original local report and transcripts remain separate.",
+  "report": {
+    "schemaVersion": 1,
+    "kind": "retrospective-cross-application-qualification",
+    "status": "qualified",
+    "qualificationComplete": true,
+    "crossApplicationEvidence": true,
+    "distinctApplications": 2,
+    "distinctUpstreamRevisions": 2,
+    "distinctUseCases": 3,
+    "teams": 3,
+    "totals": {
+      "roleAttempts": 18,
+      "actualModelCalls": 18,
+      "reportedTokens": 363028,
+      "observedRequests": 1710,
+      "reservedRequests": 3800,
+      "epochs": 6,
+      "acceptedPatches": 3
+    },
+    "usageComplete": true,
+    "apps": [
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "sourceBasis": "Declared pinned upstream preparation; no upstream-source attestation",
+        "declaredSourceBasis": "",
+        "parentEvidenceSha256": null,
+        "license": "MIT",
+        "useCase": "What if task changes must survive reload without losing identity or usability?",
+        "complete": true,
+        "realProvider": true,
+        "stopReason": "no-observed-failure",
+        "usageComplete": true,
+        "metrics": {
+          "roleAttempts": 6,
+          "actualModelCalls": 6,
+          "reportedTokens": 112969,
+          "observedRequests": 480,
+          "reservedRequests": 1200,
+          "epochs": 2,
+          "acceptedPatches": 1
+        },
+        "evidence": {
+          "teamManifestSha256": "d13a85af792ebbbf8f8d4c989327dbeb2b16ae640a1790c2543c17914beb07ac",
+          "teamEvidenceSha256": "f4b27af20755591af00700231692445f1d4837112ef6605eb5bd421eae67fd41",
+          "initialSourceSnapshotSha256": "5805f4960eb047f606276c53c91fc1ffee057065d5377a3ea5012e8ebbb3ba36",
+          "finalSourceSnapshotSha256": "7d5c708b0ffbb064e95dc3ae1a261e4a8bf75415eb0f56608dc3da740f7ef433"
+        },
+        "transitions": [
+          {
+            "epoch": 1,
+            "caseId": "c-076318a9732cd597",
+            "engine": "browser",
+            "invariant": "Ordinary create and completion remain usable",
+            "before": [
+              true,
+              true
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "healthy-control-retained",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 1,
+            "caseId": "c-c2e816c81e958f86",
+            "engine": "browser",
+            "invariant": "Completion survives reload and new tasks do not collide",
+            "before": [
+              false,
+              false
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "observed-failure-to-pass",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 1,
+            "caseId": "c-43628778404fd2f5",
+            "engine": "browser",
+            "invariant": "Edited titles survive and deleted tasks do not resurrect",
+            "before": [
+              false,
+              false
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "observed-failure-to-pass",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 1,
+            "caseId": "c-a637cf8f76391890",
+            "engine": "browser",
+            "invariant": "Malformed persisted storage leaves task creation usable",
+            "before": [
+              true,
+              true
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "healthy-control-retained",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-076318a9732cd597",
+            "engine": "browser",
+            "invariant": "Ordinary create and completion remain usable",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-c2e816c81e958f86",
+            "engine": "browser",
+            "invariant": "Completion survives reload and new tasks do not collide",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-43628778404fd2f5",
+            "engine": "browser",
+            "invariant": "Edited titles survive and deleted tasks do not resurrect",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-a637cf8f76391890",
+            "engine": "browser",
+            "invariant": "Malformed persisted storage leaves task creation usable",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          }
+        ]
+      },
+      {
+        "repository": "https://github.com/jbt/markdown-editor",
+        "commit": "58aa8bfe18c5a30af2c6fb08221b00b841688dd9",
+        "sourceBasis": "Declared pinned upstream preparation; no upstream-source attestation",
+        "declaredSourceBasis": "",
+        "parentEvidenceSha256": null,
+        "license": "ISC",
+        "useCase": "What if formatting is toggled repeatedly and task text uses non-Latin characters?",
+        "complete": true,
+        "realProvider": true,
+        "stopReason": "no-observed-failure",
+        "usageComplete": true,
+        "metrics": {
+          "roleAttempts": 6,
+          "actualModelCalls": 6,
+          "reportedTokens": 131115,
+          "observedRequests": 558,
+          "reservedRequests": 900,
+          "epochs": 2,
+          "acceptedPatches": 1
+        },
+        "evidence": {
+          "teamManifestSha256": "888eec457d60f2b0df2ee9fe1100d3141920e1d84989547b0338f499d3270e14",
+          "teamEvidenceSha256": "5b61511510b14076b159265e5f7fb801660716f3769f5103d73120d4e970527b",
+          "initialSourceSnapshotSha256": "193bdfdd5671c96913d6f9219c5c4a5da2d9b943431aee741031b6d9cc6ae0c9",
+          "finalSourceSnapshotSha256": "1c91a3fbafee813848f131d61912ffb55f3773996ea11c21e0ac6ca0aa2330fc"
+        },
+        "transitions": [
+          {
+            "epoch": 1,
+            "caseId": "c-07f9e3405dc0ed59",
+            "engine": "browser",
+            "invariant": "Healthy heading, bold, italic and ASCII task lists still render.",
+            "before": [
+              true,
+              true
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "healthy-control-retained",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 1,
+            "caseId": "c-b62cc5389f07be4c",
+            "engine": "browser",
+            "invariant": "Applying italic to an already italicized selected passage removes the italic delimiters without adding bold.",
+            "before": [
+              false,
+              false
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "observed-failure-to-pass",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 1,
+            "caseId": "c-93f32fe32c111d36",
+            "engine": "browser",
+            "invariant": "GitHub-flavored task lists retain checked/unchecked controls for Unicode and inline-formatted content.",
+            "before": [
+              false,
+              false
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "observed-failure-to-pass",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-07f9e3405dc0ed59",
+            "engine": "browser",
+            "invariant": "Healthy heading, bold, italic and ASCII task lists still render.",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-b62cc5389f07be4c",
+            "engine": "browser",
+            "invariant": "Applying italic to an already italicized selected passage removes the italic delimiters without adding bold.",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-93f32fe32c111d36",
+            "engine": "browser",
+            "invariant": "GitHub-flavored task lists retain checked/unchecked controls for Unicode and inline-formatted content.",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          }
+        ]
+      },
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "sourceBasis": "Verified continuation from included parent final-source snapshot; not upstream-source attestation",
+        "declaredSourceBasis": "Previously accepted AI repair; original upstream pin retained for lineage, not claimed pristine source",
+        "parentEvidenceSha256": "f4b27af20755591af00700231692445f1d4837112ef6605eb5bd421eae67fd41",
+        "license": "MIT",
+        "useCase": "What if a reviewed durability repair meets browser storage quota errors?",
+        "complete": true,
+        "realProvider": true,
+        "stopReason": "no-observed-failure",
+        "usageComplete": true,
+        "metrics": {
+          "roleAttempts": 6,
+          "actualModelCalls": 6,
+          "reportedTokens": 118944,
+          "observedRequests": 672,
+          "reservedRequests": 1700,
+          "epochs": 2,
+          "acceptedPatches": 1
+        },
+        "evidence": {
+          "teamManifestSha256": "4bde765c00ca4f94b032ec3d9ef182c2ca55b820d73332ea85b10014a9e6b275",
+          "teamEvidenceSha256": "6f213a0f16c360840cf930189059844b0c836eeac3868a6325bb675d25c5149f",
+          "initialSourceSnapshotSha256": "7d5c708b0ffbb064e95dc3ae1a261e4a8bf75415eb0f56608dc3da740f7ef433",
+          "finalSourceSnapshotSha256": "799a7f90a3645e21111ad6b7130d361150ec4cae09226159832c60e57de860ff"
+        },
+        "transitions": [
+          {
+            "epoch": 1,
+            "caseId": "c-076318a9732cd597",
+            "engine": "browser",
+            "invariant": "Ordinary create and completion remain usable",
+            "before": [
+              true,
+              true
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "healthy-control-retained",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 1,
+            "caseId": "c-c2e816c81e958f86",
+            "engine": "browser",
+            "invariant": "Completion survives reload and new tasks do not collide",
+            "before": [
+              true,
+              true
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "healthy-control-retained",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 1,
+            "caseId": "c-43628778404fd2f5",
+            "engine": "browser",
+            "invariant": "Edited titles survive and deleted tasks do not resurrect",
+            "before": [
+              true,
+              true
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "healthy-control-retained",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 1,
+            "caseId": "c-a637cf8f76391890",
+            "engine": "browser",
+            "invariant": "Malformed persisted storage leaves task creation usable",
+            "before": [
+              true,
+              true
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "healthy-control-retained",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 1,
+            "caseId": "c-5a63c4297942dd1d",
+            "engine": "browser",
+            "invariant": "When storage rejects writes, current-session task creation and completion remain usable",
+            "before": [
+              false,
+              false
+            ],
+            "after": [
+              true,
+              true
+            ],
+            "outcome": "observed-failure-to-pass",
+            "repairAccepted": true,
+            "evidence": {
+              "before": [
+                "epoch-1/before-1",
+                "epoch-1/before-2"
+              ],
+              "after": [
+                "epoch-1/after-1",
+                "epoch-1/after-2"
+              ]
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-076318a9732cd597",
+            "engine": "browser",
+            "invariant": "Ordinary create and completion remain usable",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-c2e816c81e958f86",
+            "engine": "browser",
+            "invariant": "Completion survives reload and new tasks do not collide",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-43628778404fd2f5",
+            "engine": "browser",
+            "invariant": "Edited titles survive and deleted tasks do not resurrect",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-a637cf8f76391890",
+            "engine": "browser",
+            "invariant": "Malformed persisted storage leaves task creation usable",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-5a63c4297942dd1d",
+            "engine": "browser",
+            "invariant": "When storage rejects writes, current-session task creation and completion remain usable",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-01c467ec12abacc1",
+            "engine": "browser",
+            "invariant": "Edited titles survive and deleted tasks do not resurrect",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          },
+          {
+            "epoch": 2,
+            "caseId": "c-97dd578af40ad83d",
+            "engine": "browser",
+            "invariant": "When storage rejects writes, current-session task creation and completion remain usable",
+            "before": [
+              true,
+              true
+            ],
+            "after": null,
+            "outcome": "not-replayed",
+            "repairAccepted": false,
+            "evidence": {
+              "before": [
+                "epoch-2/before-1",
+                "epoch-2/before-2"
+              ],
+              "after": []
+            }
+          }
+        ]
+      }
+    ],
+    "lessons": [
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "observedInvariant": "Ordinary create and completion remain usable",
+        "observation": "healthy-control-retained",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-076318a9732cd597",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "observedInvariant": "Completion survives reload and new tasks do not collide",
+        "observation": "observed-failure-to-pass",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-c2e816c81e958f86",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "observedInvariant": "Edited titles survive and deleted tasks do not resurrect",
+        "observation": "observed-failure-to-pass",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-43628778404fd2f5",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "observedInvariant": "Malformed persisted storage leaves task creation usable",
+        "observation": "healthy-control-retained",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-a637cf8f76391890",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/jbt/markdown-editor",
+        "commit": "58aa8bfe18c5a30af2c6fb08221b00b841688dd9",
+        "observedInvariant": "Healthy heading, bold, italic and ASCII task lists still render.",
+        "observation": "healthy-control-retained",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-07f9e3405dc0ed59",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/jbt/markdown-editor",
+        "commit": "58aa8bfe18c5a30af2c6fb08221b00b841688dd9",
+        "observedInvariant": "Applying italic to an already italicized selected passage removes the italic delimiters without adding bold.",
+        "observation": "observed-failure-to-pass",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-b62cc5389f07be4c",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/jbt/markdown-editor",
+        "commit": "58aa8bfe18c5a30af2c6fb08221b00b841688dd9",
+        "observedInvariant": "GitHub-flavored task lists retain checked/unchecked controls for Unicode and inline-formatted content.",
+        "observation": "observed-failure-to-pass",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-93f32fe32c111d36",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "observedInvariant": "Ordinary create and completion remain usable",
+        "observation": "healthy-control-retained",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-076318a9732cd597",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "observedInvariant": "Completion survives reload and new tasks do not collide",
+        "observation": "healthy-control-retained",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-c2e816c81e958f86",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "observedInvariant": "Edited titles survive and deleted tasks do not resurrect",
+        "observation": "healthy-control-retained",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-43628778404fd2f5",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "observedInvariant": "Malformed persisted storage leaves task creation usable",
+        "observation": "healthy-control-retained",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-a637cf8f76391890",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      },
+      {
+        "repository": "https://github.com/tastejs/todomvc",
+        "commit": "ff43b02e59dfa604386bb382034b2cd07c2bcd8a",
+        "observedInvariant": "When storage rejects writes, current-session task creation and completion remain usable",
+        "observation": "observed-failure-to-pass",
+        "acceptedRepair": true,
+        "epoch": 1,
+        "caseId": "c-5a63c4297942dd1d",
+        "evidence": {
+          "before": [
+            "epoch-1/before-1",
+            "epoch-1/before-2"
+          ],
+          "after": [
+            "epoch-1/after-1",
+            "epoch-1/after-2"
+          ]
+        }
+      }
+    ],
+    "limitations": [
+      "This is a retrospective record of finite observed trials, not a prediction of untested behavior.",
+      "Distinct role sessions use one provider and do not imply independent model weights or independent organizations.",
+      "No claim of 100x superiority, complete coverage, universal security, or production readiness follows from these runs.",
+      "Token usage is provider-reported; missing usage remains unknown. Tokens and dollars were not hard capped.",
+      "Evidence hashes establish internal consistency, not a signed execution or upstream-source attestation.",
+      "Observed invariants are evidence data for human review, not automatic instructions or permission to change another application."
+    ]
+  }
+}

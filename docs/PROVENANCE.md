@@ -36,3 +36,9 @@ MiroFish and its inspected forks are AGPL-3.0. The earlier survey found permissi
 - Kronos samples model logits in `model/kronos.py`; it is domain-specific research, not evidence for universal application testing.
 - DeepAgentForecast is retained as an archived research reference, not selected as a maintained V1 dependency.
 - Semgrep's `cli/src/semgrep/output.py` separates output handling/settings from scanning. Its root license is LGPL-2.1; subtree/dependency terms require their own review. WhatIF emits a distinct review-lead schema and does not vendor Semgrep code or claim to implement its analysis.
+
+## V3 real application qualification
+
+The original runtime remains separate from upstream apps. The checked-in recipes pin TodoMVC and jbt/markdown-editor; the preparer verifies original Git blobs and copies only allowlisted assets into an external disposable directory. No upstream dependencies are installed by the script.
+
+The examples/real-apps/patches directory contains exported source diffs derived from the accepted app repairs, with their MIT/ISC upstream notices. These are explicit exceptions to keeping research source outside the repository; they are repair artifacts, not copied runtime integrations. Exact source pins, offline dictionary substitutions and proof scope are recorded in V3-QUALIFICATION.md and REAL-APP-PREPARATION.md.

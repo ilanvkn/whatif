@@ -14,16 +14,23 @@ export function validateCampaign(p){
  must(['browser','k6','security'].includes(b.engine),'Unknown engine');const c=b.config;must(c&&typeof c==='object','Engine config required');
  integer(c.maxRequests,1,10000,'branch request budget');integer(c.timeoutMs,100,10000,'request/step timeout');total+=c.maxRequests;
  if(b.engine==='browser'){
+ if(c.storageFault!==undefined)must(c.storageFault==='quota-exceeded','Unsupported storage fault');
+ if(c.storage!==undefined){must(c.storage!==null&&typeof c.storage==='object'&&!Array.isArray(c.storage)&&[Object.prototype,null].includes(Object.getPrototypeOf(c.storage)),'Storage must be a synthetic key/value object');must(Object.keys(c.storage).length<=20,'At most 20 storage entries');for(const [key,value]of Object.entries(c.storage)){must(key.length>0&&key.length<=128,'Storage key must be 1..128 characters');must(typeof value==='string'&&value.length<=4096,'Storage value must be a string of at most 4096 characters');}}
  if(c.viewport){integer(c.viewport.width,320,3840,'viewport width');integer(c.viewport.height,320,2160,'viewport height');}
  if(c.locale)must(typeof c.locale==='string'&&c.locale.length<=40,'Invalid locale');
  if(c.timezoneId)must(typeof c.timezoneId==='string'&&c.timezoneId.length<=80,'Invalid timezone');
  if(c.reducedMotion)must(['reduce','no-preference'].includes(c.reducedMotion),'Invalid motion preference');
  must(Array.isArray(c.allowRequests)&&c.allowRequests.length>0&&c.allowRequests.length<=100,'Browser request allowlist required');
  for(const r of c.allowRequests){routePath(r.path);must(['GET','POST','PUT','PATCH','DELETE'].includes(r.method),'Invalid browser method');}
+ if(c.localMirrors!==undefined){must(Array.isArray(c.localMirrors)&&c.localMirrors.length<=10,'At most 10 local mirrors');const urls=new Set();for(const mirror of c.localMirrors){must(mirror&&typeof mirror==='object'&&typeof mirror.url==='string'&&mirror.url.length<=2048,'Mirror URL required');let url;try{url=new URL(mirror.url);}catch{throw Error('Invalid mirror URL');}must(url.protocol==='https:'&&!url.username&&!url.password&&!url.hash&&url.href===mirror.url,'Mirror requires exact normalized HTTPS URL without credentials or fragment');must(url.origin!==target.origin,'Mirror URL must be external');must(!urls.has(mirror.url),'Duplicate mirror URL');urls.add(mirror.url);routePath(mirror.path);must(c.allowRequests.some(r=>r.method==='GET'&&r.path===mirror.path),'Mirror must name a reviewed local GET path');}}
  must(Array.isArray(c.steps)&&c.steps.length>0&&c.steps.length<=100,'1..100 browser steps required');
  let assertions=0;
- for(const step of c.steps){must(['goto','click','fill','text','visible'].includes(step.action),'Unsupported browser step');
- if(step.action==='goto')routePath(step.path);else must(typeof step.selector==='string'&&step.selector.length>0&&step.selector.length<=1000,'Selector required');
+ for(const step of c.steps){must(['goto','click','dblclick','press','reload','fill','text','visible','count','value','attribute'].includes(step.action),'Unsupported browser step');
+ if(step.action==='goto')routePath(step.path);else if(step.action!=='reload')must(typeof step.selector==='string'&&step.selector.length>0&&step.selector.length<=1000,'Selector required');
+ if(step.action==='press')must(['Enter','Escape','Tab','Backspace','ControlOrMeta+A','Control+i'].includes(step.key),'Unsupported browser key');
+ if(step.action==='count'){integer(step.expected,0,10000,'Expected element count');assertions++;}
+ if(step.action==='value'){must(typeof step.expected==='string'&&step.expected.length<=4096,'Expected input value required');assertions++;}
+ if(step.action==='attribute'){must(typeof step.name==='string'&&/^[A-Za-z_:][A-Za-z0-9_.:-]{0,127}$/.test(step.name),'Valid attribute name required');must(step.expected===null||typeof step.expected==='string'&&step.expected.length<=4096,'Expected attribute string or null required');assertions++;}
  if(step.action==='fill'){must((typeof step.value==='string')!==(typeof step.valueEnv==='string'),'Fill requires value OR valueEnv');if(step.valueEnv)envName(step.valueEnv);}
  if(step.action==='text'){must(typeof step.expected==='string'&&step.expected.length<=2000,'Expected text required');assertions++;}if(step.action==='visible')assertions++;
  }must(assertions>0,'Browser journey requires an assertion');

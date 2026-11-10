@@ -1,0 +1,2 @@
+import {compileSpace} from '../lab/space.mjs';
+export function spaceFor(spec,target){return compileSpace({schemaVersion:2,seed:'independent-team',seedCampaign:{...spec.campaign,target},fixture:{repeatSafe:true,appRevision:'controller-snapshot',resetStrategy:'Disposable isolated Node checkout'},operators:spec.operators,limits:{maxEpochs:2,trialsPerEpoch:3,maxTrials:6,maxRequests:1000,maxDurationMs:60000,trialDurationMs:60000,confirmations:2,stagnationEpochs:2,maxCandidates:100}});}

@@ -1,0 +1,476 @@
+diff --git a/examples/javascript-es5/src/store.js b/examples/javascript-es5/src/store.js
+--- a/examples/javascript-es5/src/store.js
++++ b/examples/javascript-es5/src/store.js
+@@ -2,120 +2,125 @@
+ (function (window) {
+     "use strict";
+ 
+-    var MemoryStorage = {};
++    var MemoryStorage = Object.create(null);
++    var pendingWrites = Object.create(null);
+     var ID = 1;
+ 
+-    /**
+-     * Creates a new client side storage object and will create an empty
+-     * collection if no collection already exists.
+-     *
+-     * @param {string} name The name of our DB we want to use
+-     * @param {function} callback Our fake DB uses callbacks because in
+-     * real life you probably would be making AJAX calls
+-     */
+-    function Store(name, callback) {
+-        callback = callback || function () {};
++    function read(name) {
++        var raw = MemoryStorage[name];
++        var data;
+ 
+-        this._dbName = name;
++        if (!pendingWrites[name]) {
++            try {
++                raw = window.localStorage.getItem(name);
++            } catch (error) {
++                // Continue using memory when browser storage is unavailable.
++            }
++        }
+ 
+-        if (!MemoryStorage[name]) {
+-            var data = {
+-                todos: [],
+-            };
++        try {
++            data = JSON.parse(raw);
++            if (!data || !Array.isArray(data.todos)) {
++                return { todos: [], nextId: 1 };
++            }
++            for (var i = 0; i < data.todos.length; i++) {
++                var todo = data.todos[i];
++                if (!todo || typeof todo.id !== "number" ||
++                        !isFinite(todo.id) || todo.id < 1 ||
++                        Math.floor(todo.id) !== todo.id ||
++                        typeof todo.title !== "string" ||
++                        typeof todo.completed !== "boolean") {
++                    return { todos: [], nextId: 1 };
++                }
++            }
++            return data;
++        } catch (error) {
++            return { todos: [], nextId: 1 };
++        }
++    }
+ 
+-            MemoryStorage[name] = JSON.stringify(data);
++    function write(name, data) {
++        var raw = JSON.stringify(data);
++        MemoryStorage[name] = raw;
++        pendingWrites[name] = true;
++        try {
++            window.localStorage.setItem(name, raw);
++            delete pendingWrites[name];
++        } catch (error) {
++            // Keep memory authoritative until a later write succeeds.
++            // Changes cannot survive reload while storage refuses writes.
+         }
++    }
+ 
+-        callback.call(this, JSON.parse(MemoryStorage[name]));
++    /** Creates or restores a named collection. */
++    function Store(name, callback) {
++        callback = callback || function () {};
++        this._dbName = name;
++        var data = read(name);
++        write(name, data);
++        callback.call(this, data);
+     }
+ 
+-    /**
+-     * Finds items based on a query given as a JS object
+-     *
+-     * @param {object} query The query to match against (i.e. {foo: 'bar'})
+-     * @param {function} callback     The callback to fire when the query has
+-     * completed running
+-     *
+-     * @example
+-     * db.find({foo: 'bar', hello: 'world'}, function (data) {
+-     *     // data will return any items that have foo: bar and
+-     *     // hello: world in their properties
+-     * });
+-     */
++    /** Finds items matching every property in the query. */
+     Store.prototype.find = function (query, callback) {
+         if (!callback)
+             return;
+ 
+-        var todos = JSON.parse(MemoryStorage[this._dbName]).todos;
+-
+-        callback.call(
+-            this,
+-            todos.filter(function (todo) {
+-                for (var q in query) {
+-                    if (query[q] !== todo[q])
+-                        return false;
+-                }
+-
+-                return true;
+-            })
+-        );
++        var todos = read(this._dbName).todos;
++        callback.call(this, todos.filter(function (todo) {
++            for (var q in query) {
++                if (query[q] !== todo[q])
++                    return false;
++            }
++            return true;
++        }));
+     };
+ 
+-    /**
+-     * Will retrieve all data from the collection
+-     *
+-     * @param {function} callback The callback to fire upon retrieving data
+-     */
++    /** Retrieves all items. */
+     Store.prototype.findAll = function (callback) {
+         callback = callback || function () {};
+-        callback.call(this, JSON.parse(MemoryStorage[this._dbName]).todos);
++        callback.call(this, read(this._dbName).todos);
+     };
+ 
+-    /**
+-     * Will save the given data to the DB. If no item exists it will create a new
+-     * item, otherwise it'll simply update an existing item's properties
+-     *
+-     * @param {object} updateData The data to save back into the DB
+-     * @param {function} callback The callback to fire after saving
+-     * @param {number} id An optional param to enter an ID of an item to update
+-     */
++    /** Creates an item or updates an existing item by ID. */
+     Store.prototype.save = function (updateData, callback, id) {
+-        var data = JSON.parse(MemoryStorage[this._dbName]);
++        var data = read(this._dbName);
+         var todos = data.todos;
+-
++        var i;
+         callback = callback || function () {};
+ 
+-        // If an ID was actually given, find the item and update each property
+         if (id) {
+-            for (var i = 0; i < todos.length; i++) {
++            for (i = 0; i < todos.length; i++) {
+                 if (todos[i].id === id) {
+                     for (var key in updateData)
+                         todos[i][key] = updateData[key];
+-
+                     break;
+                 }
+             }
+-
+-            MemoryStorage[this._dbName] = JSON.stringify(data);
++            write(this._dbName, data);
+             callback.call(this, todos);
+         } else {
+-            // Generate an ID
+-            updateData.id = ID++;
+-
++            var nextId = ID;
++            if (typeof data.nextId === "number" &&
++                    isFinite(data.nextId) && data.nextId >= 1 &&
++                    Math.floor(data.nextId) === data.nextId) {
++                nextId = Math.max(nextId, data.nextId);
++            }
++            for (i = 0; i < todos.length; i++) {
++                nextId = Math.max(nextId, todos[i].id + 1);
++            }
++            updateData.id = nextId;
++            ID = nextId + 1;
++            data.nextId = ID;
+             todos.push(updateData);
+-            MemoryStorage[this._dbName] = JSON.stringify(data);
++            write(this._dbName, data);
+             callback.call(this, [updateData]);
+         }
+     };
+ 
+-    /**
+-     * Will remove an item from the Store based on its ID
+-     *
+-     * @param {number} id The ID of the item you want to remove
+-     * @param {function} callback The callback to fire after saving
+-     */
++    /** Removes an item by ID. */
+     Store.prototype.remove = function (id, callback) {
+-        var data = JSON.parse(MemoryStorage[this._dbName]);
++        var data = read(this._dbName);
+         var todos = data.todos;
+ 
+         for (var i = 0; i < todos.length; i++) {
+@@ -124,23 +129,22 @@
+                 break;
+             }
+         }
+-
+-        MemoryStorage[this._dbName] = JSON.stringify(data);
++        write(this._dbName, data);
+         callback.call(this, todos);
+     };
+ 
+-    /**
+-     * Will drop all storage and start fresh
+-     *
+-     * @param {function} callback The callback to fire after dropping the data
+-     */
++    /** Empties the collection while retaining its ID sequence. */
+     Store.prototype.drop = function (callback) {
+-        var data = { todos: [] };
+-        MemoryStorage[this._dbName] = JSON.stringify(data);
++        var data = read(this._dbName);
++        var nextId = data.nextId || 1;
++        for (var i = 0; i < data.todos.length; i++) {
++            nextId = Math.max(nextId, data.todos[i].id + 1);
++        }
++        data = { todos: [], nextId: nextId };
++        write(this._dbName, data);
+         callback.call(this, data.todos);
+     };
+ 
+-    // Export to window
+     window.app = window.app || {};
+     window.app.Store = Store;
+ })(window);
+diff --git a/examples/javascript-es5/dist/store.js b/examples/javascript-es5/dist/store.js
+--- a/examples/javascript-es5/dist/store.js
++++ b/examples/javascript-es5/dist/store.js
+@@ -2,120 +2,125 @@
+ (function (window) {
+     "use strict";
+ 
+-    var MemoryStorage = {};
++    var MemoryStorage = Object.create(null);
++    var pendingWrites = Object.create(null);
+     var ID = 1;
+ 
+-    /**
+-     * Creates a new client side storage object and will create an empty
+-     * collection if no collection already exists.
+-     *
+-     * @param {string} name The name of our DB we want to use
+-     * @param {function} callback Our fake DB uses callbacks because in
+-     * real life you probably would be making AJAX calls
+-     */
+-    function Store(name, callback) {
+-        callback = callback || function () {};
++    function read(name) {
++        var raw = MemoryStorage[name];
++        var data;
+ 
+-        this._dbName = name;
++        if (!pendingWrites[name]) {
++            try {
++                raw = window.localStorage.getItem(name);
++            } catch (error) {
++                // Continue using memory when browser storage is unavailable.
++            }
++        }
+ 
+-        if (!MemoryStorage[name]) {
+-            var data = {
+-                todos: [],
+-            };
++        try {
++            data = JSON.parse(raw);
++            if (!data || !Array.isArray(data.todos)) {
++                return { todos: [], nextId: 1 };
++            }
++            for (var i = 0; i < data.todos.length; i++) {
++                var todo = data.todos[i];
++                if (!todo || typeof todo.id !== "number" ||
++                        !isFinite(todo.id) || todo.id < 1 ||
++                        Math.floor(todo.id) !== todo.id ||
++                        typeof todo.title !== "string" ||
++                        typeof todo.completed !== "boolean") {
++                    return { todos: [], nextId: 1 };
++                }
++            }
++            return data;
++        } catch (error) {
++            return { todos: [], nextId: 1 };
++        }
++    }
+ 
+-            MemoryStorage[name] = JSON.stringify(data);
++    function write(name, data) {
++        var raw = JSON.stringify(data);
++        MemoryStorage[name] = raw;
++        pendingWrites[name] = true;
++        try {
++            window.localStorage.setItem(name, raw);
++            delete pendingWrites[name];
++        } catch (error) {
++            // Keep memory authoritative until a later write succeeds.
++            // Changes cannot survive reload while storage refuses writes.
+         }
++    }
+ 
+-        callback.call(this, JSON.parse(MemoryStorage[name]));
++    /** Creates or restores a named collection. */
++    function Store(name, callback) {
++        callback = callback || function () {};
++        this._dbName = name;
++        var data = read(name);
++        write(name, data);
++        callback.call(this, data);
+     }
+ 
+-    /**
+-     * Finds items based on a query given as a JS object
+-     *
+-     * @param {object} query The query to match against (i.e. {foo: 'bar'})
+-     * @param {function} callback     The callback to fire when the query has
+-     * completed running
+-     *
+-     * @example
+-     * db.find({foo: 'bar', hello: 'world'}, function (data) {
+-     *     // data will return any items that have foo: bar and
+-     *     // hello: world in their properties
+-     * });
+-     */
++    /** Finds items matching every property in the query. */
+     Store.prototype.find = function (query, callback) {
+         if (!callback)
+             return;
+ 
+-        var todos = JSON.parse(MemoryStorage[this._dbName]).todos;
+-
+-        callback.call(
+-            this,
+-            todos.filter(function (todo) {
+-                for (var q in query) {
+-                    if (query[q] !== todo[q])
+-                        return false;
+-                }
+-
+-                return true;
+-            })
+-        );
++        var todos = read(this._dbName).todos;
++        callback.call(this, todos.filter(function (todo) {
++            for (var q in query) {
++                if (query[q] !== todo[q])
++                    return false;
++            }
++            return true;
++        }));
+     };
+ 
+-    /**
+-     * Will retrieve all data from the collection
+-     *
+-     * @param {function} callback The callback to fire upon retrieving data
+-     */
++    /** Retrieves all items. */
+     Store.prototype.findAll = function (callback) {
+         callback = callback || function () {};
+-        callback.call(this, JSON.parse(MemoryStorage[this._dbName]).todos);
++        callback.call(this, read(this._dbName).todos);
+     };
+ 
+-    /**
+-     * Will save the given data to the DB. If no item exists it will create a new
+-     * item, otherwise it'll simply update an existing item's properties
+-     *
+-     * @param {object} updateData The data to save back into the DB
+-     * @param {function} callback The callback to fire after saving
+-     * @param {number} id An optional param to enter an ID of an item to update
+-     */
++    /** Creates an item or updates an existing item by ID. */
+     Store.prototype.save = function (updateData, callback, id) {
+-        var data = JSON.parse(MemoryStorage[this._dbName]);
++        var data = read(this._dbName);
+         var todos = data.todos;
+-
++        var i;
+         callback = callback || function () {};
+ 
+-        // If an ID was actually given, find the item and update each property
+         if (id) {
+-            for (var i = 0; i < todos.length; i++) {
++            for (i = 0; i < todos.length; i++) {
+                 if (todos[i].id === id) {
+                     for (var key in updateData)
+                         todos[i][key] = updateData[key];
+-
+                     break;
+                 }
+             }
+-
+-            MemoryStorage[this._dbName] = JSON.stringify(data);
++            write(this._dbName, data);
+             callback.call(this, todos);
+         } else {
+-            // Generate an ID
+-            updateData.id = ID++;
+-
++            var nextId = ID;
++            if (typeof data.nextId === "number" &&
++                    isFinite(data.nextId) && data.nextId >= 1 &&
++                    Math.floor(data.nextId) === data.nextId) {
++                nextId = Math.max(nextId, data.nextId);
++            }
++            for (i = 0; i < todos.length; i++) {
++                nextId = Math.max(nextId, todos[i].id + 1);
++            }
++            updateData.id = nextId;
++            ID = nextId + 1;
++            data.nextId = ID;
+             todos.push(updateData);
+-            MemoryStorage[this._dbName] = JSON.stringify(data);
++            write(this._dbName, data);
+             callback.call(this, [updateData]);
+         }
+     };
+ 
+-    /**
+-     * Will remove an item from the Store based on its ID
+-     *
+-     * @param {number} id The ID of the item you want to remove
+-     * @param {function} callback The callback to fire after saving
+-     */
++    /** Removes an item by ID. */
+     Store.prototype.remove = function (id, callback) {
+-        var data = JSON.parse(MemoryStorage[this._dbName]);
++        var data = read(this._dbName);
+         var todos = data.todos;
+ 
+         for (var i = 0; i < todos.length; i++) {
+@@ -124,23 +129,22 @@
+                 break;
+             }
+         }
+-
+-        MemoryStorage[this._dbName] = JSON.stringify(data);
++        write(this._dbName, data);
+         callback.call(this, todos);
+     };
+ 
+-    /**
+-     * Will drop all storage and start fresh
+-     *
+-     * @param {function} callback The callback to fire after dropping the data
+-     */
++    /** Empties the collection while retaining its ID sequence. */
+     Store.prototype.drop = function (callback) {
+-        var data = { todos: [] };
+-        MemoryStorage[this._dbName] = JSON.stringify(data);
++        var data = read(this._dbName);
++        var nextId = data.nextId || 1;
++        for (var i = 0; i < data.todos.length; i++) {
++            nextId = Math.max(nextId, data.todos[i].id + 1);
++        }
++        data = { todos: [], nextId: nextId };
++        write(this._dbName, data);
+         callback.call(this, data.todos);
+     };
+ 
+-    // Export to window
+     window.app = window.app || {};
+     window.app.Store = Store;
+ })(window);

@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+const project=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+const must=(condition,message)=>{if(!condition)throw Error(message);};
+const pins={todomvc:{repository:'https://github.com/tastejs/todomvc',commit:'ff43b02e59dfa604386bb382034b2cd07c2bcd8a',license:'MIT'},markdown:{repository:'https://github.com/jbt/markdown-editor',commit:'58aa8bfe18c5a30af2c6fb08221b00b841688dd9',license:'ISC'}};
+const dictionary={repository:'https://github.com/NextStepWebs/codemirror-spell-checker',commit:'76b6450a6395c86524dee19de4bf478336df4bbf'};
+const todoFiles=['index.html','base.css','index.css','base.js','helpers.js','store.js','model.js','template.js','view.js','controller.js','app.js','LICENSE'];
+const markdownFiles=['LICENSE','README.md','codemirror/css/css.js','codemirror/gfm/gfm.js','codemirror/htmlmixed/htmlmixed.js','codemirror/javascript/javascript.js','codemirror/lib/codemirror.css','codemirror/lib/codemirror.js','codemirror/lib/util/continuelist.js','codemirror/markdown/markdown.js','codemirror/overlay.js','codemirror/xml/xml.js','favicon.png','index.css','index.html','index.js','lib/base16-light.css','lib/default.css','lib/emojify.js','lib/github-markdown.css','lib/highlight.pack.js','lib/markdown-it-footnote.js','lib/markdown-it.js','lib/material-icons.css','lib/material-icons.woff2','lib/rawdeflate.js','lib/rawinflate.js','lib/spell-checker.min.css','lib/spell-checker.min.js','lib/sweetalert.css','lib/sweetalert.min.js','vendor/dictionary-LICENSE','vendor/en_US.aff','vendor/en_US.dic'];
+function git(root,args){return execFileSync('git',['-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','core.pager=cat','-C',root,...args],{env:{PATH:process.env.PATH,HOME:root,GIT_CONFIG_NOSYSTEM:'1',GIT_CONFIG_GLOBAL:'/dev/null',GIT_OPTIONAL_LOCKS:'0'},maxBuffer:8*1024*1024,timeout:10000,stdio:['ignore','pipe','pipe']});}
+async function repository(root,pin){const canonical=await fs.realpath(root);must(git(canonical,['rev-parse','--show-toplevel']).toString().trim()===canonical,'Source must name the repository root');must(git(canonical,['rev-parse','HEAD']).toString().trim()===pin.commit,'Upstream HEAD differs from the reviewed commit');return canonical;}
+async function pinnedFile(root,commit,file){const disk=path.join(root,file);must((await fs.lstat(disk)).isFile(),'Source asset must be a regular file: '+file);must((await fs.realpath(disk)).startsWith(root+path.sep),'Source asset escaped repository: '+file);const bytes=await fs.readFile(disk),blob=git(root,['show',`${commit}:${file}`]);must(bytes.equals(blob),'Source asset differs from pinned Git blob: '+file);return bytes;}
+export async function prepareRealApp({app,source,out,dictionaries}={}){
+ must(Object.hasOwn(pins,app),'--app must be todomvc or markdown');must(source&&out,'--source and --out are required');must(app==='markdown'||!dictionaries,'--dictionaries applies only to markdown');must(app!=='markdown'||dictionaries,'Markdown requires --dictionaries');
+ const pin=pins[app],root=await repository(source,pin),dictionaryRoot=app==='markdown'?await repository(dictionaries,dictionary):null;
+ const templateFile=path.join(project,'examples','real-apps',app+'.json'),templateBytes=await fs.readFile(templateFile),spec=JSON.parse(templateBytes);
+ must(spec.runner==='static-web'&&spec.app&&Array.isArray(spec.app.assets)&&Array.isArray(spec.app.files),'Expected a static-web template with files and assets');must(spec.provenance?.commit===pin.commit,'Template commit differs from reviewed pin');
+ const allowed=app==='markdown'?markdownFiles:todoFiles,selected=spec.app.assets;
+ must(selected.length===allowed.length&&new Set(selected).size===allowed.length&&selected.every(f=>allowed.includes(f)),'Template must contain exactly the reviewed asset allowlist');must(spec.app.files.every(f=>selected.includes(f)),'Reviewed source is absent from assets');
+ const expectedEditable=app==='markdown'?'index.js':'store.js';must(JSON.stringify(spec.app.editable)===JSON.stringify([expectedEditable]),'Template editable source differs from reviewed scope');
+ // Read and compare every selected file before creating output. Unselected or untracked
+ // repository files are never copied; staging state cannot override pinned blob checks.
+ const copies=[];for(const destination of selected){let origin=root,commit=pin.commit,repositoryUrl=pin.repository,sourceFile=destination;
+ if(app==='todomvc')sourceFile=destination==='LICENSE'?'license.md':'examples/javascript-es5/dist/'+destination;
+ else if(destination.startsWith('vendor/')){origin=dictionaryRoot;commit=dictionary.commit;repositoryUrl=dictionary.repository;sourceFile=destination==='vendor/dictionary-LICENSE'?'LICENSE':'dist/'+path.basename(destination);}
+ const bytes=await pinnedFile(origin,commit,sourceFile);copies.push({destination,sourceFile,repository:repositoryUrl,commit,sha256:sha(bytes),bytes:bytes.length,content:bytes});}
+ const requested=path.resolve(out),destination=path.join(await fs.realpath(path.dirname(requested)),path.basename(requested));for(const upstream of [root,dictionaryRoot].filter(Boolean))must(destination!==upstream&&!destination.startsWith(upstream+path.sep),'Output must be outside upstream checkouts');await fs.mkdir(destination,{recursive:false});const canonicalOut=await fs.realpath(destination),appRoot=path.join(canonicalOut,'app');
+ try{await fs.mkdir(appRoot);for(const file of copies){const dest=path.join(appRoot,file.destination);await fs.mkdir(path.dirname(dest),{recursive:true});await fs.writeFile(dest,file.content,{flag:'wx'});}spec.app.source=appRoot;
+ const provenance={schemaVersion:1,app,upstream:{...pin,source:root},dictionaries:dictionaryRoot?{...dictionary,source:dictionaryRoot}:null,template:{path:path.relative(project,templateFile),sha256:sha(templateBytes)},preparedSource:appRoot,sourceChanges:[],verification:'Every copied file byte-compared against its exact pinned Git blob; original checkout not modified.',files:copies.map(({content,...record})=>record),limitations:['No dependency install, download, build, application test or AI model call was performed.','Local mirrors qualify pinned offline assets, not live CDN responses.','Hash provenance is not a signed upstream attestation.']};
+ await fs.writeFile(path.join(canonicalOut,'app-spec.json'),JSON.stringify(spec,null,2)+'\n',{flag:'wx'});await fs.writeFile(path.join(canonicalOut,'provenance.json'),JSON.stringify(provenance,null,2)+'\n',{flag:'wx'});return {app,preparedSource:appRoot,spec:path.join(canonicalOut,'app-spec.json'),provenance:path.join(canonicalOut,'provenance.json'),files:copies.length,commit:pin.commit};
+ }catch(error){await fs.rm(canonicalOut,{recursive:true,force:true});throw error;}
+}
+function parse(args){const result={};for(let i=0;i<args.length;i+=2){const name=args[i];must(['--app','--source','--out','--dictionaries'].includes(name)&&args[i+1]&&!args[i+1].startsWith('--')&&!Object.hasOwn(result,name.slice(2)),'Usage: prepare-real-app.mjs --app todomvc|markdown --source REPOSITORY_ROOT --out NEW_DIRECTORY [--dictionaries DICTIONARY_REPOSITORY_ROOT]');result[name.slice(2)]=args[i+1];}return result;}
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){try{console.log(JSON.stringify(await prepareRealApp(parse(process.argv.slice(2))),null,2));}catch(error){console.error('Preparation failed: '+error.message);process.exitCode=1;}}

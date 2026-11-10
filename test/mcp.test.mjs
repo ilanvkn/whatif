@@ -13,14 +13,21 @@ test('MCP discovery and real plan/run/verify lifecycle',async t=>{
  const rl=readline.createInterface({input:child.stdout});rl.on('line',l=>{const m=JSON.parse(l);pending.get(m.id)?.(m);pending.delete(m.id);});
  t.after(async()=>{child.stdin.end();await new Promise(r=>child.once('exit',r));rl.close();});
  const call=(method,params)=>new Promise((resolve,reject)=>{const next=++id;const timer=setTimeout(()=>reject(Error('MCP timeout')),10000);pending.set(next,m=>{clearTimeout(timer);resolve(m);});child.stdin.write(JSON.stringify({jsonrpc:'2.0',id:next,method,params})+'\n');});
- const init=await call('initialize',{protocolVersion:'2024-11-05',capabilities:{},clientInfo:{name:'test',version:'1'}});assert.equal(init.result.serverInfo.name,'whatif');
- const list=await call('tools/list');assert.equal(list.result.tools.length,24);
+ const init=await call('initialize',{protocolVersion:'2024-11-05',capabilities:{},clientInfo:{name:'test',version:'1'}});assert.equal(init.result.serverInfo.name,'whatif');assert.equal(init.result.serverInfo.version,JSON.parse(await fs.readFile(new URL('../package.json',import.meta.url))).version);
+ const list=await call('tools/list');assert.equal(list.result.tools.length,26);
  const tool=async(name,args)=>{const r=await call('tools/call',{name,arguments:args});assert.equal(r.result.isError,false);return JSON.parse(r.result.content[0].text);};
  const team=path.join(root,'team');
  const planned=await tool('whatif_team_plan',{source:path.resolve('examples/agent-app'),out:team});assert.equal(planned.execution,'not-started');
+ const source=path.join(root,'static-source');await fs.mkdir(source);await fs.writeFile(path.join(source,'index.html'),'<script src="app.js"></script>');await fs.writeFile(path.join(source,'app.js'),'document.body.dataset.ready="true";');
+ const spec=JSON.parse(await fs.readFile(path.join(team,'team.json')));spec.runner='static-web';spec.contract='The page marks itself ready.';spec.provenance={repository:'synthetic-local-test',commit:'a'.repeat(40),license:'MIT'};spec.app={source,files:['index.html','app.js'],assets:['index.html','app.js'],editable:['app.js'],entry:'index.html',repeatSafe:true};
+ const manifest=path.join(root,'app.json');await fs.writeFile(manifest,JSON.stringify(spec));const appPlan=await tool('whatif_app_plan',{manifest,out:path.join(root,'app-team')});assert.equal(appPlan.execution,'not-started');assert.equal(appPlan.assets,2);assert.equal(appPlan.runner,'static-web');
+ await assert.rejects(fs.stat(path.join(root,'app-team','run')),{code:'ENOENT'});
+ spec.runner='unsupported';await fs.writeFile(manifest,JSON.stringify(spec));const invalidPlan=await call('tools/call',{name:'whatif_app_plan',arguments:{manifest,out:path.join(root,'invalid-team')}});assert.equal(invalidPlan.result.isError,true);await assert.rejects(fs.stat(path.join(root,'invalid-team')),{code:'ENOENT'});
  const refused=await call('tools/call',{name:'whatif_team_run',arguments:{teamDirectory:team,ackSource:'wrong-source'}});assert.equal(refused.result.isError,true);
  await assert.rejects(fs.stat(path.join(team,'run')),{code:'ENOENT'});
  const unrun=await call('tools/call',{name:'whatif_team_verify',arguments:{teamDirectory:team}});assert.equal(unrun.result.isError,true);
+ const qualification=path.join(root,'qualification');
+ for(const teamDirectories of [[],[team],[team,team],[team,7],['','missing'],[team,path.join(root,'missing')]]){const response=await call('tools/call',{name:'whatif_qualify',arguments:{teamDirectories,out:qualification}});assert.equal(response.result.isError,true);await assert.rejects(fs.stat(qualification),{code:'ENOENT'});}
  const target=`http://127.0.0.1:${s.address().port}/`,dir=path.join(root,'case');
  await tool('whatif_plan',{question:'one million users',target,out:dir});
  const run=await tool('whatif_run',{caseDirectory:dir,ackTarget:target});assert.equal(run.requests,20);assert.equal(run.capacityVerdict,'NOT_ESTABLISHED');
@@ -46,4 +53,10 @@ test('MCP discovery and real plan/run/verify lifecycle',async t=>{
  assert.equal((await tool('whatif_lab_compare',{baseline:lab,candidate:lab})).compatible,true);
  assert.equal((await tool('whatif_lab_replay',{labDirectory:lab,out:path.join(root,'lab-replay')})).candidates,1);
  const bad=await call('tools/call',{name:'whatif_run',arguments:{caseDirectory:dir,ackTarget:7}});assert.equal(bad.result.isError,true);
+});
+
+test('local JavaScript API exposes stable planning, execution and verification functions',async()=>{
+ const api=await import('../src/index.mjs');
+ for(const name of ['qualifyTeams','planAppTeam','planTeam','runTeam','verifyTeam','createCampaign','runCampaign','verifyCampaign','compareCampaigns','engineDoctor','planLab','inspectLab','runLab','verifyLab','replayLab','compareLabs'])assert.equal(typeof api[name],'function',name);
+ assert.equal(api.runTeam,(await import('../src/agents/team.mjs')).runTeam);
 });

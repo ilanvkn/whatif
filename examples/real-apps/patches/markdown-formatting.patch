@@ -1,0 +1,45 @@
+diff --git a/index.js b/index.js
+--- a/index.js
++++ b/index.js
+@@ -58,21 +58,11 @@
+ User: @austinmm
+ */
+ var render_tasklist = function(str){
+-    // Checked task-list box match
+-	if(str.match(/<li>\[x\]\s+\w+/gi)){
+-        str = str.replace(/(<li)(>\[x\]\s+)(\w+)/gi, 
+-          `$1 style="list-style-type: none;"><input type="checkbox" 
+-          checked style="list-style-type: none; 
+-          margin: 0 0.2em 0 -1.3em;" disabled> $3`);
+-    }
+-    // Unchecked task-list box match
+-    if (str.match(/<li>\[ \]\s+\w+/gi)){
+-        str = str.replace(/(<li)(>\[ \]\s+)(\w+)/gi, 
+-          `$1 style="list-style-type: none;"><input type="checkbox" 
+-            style="list-style-type: none; 
+-            margin: 0 0.2em 0 -1.3em;" disabled> $3`);
+-    }
+-    return str
++    return str.replace(/<li>\[([ x])\]\s+/gi, function(match, state) {
++        var checked = state.toLowerCase() === 'x' ? ' checked' : '';
++        return '<li style="list-style-type: none;"><input type="checkbox"' +
++            checked + ' style="list-style-type: none; margin: 0 0.2em 0 -1.3em;" disabled> ';
++    });
+ }
+ 
+ function setOutput(val) {
+@@ -127,8 +117,12 @@
+     if(!endoperator){
+         endoperator = operator
+     }
+-    var isApplied = selection.slice(0, 2) === operator && selection.slice(-2) === endoperator;
+-    var finaltext = isApplied ? selection.slice(2, -2) : operator + selection + endoperator;
++    var isApplied = selection.length >= operator.length + endoperator.length &&
++        selection.slice(0, operator.length) === operator &&
++        selection.slice(-endoperator.length) === endoperator;
++    var finaltext = isApplied ?
++        selection.slice(operator.length, selection.length - endoperator.length) :
++        operator + selection + endoperator;
+     return finaltext;
+ }
+ 

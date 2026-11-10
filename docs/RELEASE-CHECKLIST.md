@@ -1,18 +1,16 @@
-# V2.1 release checklist
+# V3 release checklist
 
-Version 2.1.0 adds optional independent Codex red/blue/critic sessions, isolated fixture patching and measured replay. Existing adaptive labs retain deterministic roles. The release scope is a macOS disposable Node fixture (`examples/agent-app`), not arbitrary applications or autonomous production testing.
+The release adds pinned static-web application repair and retained cross-application findings. It is not a universal backend/native runner or a claim of product superiority.
 
-Before publishing, record evidence for each item:
-
-- Package, Codex/Claude manifests, CLI and MCP report the same version; package validation and the full unit suite pass with Node 22+.
-- CLI help and MCP discovery expose all 24 tools, including team planning, execution and verification. Invalid arguments fail before execution.
-- Installer tests cover identical-stage retry, missing/transient Codex failures, descriptor rollback, prior receipt/release preservation and installed-version verification. Shipped tests run from a path containing spaces.
-- Actual provider qualification records distinct session IDs, provider identity, usage completeness, red findings, blue patch proposals and critic evidence citations. Fake-provider tests are labeled as controller tests.
-- The macOS fixture demonstrates a measured defect, isolated repair, unchanged oracles, repeated replay and a subsequent epoch. Original source remains unchanged. Rejected or failed patches roll back and processes stop.
-- Fresh-process verification checks evidence integrity. Corruption, budget exhaustion, cancellation and provider failure remain visible; none become a success claim.
-- README and skill state source disclosure, optional engine/authentication requirements, supported platform and fixture scope. Token thresholds are post-call checks; no hard token or dollar cap is advertised.
-- Record finite executed tests separately from generated candidates. Do not claim million-user capacity, complete security, general app repair or superiority over MiroFish without relevant comparative evidence.
-- Review the final tracked tree for credentials, generated evidence/source copies and unrelated files. Keep upstream research outside the release and retain provenance/license records.
-- Verify the intended Git remote and publication authorization before pushing or announcing a release. Local package validation is not evidence of a published release or production qualification.
-
-The source is original MIT code; optional engines and research references retain their own licenses. Claude-compatible packaging is included, but live host compatibility needs its own qualification. Public messaging must describe verified outcomes and unresolved limits rather than promise a universal simulator.
+- Package/manifests/CLI/MCP identify 3.0.2; package validation and core tests pass. Default tests use bounded concurrency to avoid short subprocess deadlines becoming machine-load races.
+- 26 MCP tools and the local Node API are exercised; app plans pin assets without inference. Invalid manifests and qualification inputs fail before execution/output creation.
+- Real source preparation verifies selected Git blobs and exact upstream commits, preserves licenses, refuses changed files and avoids install hooks. No unreviewed whole-repository packaging.
+- Actual Codex roles have unique session receipts. Source patches, critic decisions, repeated cases and current isolated source verify from a fresh process. Mock provider tests are labeled separately.
+- At least two upstream applications have actual browser evidence, healthy controls and accepted repairs. Requested improvements are distinguished from upstream defects. New failures discovered in an accepted fix receive a new immutable regression case and a linked continuation.
+- Verification reconstructs approved candidate cases; changing an assertion and recomputing hashes must still fail. Immutable assets and static host/configuration are checked separately from editable source.
+- Offline dependency mirrors and storage faults are explicit, measured interventions. They do not establish live CDN behavior or storage durability when writes are rejected.
+- Qualification verifies parent evidence/source continuity and rejects missing/cyclic lineage or duplicated sessions. Public reports omit model-session identifiers and source code; source patches retain upstream notices.
+- Existing real browser/k6/security tests remain green. Isolated host, request caps, cancellation, rollout/rollback, source-path guards and corrupted evidence tests pass.
+- Installer preserves previous releases, retries identical bytes and refuses changed bytes under the same version. Test the installed MCP entrypoint and archive from a path containing spaces.
+- README/skill describe source disclosure and supported runtime accurately. Reported tokens are checked between calls, not hard token or dollar caps. Finite app results do not establish full security, production capacity or universal repair.
+- Review clean Git diff, tag and archive; keep provider transcripts/research clones local. Check the intended remote and publication authorization before publishing. Never send upstream issues or patches without explicit communication authorization.

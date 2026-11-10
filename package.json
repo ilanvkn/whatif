@@ -1,6 +1,6 @@
 {
   "name": "whatif-plugin",
-  "version": "2.1.0",
+  "version": "3.0.2",
   "private": true,
   "type": "module",
   "description": "Evidence-led application scenarios, bounded probes and load-test preparation",
@@ -11,12 +11,13 @@
     "whatif": "./src/cli.mjs"
   },
   "scripts": {
-    "test": "node --test test/*.test.mjs",
+    "test": "node --test --test-concurrency=2 test/*.test.mjs",
     "demo": "node scripts/demo.mjs",
     "check": "node scripts/validate-package.mjs",
-    "test:engines": "WHATIF_ENGINE_TESTS=1 node --test test/engines.integration.test.mjs",
+    "test:engines": "WHATIF_ENGINE_TESTS=1 node --test test/engines.integration.test.mjs test/browser-actions.test.mjs",
     "demo:integrations": "node scripts/integration-demo.mjs",
     "demo:lab": "node scripts/lab-demo.mjs"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "exports": "./src/index.mjs"
 }

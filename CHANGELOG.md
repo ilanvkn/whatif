@@ -1,5 +1,23 @@
 # Changelog
 
+## 3.0.2 — 2026-11-10
+
+- Bind the MCP protocol test to the package version instead of a stale 3.0.0 literal. Local 3.0.1 installation worked but its shipped test caught this mismatch; prior staged versions remain preserved.
+
+## 3.0.1 — 2026-11-10
+
+- Finalize V3 benchmark-scope documentation and release checklist after local staging. Preserve the immutable 3.0.0 staged payload; no runtime behavior change.
+
+## 3.0.0 — 2026-11-10
+
+- Generalized independent AI repair to reviewed static-web application manifests with pinned assets, upstream provenance and editable source scopes.
+- Qualified actual TodoMVC and Markdown editor workflows:18 AI sessions,6 epochs,76 browser journeys and3 accepted source repairs, including a regression found in the first AI repair.
+- Added exact Git-blob preparation, offline dependency mirrors, keyboard/edit/reload/value/count/attribute browser actions, synthetic storage and verified quota-error injection.
+- Strengthened verification to reconstruct approved cases and enforce immutable assets; rehashing weakened assertions cannot hide scope changes.
+- Added retained cross-app findings with verified parent-source continuity, usage accounting and public report redaction.
+-26 MCP tools, matching CLI commands and a local JavaScript API. No deployed HTTP API or universal backend/native adapter claimed.
+- Exported reviewed upstream-app patches with license notices; no upstream publication performed.
+
 ## 2.1.0 — 2026-11-10
 
 - Fresh independent Codex red, blue and critic sessions with schema-constrained proposals, provider receipts and reported usage.
