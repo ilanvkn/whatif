@@ -13,4 +13,14 @@ Browser actions include reviewed navigation, click/double-click, fill, allowlist
 
 macOS Seatbelt plus Node permissions isolate the static host. Browser contexts are disposable; the adapter never imports the upstream JavaScript into the controller. Source disclosures use existing Codex authentication. Separate sessions may use the same model weights. Call/time/request/input/output limits apply; reported tokens are checked between calls, not hard token/dollar caps. No automatic mid-run resume or endless successor runs.
 
-Supported qualification covers real client applications. Backends needing databases, build hooks, OAuth, native/mobile runtimes and distributed load need separate reviewed adapters and evidence. Never generalize two successful apps to “anywhere, anything,” or to comparative superiority.
+Supported runners cover real client applications and explicitly prepared Python/SQLite backends on macOS. Other database engines, build hooks, OAuth, native/mobile runtimes and distributed load need separate reviewed adapters and evidence. Never generalize two successful apps to “anywhere, anything,” or to comparative superiority.
+
+## Python/SQLite backends
+
+Use `runner: python-sqlite` with a reviewed immutable bootstrap, exact asset list and an absolute reviewed Python environment. Planning fingerprints the interpreter and runtime trees. No dependency installation is performed by team-run. See `examples/backends` and the backend preparation script.
+
+The `api` campaign engine executes allowlisted same-origin methods, synthetic registration/login, captured bearer tokens and JSON-pointer assertions. Tokens, cookies and response bodies are not persisted. Use synthetic credentials only. Each repeated confirmation begins from the identical empty database seed. After the main campaign, WhatIF stops the owned server, restarts it against the same database and runs the immutable restart campaign. Both campaigns must pass for acceptance.
+
+macOS isolation restricts writes to private database storage, denies outgoing connections and child processes, and restricts the listener to its assigned loopback port. The runner checks SQLite integrity and records table counts and file hashes, then removes private databases and generated session secrets. Verification checks reset/restart/process/runtime evidence and cleanup. This is a single-process SQLite qualification, not PostgreSQL, worker concurrency, OAuth or production capacity evidence.
+
+Keep ordinary API defects separate from deliberately vulnerable training endpoints. Never call a 500 response an authorization bypass without observing unauthorized access or mutation. Initialization has its own bounded deadline; epoch budgets and between-call token thresholds do not impose a hard money cap.

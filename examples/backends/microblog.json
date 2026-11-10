@@ -1,0 +1,1022 @@
+{
+  "schemaVersion": 3,
+  "runner": "python-sqlite",
+  "question": "Do authenticated CRUD boundaries and bounded cursor pagination survive real HTTP, database resets and server restarts?",
+  "app": {
+    "source": "REPLACE_WITH_PREPARED_APP",
+    "entry": "whatif_backend.py",
+    "files": [
+      "whatif_backend.py",
+      "api/decorators.py",
+      "api/schemas.py"
+    ],
+    "assets": [
+      "LICENSE",
+      "api/__init__.py",
+      "api/app.py",
+      "api/auth.py",
+      "api/dates.py",
+      "api/decorators.py",
+      "api/email.py",
+      "api/errors.py",
+      "api/fake.py",
+      "api/models.py",
+      "api/posts.py",
+      "api/schemas.py",
+      "api/templates/reset.html",
+      "api/templates/reset.txt",
+      "api/tokens.py",
+      "api/users.py",
+      "config.py",
+      "whatif_backend.py"
+    ],
+    "editable": [
+      "api/decorators.py"
+    ],
+    "repeatSafe": true
+  },
+  "provenance": {
+    "repository": "https://github.com/miguelgrinberg/microblog-api",
+    "commit": "e250d7115b47010ff0e7051d5868485fff4e32fb",
+    "license": "MIT",
+    "sourceBasis": "Exact upstream source plus immutable local SQLite bootstrap; real authentication enabled"
+  },
+  "contract": "Fix the natural pagination validation defect: nonpositive limit values must return400 consistently in offset and keyset after/before cursor modes, before querying. Preserve valid positive limits and the configured maximum25, healthy authentication, author-only updates/deletes and allowed reads by other authenticated users. Do not change auth, bootstrap, tests, dependencies or error oracles. The fixed cursor may use different timestamp or ID types; preserve existing supported paths. Each confirmation restores exact empty SQLite seed; records must persist across a real process restart.",
+  "backend": {
+    "python": "/REPLACE_WITH_REVIEWED_VENV/bin/python",
+    "reset": "seed-copy-per-confirmation",
+    "restartCampaign": {
+      "schemaVersion": 1,
+      "question": "Authenticated committed records survive server restart",
+      "target": "http://127.0.0.1:8080/",
+      "budget": {
+        "maxRequests": 2,
+        "maxDurationMs": 60000
+      },
+      "branches": [
+        {
+          "id": "read-after-restart",
+          "engine": "api",
+          "hypothesis": "Login and read committed posts after process restart",
+          "config": {
+            "maxRequests": 2,
+            "timeoutMs": 5000,
+            "allowRequests": [
+              {
+                "method": "POST",
+                "path": "/api/tokens"
+              },
+              {
+                "method": "GET",
+                "path": "/api/posts"
+              }
+            ],
+            "steps": [
+              {
+                "method": "POST",
+                "path": "/api/tokens",
+                "expectStatus": [
+                  200
+                ],
+                "headers": {
+                  "Authorization": "Basic aGVhbHRoeS1hbGljZTpzeW50aGV0aWMtcGFzc3dvcmQ="
+                },
+                "capture": {
+                  "owner": "/access_token"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/api/posts",
+                "expectStatus": [
+                  200
+                ],
+                "headers": {
+                  "Authorization": "Bearer {{owner}}"
+                },
+                "query": {
+                  "limit": 2
+                },
+                "assert": [
+                  {
+                    "pointer": "/data/0/text",
+                    "exists": true
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "campaign": {
+    "schemaVersion": 1,
+    "question": "Authenticated API boundaries and bounded pagination",
+    "target": "http://127.0.0.1:8080/",
+    "budget": {
+      "maxRequests": 56,
+      "maxDurationMs": 60000
+    },
+    "branches": [
+      {
+        "id": "auth-crud",
+        "engine": "api",
+        "hypothesis": "Real registration, auth denial and author-only mutation remain correct",
+        "config": {
+          "maxRequests": 13,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "POST",
+              "path": "/api/tokens"
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts"
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts"
+            },
+            {
+              "method": "PUT",
+              "path": "/api/posts/{{postId}}"
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/posts/{{postId}}"
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts/{{postId}}"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                201
+              ],
+              "json": {
+                "username": "healthy-alice",
+                "email": "healthy-alice@example.invalid",
+                "password": "synthetic-password"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                201
+              ],
+              "json": {
+                "username": "healthy-bobby",
+                "email": "healthy-bobby@example.invalid",
+                "password": "synthetic-password"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/tokens",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Basic aGVhbHRoeS1hbGljZTpzeW50aGV0aWMtcGFzc3dvcmQ="
+              },
+              "capture": {
+                "owner": "/access_token"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/tokens",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Basic aGVhbHRoeS1ib2JieTpzeW50aGV0aWMtcGFzc3dvcmQ="
+              },
+              "capture": {
+                "other": "/access_token"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts",
+              "expectStatus": [
+                401
+              ]
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic original"
+              },
+              "capture": {
+                "postId": "/id"
+              }
+            },
+            {
+              "method": "PUT",
+              "path": "/api/posts/{{postId}}",
+              "expectStatus": [
+                403
+              ],
+              "headers": {
+                "Authorization": "Bearer {{other}}"
+              },
+              "json": {
+                "text": "Forbidden change"
+              }
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/posts/{{postId}}",
+              "expectStatus": [
+                403
+              ],
+              "headers": {
+                "Authorization": "Bearer {{other}}"
+              }
+            },
+            {
+              "method": "PUT",
+              "path": "/api/posts/{{postId}}",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Owned update"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts/{{postId}}",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "assert": [
+                {
+                  "pointer": "/text",
+                  "equals": "Owned update"
+                }
+              ]
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/posts/{{postId}}",
+              "expectStatus": [
+                204
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts/{{postId}}",
+              "expectStatus": [
+                404
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Retained across real server restart"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "healthy-pagination",
+        "engine": "api",
+        "hypothesis": "Positive cursor/offset bounds remain correct",
+        "config": {
+          "maxRequests": 37,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "POST",
+              "path": "/api/tokens"
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts"
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                201
+              ],
+              "json": {
+                "username": "pagination-user",
+                "email": "pagination-user@example.invalid",
+                "password": "synthetic-password"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/tokens",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Basic cGFnaW5hdGlvbi11c2VyOnN5bnRoZXRpYy1wYXNzd29yZA=="
+              },
+              "capture": {
+                "owner": "/access_token"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 0"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 1"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 2"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 3"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 4"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 5"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 6"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 7"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 8"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 9"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 10"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 11"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 12"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 13"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 14"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 15"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 16"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 17"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 18"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 19"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 20"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 21"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 22"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 23"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 24"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 25"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 26"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 27"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 28"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/posts",
+              "expectStatus": [
+                201
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "json": {
+                "text": "Synthetic page item 29"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "assert": [
+                {
+                  "pointer": "/data/24",
+                  "exists": true
+                },
+                {
+                  "pointer": "/data/25",
+                  "exists": false
+                }
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "query": {
+                "limit": 2
+              },
+              "assert": [
+                {
+                  "pointer": "/data/1",
+                  "exists": true
+                },
+                {
+                  "pointer": "/data/2",
+                  "exists": false
+                }
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "query": {
+                "after": "2099-01-01T00:00:00",
+                "limit": 2
+              },
+              "assert": [
+                {
+                  "pointer": "/data/1",
+                  "exists": true
+                },
+                {
+                  "pointer": "/data/2",
+                  "exists": false
+                }
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts",
+              "expectStatus": [
+                400
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "query": {
+                "limit": -1
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "query": {
+                "after": "2099-01-01T00:00:00",
+                "limit": 100
+              },
+              "assert": [
+                {
+                  "pointer": "/data/24",
+                  "exists": true
+                },
+                {
+                  "pointer": "/data/25",
+                  "exists": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "negative-cursor",
+        "engine": "api",
+        "hypothesis": "Negative cursor limit is rejected instead of removing SQL LIMIT",
+        "config": {
+          "maxRequests": 3,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "POST",
+              "path": "/api/tokens"
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                201
+              ],
+              "json": {
+                "username": "negative-user",
+                "email": "negative-user@example.invalid",
+                "password": "synthetic-password"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/tokens",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Basic bmVnYXRpdmUtdXNlcjpzeW50aGV0aWMtcGFzc3dvcmQ="
+              },
+              "capture": {
+                "owner": "/access_token"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts",
+              "expectStatus": [
+                400
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "query": {
+                "after": "2099-01-01T00:00:00",
+                "limit": -1
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "zero-cursor",
+        "engine": "api",
+        "hypothesis": "Zero cursor limit is rejected consistently",
+        "config": {
+          "maxRequests": 3,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "POST",
+              "path": "/api/tokens"
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                201
+              ],
+              "json": {
+                "username": "zero-user",
+                "email": "zero-user@example.invalid",
+                "password": "synthetic-password"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/tokens",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Basic emVyby11c2VyOnN5bnRoZXRpYy1wYXNzd29yZA=="
+              },
+              "capture": {
+                "owner": "/access_token"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/posts",
+              "expectStatus": [
+                400
+              ],
+              "headers": {
+                "Authorization": "Bearer {{owner}}"
+              },
+              "query": {
+                "after": "2099-01-01T00:00:00",
+                "limit": 0
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "operators": {
+    "statuses": [],
+    "delaysMs": [],
+    "abort": false,
+    "viewports": [],
+    "locales": [],
+    "timezones": [],
+    "reducedMotion": [],
+    "vus": [],
+    "paceMs": [],
+    "repeatClicks": [],
+    "interactionDepth": 1
+  },
+  "budget": {
+    "maxEpochs": 2,
+    "maxCalls": 8,
+    "maxDurationMs": 900000,
+    "callTimeoutMs": 120000,
+    "maxInputChars": 100000,
+    "maxOutputBytes": 262144,
+    "maxRequests": 4000,
+    "maxReportedTokens": 350000
+  }
+}

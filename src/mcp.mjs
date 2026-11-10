@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import {qualifyTeams} from './agents/qualification.mjs';
+import {planBackendTeam} from './agents/backend.mjs';
 import {planAppTeam} from './agents/static-app.mjs';
 import {planTeam,runTeam,verifyTeam} from './agents/team.mjs';
 import {planLab,inspectLab,runLab,verifyLab,replayLab,compareLabs} from './lab/lab.mjs';
@@ -13,10 +14,10 @@ import path from 'node:path';
 import {makePlan,createCase,runCase,verifyCase,scanSource} from './core.mjs';
 const schemas={
  whatif_qualify:{description:'Verify 2..20 recorded team runs and prepare a cross-application qualification report. No model calls or target traffic; observed evidence does not establish general performance or superiority.',properties:{teamDirectories:{type:'array',items:{type:'string'},minItems:2,maxItems:20,uniqueItems:true},out:{type:'string'}},required:['teamDirectories','out']},
- whatif_app_plan:{description:'Plan a reviewed static-web application team from a pinned local manifest, hash assets and preserve application-specific oracles. No model calls or test traffic; execution requires macOS isolation.',properties:{manifest:{type:'string'},out:{type:'string'}},required:['manifest','out']},
+ whatif_app_plan:{description:'Plan a reviewed static-web or python-sqlite application team from a pinned local manifest, hash assets and preserve application-specific oracles. No model calls or test traffic; execution requires macOS isolation.',properties:{manifest:{type:'string'},out:{type:'string'}},required:['manifest','out']},
  whatif_team_plan:{description:'Prepare an independent AI red/blue/critic team for the disposable macOS Node fixture. No model calls or test traffic. Review source disclosure and budgets.',properties:{source:{type:'string'},out:{type:'string'}},required:['source','out']},
- whatif_team_run:{description:'Run fresh Codex role sessions, measured tests, isolated allowlisted repairs and replay epochs. Supports reviewed static-web manifests and the legacy examples/agent-app fixture using macOS isolation. Uses existing Codex authentication; call/time/request limits are not hard token or dollar caps.',properties:{teamDirectory:{type:'string'},ackSource:{type:'string'}},required:['teamDirectory','ackSource']},
- whatif_team_verify:{description:'Verify recorded static-web or legacy fixture AI team evidence hashes without model calls or traffic. Integrity is not proof of general correctness or a signed attestation.',properties:{teamDirectory:{type:'string'}},required:['teamDirectory']},
+ whatif_team_run:{description:'Run fresh Codex role sessions, measured tests, isolated allowlisted repairs and replay epochs. Supports reviewed static-web and pinned python-sqlite manifests and the legacy examples/agent-app fixture using macOS isolation. Uses existing Codex authentication; call/time/request limits are not hard token or dollar caps.',properties:{teamDirectory:{type:'string'},ackSource:{type:'string'}},required:['teamDirectory','ackSource']},
+ whatif_team_verify:{description:'Verify recorded static-web, python-sqlite or legacy fixture AI team evidence hashes without model calls or traffic. Integrity is not proof of general correctness or a signed attestation.',properties:{teamDirectory:{type:'string'}},required:['teamDirectory']},
  whatif_lab_plan:{description:'Prepare a V2 adaptive trial lab from a reviewed campaign; generates mutations without traffic. Repeat safety and revision must be recorded before running.',properties:{campaignDirectory:{type:'string'},out:{type:'string'}},required:['campaignDirectory','out']},
  whatif_lab_inspect:{description:'Compile bounded scenario space and inspect readiness without executing. Counts generated candidates separately from covered trials.',properties:{labDirectory:{type:'string'}},required:['labDirectory']},
  whatif_lab_run:{description:'Run bounded adaptive epochs, replay failures, classify evidence and produce regression packs. Requires repeat-safe fixtures, exact target acknowledgement and explicit budgets. Roles are deterministic policies, not independent LLMs.',properties:{labDirectory:{type:'string'},ackTarget:{type:'string'}},required:['labDirectory','ackTarget']},
@@ -43,7 +44,7 @@ const send=x=>process.stdout.write(JSON.stringify(x)+'\n');
 async function handle(m){
  if(m.method==='notifications/initialized'||m.id===undefined)return;
  const reply=result=>send({jsonrpc:'2.0',id:m.id,result});
- if(m.method==='initialize')return reply({protocolVersion:'2024-11-05',capabilities:{tools:{listChanged:false}},serverInfo:{name:'whatif',version:'3.0.2'}});
+ if(m.method==='initialize')return reply({protocolVersion:'2024-11-05',capabilities:{tools:{listChanged:false}},serverInfo:{name:'whatif',version:'3.1.0-rc.1'}});
  if(m.method==='ping')return reply({});
  if(m.method==='tools/list')return reply({tools:Object.entries(schemas).map(([name,s])=>({name,description:s.description,inputSchema:{type:'object',properties:s.properties,required:s.required,additionalProperties:false}}))});
  if(m.method!=='tools/call')return send({jsonrpc:'2.0',id:m.id,error:{code:-32601,message:'Method not found'}});
@@ -54,7 +55,7 @@ async function handle(m){
  for(const [k,v]of Object.entries(args)){if(!s.properties[k])throw Error('Unknown argument '+k);const t=s.properties[k].type;if(t==='string'&&(typeof v!=='string'||!v.trim()))throw Error('Invalid '+k);if(t==='integer'&&!Number.isInteger(v))throw Error('Invalid '+k);if(t==='array'){const p=s.properties[k];if(!Array.isArray(v)||v.length<p.minItems||v.length>p.maxItems||v.some(item=>typeof item!=='string'||!item.trim())||p.uniqueItems&&new Set(v).size!==v.length)throw Error('Invalid '+k);}}
  let result;
  if(name==='whatif_qualify')result=await qualifyTeams({directories:args.teamDirectories.map(d=>path.resolve(d)),out:path.resolve(args.out)});
- if(name==='whatif_app_plan')result=await planAppTeam({manifest:path.resolve(args.manifest),out:path.resolve(args.out)});
+ if(name==='whatif_app_plan'){const manifest=path.resolve(args.manifest),spec=JSON.parse(await fs.readFile(manifest));result=await (spec.runner==='python-sqlite'?planBackendTeam:planAppTeam)({manifest,out:path.resolve(args.out)});}
  if(name==='whatif_team_plan')result=await planTeam({source:path.resolve(args.source),out:path.resolve(args.out)});
  if(name==='whatif_team_run')result=await runTeam(path.resolve(args.teamDirectory),{ackSource:args.ackSource});
  if(name==='whatif_team_verify')result=await verifyTeam(path.resolve(args.teamDirectory));

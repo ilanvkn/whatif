@@ -1,0 +1,36 @@
+--- a/api/decorators.py
++++ b/api/decorators.py
+@@ -14,6 +14,12 @@
+         def paginate(*args, **kwargs):
+             args = list(args)
+             pagination = args.pop(-1)
++            limit = pagination.get('limit', max_limit)
++            if limit <= 0:
++                abort(400)
++            if limit > max_limit:
++                limit = max_limit
++
+             select_query = f(*args, **kwargs)
+             if order_by is not None:
+                 o = order_by.desc() if order_direction == 'desc' else order_by
+@@ -22,11 +28,8 @@
+             count = db.session.scalar(sqla.select(
+                 sqla.func.count()).select_from(select_query.subquery()))
+ 
+-            limit = pagination.get('limit', max_limit)
+             offset = pagination.get('offset')
+             after = pagination.get('after')
+-            if limit > max_limit:
+-                limit = max_limit
+             if after is not None:
+                 if offset is not None or order_by is None:  # pragma: no cover
+                     abort(400)
+@@ -43,7 +46,7 @@
+             else:
+                 if offset is None:
+                     offset = 0
+-                if offset < 0 or (count > 0 and offset >= count) or limit <= 0:
++                if offset < 0 or (count > 0 and offset >= count):
+                     abort(400)
+ 
+                 query = select_query.limit(limit).offset(offset)

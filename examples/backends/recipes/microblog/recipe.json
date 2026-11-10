@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "app": "microblog",
+  "repository": "https://github.com/miguelgrinberg/microblog-api",
+  "commit": "e250d7115b47010ff0e7051d5868485fff4e32fb",
+  "license": "MIT",
+  "pythonVersion": "3.12.15",
+  "platform": "macOS arm64",
+  "database": "SQLite",
+  "assets": [
+    {
+      "destination": "LICENSE",
+      "source": "LICENSE",
+      "origin": "upstream",
+      "sha256": "4b8abadcc5e3dd29c71905b84952945699f0a7ba41e6af99eaba46faabe95bb7"
+    },
+    {
+      "destination": "api/__init__.py",
+      "source": "api/__init__.py",
+      "origin": "upstream",
+      "sha256": "4301edca6c0c32d7d7b7f96f1a5f0cba81b13afd9b7d7020f443cde13cf8468c"
+    },
+    {
+      "destination": "api/app.py",
+      "source": "api/app.py",
+      "origin": "upstream",
+      "sha256": "51b2aeebb0d466106d5aabf3d099647bada5127810f236f17e2700f73c056d5b"
+    },
+    {
+      "destination": "api/auth.py",
+      "source": "api/auth.py",
+      "origin": "upstream",
+      "sha256": "02b4b61692b7757e71ba9f39e3a8c13cd4e856a28d5a0ce8b22fd6b57101fe6b"
+    },
+    {
+      "destination": "api/dates.py",
+      "source": "api/dates.py",
+      "origin": "upstream",
+      "sha256": "dc4e5a8133d20967df64a7d3248dcafa50373ae2b943ee6946cfa2945b5303c2"
+    },
+    {
+      "destination": "api/decorators.py",
+      "source": "api/decorators.py",
+      "origin": "upstream",
+      "sha256": "17001b95fbe754ac0f4c44c07894cbd9148c8f0c71a1c4f9c89b16818143629e"
+    },
+    {
+      "destination": "api/email.py",
+      "source": "api/email.py",
+      "origin": "upstream",
+      "sha256": "d89d8e7eb517eeaeb1f53bb66f79cfae42419a9b9142a1a3143b33110fce6c8b"
+    },
+    {
+      "destination": "api/errors.py",
+      "source": "api/errors.py",
+      "origin": "upstream",
+      "sha256": "0de6fd8dc253af7594ceb436e52e43434eb4b3c199a3a641e79301ff46da5b1f"
+    },
+    {
+      "destination": "api/fake.py",
+      "source": "api/fake.py",
+      "origin": "upstream",
+      "sha256": "29d80b83d4f2cfde2ca1841a50e050ffda27831f08279ec6b8046cbcc907c537"
+    },
+    {
+      "destination": "api/models.py",
+      "source": "api/models.py",
+      "origin": "upstream",
+      "sha256": "1e3e064b0d2626258f406ac1628e953a117f329cecac61da73c0fc1fa3ef0e50"
+    },
+    {
+      "destination": "api/posts.py",
+      "source": "api/posts.py",
+      "origin": "upstream",
+      "sha256": "3064fda5ac23ce7d14bd3cfd630d5f97540ac7b48a998f040a2f946d3cc1fceb"
+    },
+    {
+      "destination": "api/schemas.py",
+      "source": "api/schemas.py",
+      "origin": "upstream",
+      "sha256": "ba957e922d18708ac268312154cf63a6e5e89cb68c3c49016d629ee1e8f20d8c"
+    },
+    {
+      "destination": "api/templates/reset.html",
+      "source": "api/templates/reset.html",
+      "origin": "upstream",
+      "sha256": "aca86467ae4291630979a8383d0b8cf7ae8f4cf0d88bd452e259f1fc143b215b"
+    },
+    {
+      "destination": "api/templates/reset.txt",
+      "source": "api/templates/reset.txt",
+      "origin": "upstream",
+      "sha256": "60a41cc83d98399d6fa11867a98602fcfe377c48396cb8e98da5515d6c321ea0"
+    },
+    {
+      "destination": "api/tokens.py",
+      "source": "api/tokens.py",
+      "origin": "upstream",
+      "sha256": "31405ceb0a06709f8ab31f2587275b351cbc972ce44792ccde65eeed7e30e7bb"
+    },
+    {
+      "destination": "api/users.py",
+      "source": "api/users.py",
+      "origin": "upstream",
+      "sha256": "b9f7d96197866cade9ef14b11363e9828c5e96a7adbf56a21a6a8958dd01e0c1"
+    },
+    {
+      "destination": "config.py",
+      "source": "config.py",
+      "origin": "upstream",
+      "sha256": "c7f835c15a75888c8536c0acf38bca1a9d7a9771f8853d1bc80ba649e8bb363f"
+    },
+    {
+      "destination": "whatif_backend.py",
+      "source": "whatif_backend.py",
+      "origin": "recipe",
+      "sha256": "89ab5b4dd6f3fbcb2535f477ec9211dbccb3795bfe0ddeae6a9526793f5f62f7"
+    }
+  ],
+  "wheelManifestSha256": "f97c72b4cdde23e0378e5a3bb73bfcabcb24eea70f9a82f40abd48516b1eeb95",
+  "requirementsLockSha256": "dd0790ceb90a2cc64268d22b6ecdae86a7d432a0eeca6c220c3ead60e5a4f24b",
+  "dependencyNotes": [
+    "Exact historical qualified versions, not a security-upgrade recommendation.",
+    "Python 3.9 lacks required hashlib.scrypt; do not weaken password hashing to work around this."
+  ]
+}

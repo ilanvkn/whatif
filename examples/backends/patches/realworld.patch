@@ -1,0 +1,15 @@
+--- a/conduit/articles/views.py
++++ b/conduit/articles/views.py
+@@ -87,9 +87,11 @@
+ 
+ 
+ @blueprint.route("/api/articles/<slug>", methods=("DELETE",))
+-@jwt_required(optional=True)
++@jwt_required()
+ def delete_article(slug):
+     article = Article.query.filter_by(slug=slug, author_id=current_user.profile.id).first()
++    if not article:
++        raise InvalidUsage.article_not_found()
+     article.delete()
+     return "", 200
+ 

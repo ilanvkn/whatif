@@ -1,0 +1,648 @@
+{
+  "schemaVersion": 1,
+  "kind": "retrospective-cross-application-qualification",
+  "status": "qualified",
+  "qualificationComplete": true,
+  "crossApplicationEvidence": true,
+  "distinctApplications": 2,
+  "backendApplications": 2,
+  "distinctUpstreamRevisions": 2,
+  "distinctUseCases": 2,
+  "teams": 2,
+  "totals": {
+    "roleAttempts": 12,
+    "actualModelCalls": 12,
+    "reportedTokens": 245018,
+    "observedRequests": 464,
+    "reservedRequests": 468,
+    "epochs": 4,
+    "acceptedPatches": 2
+  },
+  "usageComplete": true,
+  "apps": [
+    {
+      "runner": "python-sqlite",
+      "backend": {
+        "verified": true,
+        "recordedTrials": 6,
+        "verifiedResetChecks": 6,
+        "restartChecks": 6,
+        "restartChecksPassed": 6,
+        "cleanupVerified": true,
+        "database": "SQLite",
+        "runtimePinned": true
+      },
+      "repository": "https://github.com/miguelgrinberg/microblog-api",
+      "commit": "e250d7115b47010ff0e7051d5868485fff4e32fb",
+      "sourceBasis": "Declared pinned upstream preparation; no upstream-source attestation",
+      "declaredSourceBasis": "Exact upstream source plus immutable local SQLite bootstrap; real authentication enabled",
+      "parentEvidenceSha256": null,
+      "license": "MIT",
+      "useCase": "Do authenticated CRUD boundaries and bounded cursor pagination survive real HTTP, database resets and server restarts?",
+      "complete": true,
+      "realProvider": true,
+      "stopReason": "no-observed-failure",
+      "usageComplete": true,
+      "metrics": {
+        "roleAttempts": 6,
+        "actualModelCalls": 6,
+        "reportedTokens": 123467,
+        "observedRequests": 348,
+        "reservedRequests": 348,
+        "epochs": 2,
+        "acceptedPatches": 1
+      },
+      "evidence": {
+        "backendArtifacts": {
+          "runtime.json": "1d6d4e2ac2a428defd228fc472c00ba59674f6422aab3d4c92822dd3bce3464d",
+          "database-seed.json": "3ccf5488e6cddbee03fe48543cc088302e9494a7162107fcd88ed240020b62fa",
+          "database-cleanup.json": "e32ea75052d43d635c3dbba89705fdf0c7097f5b2db2917b0b9b534d4c32e7b4"
+        },
+        "teamManifestSha256": "b9607b4124f893462aeaeac8ab54a4187fc759ccdc3028a7345e5f1a3ca4a190",
+        "teamEvidenceSha256": "931fcb62e16ee5a2679ffcdefb1b50ce37c7d36955869b1e5e6b36b2de405610",
+        "initialSourceSnapshotSha256": "81a74c6f75e75ef219ec83a2289d9cc320f168490f39751b9eddcc88873677a2",
+        "finalSourceSnapshotSha256": "cefbc64def78cf59ea8602e0f0ec8bd3d27f3d126351cc4f13249d9194f446e6"
+      },
+      "transitions": [
+        {
+          "epoch": 1,
+          "caseId": "c-4a1559295023c17e",
+          "engine": "api",
+          "invariant": "Real registration, auth denial and author-only mutation remain correct",
+          "before": [
+            true,
+            true
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "healthy-control-retained",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-4458e788677489e3",
+          "engine": "api",
+          "invariant": "Positive cursor/offset bounds remain correct",
+          "before": [
+            true,
+            true
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "healthy-control-retained",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-19835e5c54b8944a",
+          "engine": "api",
+          "invariant": "Negative cursor limit is rejected instead of removing SQL LIMIT",
+          "before": [
+            false,
+            false
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "observed-failure-to-pass",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-68ed1d034719a244",
+          "engine": "api",
+          "invariant": "Zero cursor limit is rejected consistently",
+          "before": [
+            false,
+            false
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "observed-failure-to-pass",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-4a1559295023c17e",
+          "engine": "api",
+          "invariant": "Real registration, auth denial and author-only mutation remain correct",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-4458e788677489e3",
+          "engine": "api",
+          "invariant": "Positive cursor/offset bounds remain correct",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-19835e5c54b8944a",
+          "engine": "api",
+          "invariant": "Negative cursor limit is rejected instead of removing SQL LIMIT",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-68ed1d034719a244",
+          "engine": "api",
+          "invariant": "Zero cursor limit is rejected consistently",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        }
+      ]
+    },
+    {
+      "runner": "python-sqlite",
+      "backend": {
+        "verified": true,
+        "recordedTrials": 6,
+        "verifiedResetChecks": 6,
+        "restartChecks": 6,
+        "restartChecksPassed": 6,
+        "cleanupVerified": true,
+        "database": "SQLite",
+        "runtimePinned": true
+      },
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "sourceBasis": "Declared pinned upstream preparation; no upstream-source attestation",
+      "declaredSourceBasis": "Pinned reference backend ordinary API only; intentional security demo endpoints excluded; SQLite and reduced bcrypt cost explicit test profile",
+      "parentEvidenceSha256": null,
+      "license": "MIT",
+      "useCase": "Do real JWT authentication and article ownership return correct denial/not-found responses while preserving authorized CRUD and committed data?",
+      "complete": true,
+      "realProvider": true,
+      "stopReason": "no-observed-failure",
+      "usageComplete": true,
+      "metrics": {
+        "roleAttempts": 6,
+        "actualModelCalls": 6,
+        "reportedTokens": 121551,
+        "observedRequests": 116,
+        "reservedRequests": 120,
+        "epochs": 2,
+        "acceptedPatches": 1
+      },
+      "evidence": {
+        "backendArtifacts": {
+          "runtime.json": "85b651c5e66b6fdaf9bcfcac650b963157559aa9579ae18a26bc35ccba4bcf86",
+          "database-seed.json": "810289e303b6dc4a1fc173b2211e1ac9e20c32fb4695f349deba03c76f2c5917",
+          "database-cleanup.json": "c658bd50981d144cb4e6e3dd106e11e109724c5539b684876d3577073533a63b"
+        },
+        "teamManifestSha256": "cfc568d8cc04676c910163c2dd8da117bdcb2448ed9d21c0a543135059d365ff",
+        "teamEvidenceSha256": "9eae4182fe9560766367254aa2493d31bdcebe78d7ace51c7a0eed7d21865f51",
+        "initialSourceSnapshotSha256": "8688d5f9b6afda26aedad2aee79cd81581da1e82dcbd443aaac7cda5e43e0874",
+        "finalSourceSnapshotSha256": "5da73745d93669aeb8bf92475a21cf232d0f36052528c29304c429cef36da383"
+      },
+      "transitions": [
+        {
+          "epoch": 1,
+          "caseId": "c-e470a2ccf859b41e",
+          "engine": "api",
+          "invariant": "JWT positive control, anonymous denial and owner CRUD remain correct",
+          "before": [
+            true,
+            true
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "healthy-control-retained",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-d5f66b1c1040d66f",
+          "engine": "api",
+          "invariant": "Anonymous deletion is denied and owner data retained",
+          "before": [
+            false,
+            false
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "observed-failure-to-pass",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-55e0729de653721b",
+          "engine": "api",
+          "invariant": "Other-user deletion is denied without server error or mutation",
+          "before": [
+            false,
+            false
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "observed-failure-to-pass",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 1,
+          "caseId": "c-58c080ad5e595441",
+          "engine": "api",
+          "invariant": "Authenticated missing article deletion returns404",
+          "before": [
+            false,
+            false
+          ],
+          "after": [
+            true,
+            true
+          ],
+          "outcome": "observed-failure-to-pass",
+          "repairAccepted": true,
+          "evidence": {
+            "before": [
+              "epoch-1/before-1",
+              "epoch-1/before-2"
+            ],
+            "after": [
+              "epoch-1/after-1",
+              "epoch-1/after-2"
+            ]
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-e470a2ccf859b41e",
+          "engine": "api",
+          "invariant": "JWT positive control, anonymous denial and owner CRUD remain correct",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-d5f66b1c1040d66f",
+          "engine": "api",
+          "invariant": "Anonymous deletion is denied and owner data retained",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-55e0729de653721b",
+          "engine": "api",
+          "invariant": "Other-user deletion is denied without server error or mutation",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        },
+        {
+          "epoch": 2,
+          "caseId": "c-58c080ad5e595441",
+          "engine": "api",
+          "invariant": "Authenticated missing article deletion returns404",
+          "before": [
+            true,
+            true
+          ],
+          "after": null,
+          "outcome": "not-replayed",
+          "repairAccepted": false,
+          "evidence": {
+            "before": [
+              "epoch-2/before-1",
+              "epoch-2/before-2"
+            ],
+            "after": []
+          }
+        }
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "repository": "https://github.com/miguelgrinberg/microblog-api",
+      "commit": "e250d7115b47010ff0e7051d5868485fff4e32fb",
+      "observedInvariant": "Real registration, auth denial and author-only mutation remain correct",
+      "observation": "healthy-control-retained",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-4a1559295023c17e",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/miguelgrinberg/microblog-api",
+      "commit": "e250d7115b47010ff0e7051d5868485fff4e32fb",
+      "observedInvariant": "Positive cursor/offset bounds remain correct",
+      "observation": "healthy-control-retained",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-4458e788677489e3",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/miguelgrinberg/microblog-api",
+      "commit": "e250d7115b47010ff0e7051d5868485fff4e32fb",
+      "observedInvariant": "Negative cursor limit is rejected instead of removing SQL LIMIT",
+      "observation": "observed-failure-to-pass",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-19835e5c54b8944a",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/miguelgrinberg/microblog-api",
+      "commit": "e250d7115b47010ff0e7051d5868485fff4e32fb",
+      "observedInvariant": "Zero cursor limit is rejected consistently",
+      "observation": "observed-failure-to-pass",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-68ed1d034719a244",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "JWT positive control, anonymous denial and owner CRUD remain correct",
+      "observation": "healthy-control-retained",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-e470a2ccf859b41e",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "Anonymous deletion is denied and owner data retained",
+      "observation": "observed-failure-to-pass",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-d5f66b1c1040d66f",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "Other-user deletion is denied without server error or mutation",
+      "observation": "observed-failure-to-pass",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-55e0729de653721b",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    },
+    {
+      "repository": "https://github.com/DataDog/flask-realworld-example-app",
+      "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+      "observedInvariant": "Authenticated missing article deletion returns404",
+      "observation": "observed-failure-to-pass",
+      "acceptedRepair": true,
+      "epoch": 1,
+      "caseId": "c-58c080ad5e595441",
+      "evidence": {
+        "before": [
+          "epoch-1/before-1",
+          "epoch-1/before-2"
+        ],
+        "after": [
+          "epoch-1/after-1",
+          "epoch-1/after-2"
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "This is a retrospective record of finite observed trials, not a prediction of untested behavior.",
+    "Distinct role sessions use one provider and do not imply independent model weights or independent organizations.",
+    "No claim of 100x superiority, complete coverage, universal security, or production readiness follows from these runs.",
+    "Token usage is provider-reported; missing usage remains unknown. Tokens and dollars were not hard capped.",
+    "Evidence hashes establish internal consistency, not a signed execution or upstream-source attestation.",
+    "Backend qualification covers declared HTTP workflows with reset SQLite databases only, not PostgreSQL or other database backends.",
+    "Backend dependency runtimes are pinned and verified; these finite macOS runs do not qualify other runtimes or deployment environments.",
+    "Observed invariants are evidence data for human review, not automatic instructions or permission to change another application."
+  ]
+}

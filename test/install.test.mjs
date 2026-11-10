@@ -7,14 +7,14 @@ import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 const exec=promisify(execFile);
 const installer=await fs.readFile(new URL('../scripts/install.mjs',import.meta.url));
-async function setup(t){
+async function setup(t,version='9.1.0'){
  if(process.platform==='win32'){t.skip('Injected executable fixture is qualified on POSIX');return null;}
  const base=await fs.mkdtemp(path.join(os.tmpdir(),'whatif install '));t.after(()=>fs.rm(base,{recursive:true,force:true}));
  const source=path.join(base,'source'),home=path.join(base,'codex-home');await fs.mkdir(home,{recursive:true});
  for(const dir of ['src','skills','commands','scripts','docs','examples','test','.codex-plugin','.claude-plugin']){await fs.mkdir(path.join(source,dir),{recursive:true});await fs.writeFile(path.join(source,dir,'marker.txt'),dir);}
  await fs.writeFile(path.join(source,'scripts/install.mjs'),installer);
- for(const name of ['.codex-plugin/plugin.json','.claude-plugin/plugin.json'])await fs.writeFile(path.join(source,name),JSON.stringify({name:'whatif',version:'9.1.0'}));
- await fs.writeFile(path.join(source,'package.json'),JSON.stringify({name:'whatif-plugin',version:'9.1.0',type:'module',scripts:{test:'node --test test/*.test.mjs'}}));
+ for(const name of ['.codex-plugin/plugin.json','.claude-plugin/plugin.json'])await fs.writeFile(path.join(source,name),JSON.stringify({name:'whatif',version}));
+ await fs.writeFile(path.join(source,'package.json'),JSON.stringify({name:'whatif-plugin',version,type:'module',scripts:{test:'node --test test/*.test.mjs'}}));
  for(const name of ['README.md','LICENSE','CHANGELOG.md','SECURITY.md','.mcp.json'])await fs.writeFile(path.join(source,name),name);
  await fs.writeFile(path.join(source,'test/payload.test.mjs'),'import test from "node:test";test("packaged",()=>{});');
  const fake=path.join(base,'fake-codex');
@@ -28,12 +28,12 @@ else if(args[1]==='add'){
  const market=path.join(home,'whatif/marketplace'),descriptor=JSON.parse(fs.readFileSync(path.join(market,'.agents/plugins/marketplace.json'))),stage=path.resolve(market,descriptor.plugins[0].source.path),cache=path.join(home,'fake-cache');
  fs.cpSync(stage,cache,{recursive:true});
  if(control.wrongVersion){const f=path.join(cache,'.codex-plugin/plugin.json'),p=JSON.parse(fs.readFileSync(f));p.version='0.0.0';fs.writeFileSync(f,JSON.stringify(p));}
- console.log(JSON.stringify({pluginId:'whatif@whatif-local',installedPath:cache,version:'9.1.0'}));
+ console.log(JSON.stringify({pluginId:'whatif@whatif-local',installedPath:cache,version:JSON.parse(fs.readFileSync(path.join(cache,'.codex-plugin/plugin.json'))).version}));
 }else process.exit(2);
 `,{mode:0o755});
  const set=control=>fs.writeFile(path.join(home,'control.json'),JSON.stringify(control));await set({});
  const run=async(binary=fake)=>JSON.parse((await exec(process.execPath,[path.join(source,'scripts/install.mjs'),'--home',home,'--codex',binary])).stdout);
- return {base,source,home,fake,set,run,market:path.join(home,'whatif/marketplace'),descriptor:path.join(home,'whatif/marketplace/.agents/plugins/marketplace.json'),receipt:path.join(home,'whatif/install-receipt.json'),stage:path.join(home,'whatif/marketplace/plugins/whatif-9.1.0')};
+ return {base,source,home,fake,set,run,market:path.join(home,'whatif/marketplace'),descriptor:path.join(home,'whatif/marketplace/.agents/plugins/marketplace.json'),receipt:path.join(home,'whatif/install-receipt.json'),stage:path.join(home,'whatif/marketplace/plugins/whatif-'+version)};
 }
 async function prior(h){
  const old=path.join(h.market,'plugins/whatif-1.0.0');await fs.mkdir(old,{recursive:true});await fs.writeFile(path.join(old,'keep.txt'),'preserve old release');
@@ -47,3 +47,6 @@ test('marketplace registration failure also restores exact previous descriptor',
 test('installed-version mismatch cannot replace the previous successful receipt',async t=>{const h=await setup(t);if(!h)return;const old=await prior(h);await h.set({wrongVersion:true});await assert.rejects(h.run(),/Installed version mismatch/);assert.equal(await fs.readFile(h.descriptor,'utf8'),old.descriptor);assert.equal(await fs.readFile(h.receipt,'utf8'),old.receipt);await h.set({});assert.equal((await h.run()).version,'9.1.0');});
 test('same-version modified staging is preserved and rejected before registration',async t=>{const h=await setup(t);if(!h)return;await h.run();const descriptor=await fs.readFile(h.descriptor,'utf8'),receipt=await fs.readFile(h.receipt,'utf8'),calls=await fs.readFile(path.join(h.home,'calls.jsonl'),'utf8');await fs.writeFile(path.join(h.stage,'src/marker.txt'),'local changed payload');await assert.rejects(h.run(),/Existing staged release differs/);assert.equal(await fs.readFile(h.descriptor,'utf8'),descriptor);assert.equal(await fs.readFile(h.receipt,'utf8'),receipt);assert.equal(await fs.readFile(path.join(h.home,'calls.jsonl'),'utf8'),calls);assert.equal(await fs.readFile(path.join(h.stage,'src/marker.txt'),'utf8'),'local changed payload');});
 test('inconsistent release versions fail before selecting the new marketplace payload',async t=>{const h=await setup(t);if(!h)return;const old=await prior(h);const p=JSON.parse(await fs.readFile(path.join(h.source,'package.json')));p.version='9.2.0';await fs.writeFile(path.join(h.source,'package.json'),JSON.stringify(p));await assert.rejects(h.run(),/Release manifest version mismatch/);assert.equal(await fs.readFile(h.descriptor,'utf8'),old.descriptor);assert.equal(await fs.readFile(h.receipt,'utf8'),old.receipt);await assert.rejects(fs.access(path.join(h.home,'calls.jsonl')));});
+
+test('release candidate installs and identical retry preserves older releases',async t=>{const h=await setup(t,'3.1.0-rc.1');if(!h)return;const old=await prior(h);const result=await h.run();assert.equal(result.version,'3.1.0-rc.1');assert.match(result.stagedSource,/whatif-3\.1\.0-rc\.1$/);assert.equal((await h.run()).reusedStage,true);assert.equal(await fs.readFile(path.join(old.old,'keep.txt'),'utf8'),'preserve old release');});
+test('installer rejects unsafe or malformed release identifiers before registering',async t=>{for(const version of ['3.1.0-rc.01','03.1.0','3.1.0-rc.1/escape','3.1.0-rc.1+local','3.1.0-beta.1']){const h=await setup(t,version);if(!h)return;await assert.rejects(h.run(),/Invalid release version/);await assert.rejects(fs.access(path.join(h.home,'calls.jsonl')));}});

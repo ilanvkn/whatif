@@ -1,4 +1,6 @@
-# V3 real-application qualification
+# V3.0 browser application qualification
+
+Historical V3.0 qualification; see [V3.1 backend RC](BACKEND-RC-QUALIFICATION.md) for subsequent backend support.
 
 Date: 2026-11-10. Local macOS, Node 22.23.3, Codex CLI 0.166.0-alpha.5.1, Playwright 1.65.0 and Chrome 157.0.8103.40. These experiments used real open-source application workflows with synthetic inputs and local assets. No public deployment, production account or company service was targeted.
 

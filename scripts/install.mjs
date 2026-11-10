@@ -14,7 +14,7 @@ for(let i=0;i<args.length;i+=2){
 }
 const home=path.resolve(opts.home||process.env.CODEX_HOME||path.join(os.homedir(),'.codex'));
 const manifest=JSON.parse(await fs.readFile(path.join(root,'.codex-plugin/plugin.json'),'utf8'));
-if(!/^\d+\.\d+\.\d+$/.test(manifest.version))throw Error('Invalid release version');
+if(!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-rc\.(0|[1-9]\d*))?$/.test(manifest.version))throw Error('Invalid release version');
 const market=path.join(home,'whatif','marketplace'),dest=path.join(market,'plugins','whatif-'+manifest.version);
 const marketFile=path.join(market,'.agents/plugins/marketplace.json');
 const receiptFile=path.join(home,'whatif','install-receipt.json');

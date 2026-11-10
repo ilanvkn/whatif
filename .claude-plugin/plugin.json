@@ -1,6 +1,6 @@
 {
   "name": "whatif",
-  "version": "3.0.2",
-  "description": "Evidence-led application scenarios and bounded test preparation",
+  "version": "3.1.0-rc.1",
+  "description": "Evidence-led browser and API testing with isolated macOS static-web and SQLite repair trials",
   "license": "MIT"
 }

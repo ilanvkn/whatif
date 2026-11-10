@@ -1,10 +1,10 @@
-# WhatIF V3
+# WhatIF V3.1 RC
 
 **Ask what could fail. Run the app. Challenge the evidence. Repair and replay.**
 
 WhatIF turns application scenarios into bounded tests and traceable findings. Independent red, blue and critic AI sessions inspect source, debate measured failures, propose actual patches and review repeated tests. The controller enforces editable-file lists, unchanged test assertions, isolation, budgets and rollback.
 
-V3 has run this loop on two pinned open-source apps—not only its synthetic fixture:
+V3 has run this loop on pinned open-source applications. The original browser qualification covers:
 
 | Application | Observed change |
 |---|---|
@@ -13,17 +13,20 @@ V3 has run this loop on two pinned open-source apps—not only its synthetic fix
 
 **18 independent AI sessions · 6 epochs · 76 browser journeys · 3 accepted source repairs.** These are finite application results, not claims of universal testing or superiority over another product. [Qualification and limits](docs/V3-QUALIFICATION.md) · [Benchmark protocol](docs/BENCHMARK-PROTOCOL.md)
 
+The **3.1.0-rc.1 backend qualification** adds Microblog API and a RealWorld Flask backend: **12 independent AI sessions, 4 epochs, 2 accepted repairs, 464 HTTP requests and 12 passing database reset/restart trials**. Healthy authentication and CRUD remain passing. [Backend proof](docs/BACKEND-RC-QUALIFICATION.md).
+
 ## What you can use
 
 - **26 MCP tools**, a CLI, a WhatIF skill and a local JavaScript API.
 - Actual browser workflows, synthetic-account security checks and bounded local k6 workloads.
 - Adaptive scenario generation, repeated failure confirmation and exact regression replay.
 - Independent Codex red/blue/critic sessions with source patches, review gates and rollback.
-- A reusable static-web app adapter with pinned source/assets and immutable application-specific tests.
+- Reusable static-web and Python/SQLite backend adapters with pinned source, runtimes and immutable application-specific tests.
+- Stateful API journeys with synthetic registration/login, ownership checks, fresh database resets and real process-restart persistence checks.
 - Cross-application reports that retain verified findings and usage without copying source or model-session identifiers into the public report.
 - Population/workload planning, loopback smoke tests and before/after comparison.
 
-Automatic repair is currently qualified for **static web applications on macOS**, plus the legacy Node test fixture. Browser/load/security campaigns support reviewed loopback and authorized HTTPS targets. Arbitrary backend builds, databases, OAuth, mobile/native apps, distributed million-user loads and behavioral prediction remain separate work. A million modeled users is not a million measured users.
+Automatic repair supports **static web applications and reviewed Python/SQLite backends on macOS**, plus the legacy Node test fixture. Browser/load/security campaigns support reviewed loopback and authorized HTTPS targets. Other database engines, arbitrary build hooks, OAuth, mobile/native apps, distributed million-user loads and behavioral prediction remain separate work. A million modeled users is not a million measured users.
 
 ## Install
 
@@ -35,7 +38,7 @@ node scripts/install.mjs
 
 Refresh plugins or open a new chat. Select `$whatif` through the host's skill picker; the exact slash-command alias depends on the host. The installer stages versioned releases, preserves prior versions and supports retrying an identical payload. Changed bytes under an installed version are refused. It does not install engines or upstream projects.
 
-Playwright and k6 are optional, separately configured engines. See [engine setup](docs/ENGINE-GUIDE.md). AI teams require Playwright and Codex authentication; ordinary planning and verification make no model calls. Claude-compatible packaging is included but not live-qualified.
+Playwright and k6 are optional, separately configured engines. See [engine setup](docs/ENGINE-GUIDE.md). Browser AI teams require Playwright and Codex authentication; backend AI teams require their reviewed Python runtime and Codex authentication; ordinary planning and verification make no model calls. Claude-compatible packaging is included but not live-qualified.
 
 ## Run a real app team
 
@@ -54,6 +57,12 @@ Use the canonical source path returned by planning if `/tmp` resolves elsewhere 
 Accepted patches stay in `run/app`, committed in its isolated Git checkout. The original checkout remains unchanged. Inspect `run/report.md`, `epochs.json`, `calls.json` and per-epoch source/test evidence before integrating a patch. A used run directory is never silently resumed.
 
 AI execution sends reviewed source and evidence to the configured Codex provider. Different sessions do not imply different model weights. Call, request, input/output and time limits bound the loop; the reported-token threshold is checked between calls. **Tokens and dollars are not hard capped.** Missing usage remains unknown.
+
+## Run a backend team
+
+Use the [pinned backend recipes](examples/backends) for Microblog API or the RealWorld Flask reference backend. Review source, dependencies, authentication contracts and synthetic inputs before running. The same `app-plan`, `team-run` and `team-verify` commands accept `python-sqlite` manifests. The original checkout stays unchanged; prepared source runs in an isolated copy.
+
+Each confirmation restores the same database seed. WhatIF executes real API requests, stops the server, restarts it against the committed database and checks persistence. A repair must pass both the API and restart assertions. Private databases and generated session secrets are removed afterward. [Backend RC evidence and limits](docs/BACKEND-RC-QUALIFICATION.md).
 
 ## Keep findings across apps
 

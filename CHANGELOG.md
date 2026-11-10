@@ -1,3 +1,11 @@
+# 3.1.0-rc.1 — database-backed application teams
+
+- Built-in stateful API journeys with allowlisted methods, temporary token capture and status/JSON assertions.
+- Reviewed Python/SQLite runner on macOS with pinned runtime, isolated writes/network/processes, fresh database restoration, real restart persistence checks and cleanup.
+- Backend-aware evidence reconstruction and cross-application qualification; restart failures prevent repair acceptance.
+- Real independent AI qualification on two pinned open-source backends: 12 sessions, 4 epochs, 2 repairs, 464 HTTP requests and 12 verified reset/restart trials. Portable preparation recipes and candidate patches preserve upstream notices.
+- RC version support in the reversible installer. Partial interrupted team traffic is explicitly marked as a lower bound.
+
 # Changelog
 
 ## 3.0.2 — 2026-11-10

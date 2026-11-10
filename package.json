@@ -1,9 +1,9 @@
 {
   "name": "whatif-plugin",
-  "version": "3.0.2",
+  "version": "3.1.0-rc.1",
   "private": true,
   "type": "module",
-  "description": "Evidence-led application scenarios, bounded probes and load-test preparation",
+  "description": "Evidence-led browser and API testing with isolated macOS static-web and SQLite repair trials",
   "engines": {
     "node": ">=22"
   },

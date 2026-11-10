@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 3,
+  "runner": "python-sqlite",
+  "question": "Do real JWT authentication and article ownership return correct denial/not-found responses while preserving authorized CRUD and committed data?",
+  "app": {
+    "source": "REPLACE_WITH_PREPARED_APP",
+    "entry": "whatif_backend.py",
+    "files": [
+      "whatif_backend.py",
+      "conduit/articles/views.py",
+      "conduit/articles/models.py",
+      "conduit/exceptions.py"
+    ],
+    "assets": [
+      "conduit/__init__.py",
+      "conduit/app.py",
+      "conduit/articles/__init__.py",
+      "conduit/articles/models.py",
+      "conduit/articles/serializers.py",
+      "conduit/articles/views.py",
+      "conduit/commands.py",
+      "conduit/compat.py",
+      "conduit/database.py",
+      "conduit/exceptions.py",
+      "conduit/extensions.py",
+      "conduit/profile/__init__.py",
+      "conduit/profile/models.py",
+      "conduit/profile/serializers.py",
+      "conduit/profile/views.py",
+      "conduit/security/__init__.py",
+      "conduit/security/views.py",
+      "conduit/security/vulnerabilities.py",
+      "conduit/settings.py",
+      "conduit/user/__init__.py",
+      "conduit/user/models.py",
+      "conduit/user/serializers.py",
+      "conduit/user/views.py",
+      "conduit/utils.py",
+      "LICENSE",
+      "requirements/prod.txt",
+      "whatif_backend.py",
+      "requirements.lock",
+      "wheel-manifest.json"
+    ],
+    "editable": [
+      "conduit/articles/views.py"
+    ],
+    "repeatSafe": true
+  },
+  "provenance": {
+    "repository": "https://github.com/DataDog/flask-realworld-example-app",
+    "commit": "fff212220e9354bd358dd8e0fb0fcf5f32666192",
+    "license": "MIT",
+    "sourceBasis": "Pinned reference backend ordinary API only; intentional security demo endpoints excluded; SQLite and reduced bcrypt cost explicit test profile"
+  },
+  "contract": "Repair ordinary article DELETE error handling. Anonymous deletion must401, another authenticated owner must403 or404, and an authenticated owner deleting a nonexistent slug must404. Preserve article contents on denied requests and preserve successful owner create/read/delete. Existing failures are incorrect500 responses, not proven ownership bypass. Do not disable auth or blanket deny all deletion. Only conduit/articles/views.py editable; keep dependencies/bootstrap/models/oracles unchanged. Do not touch or invoke deliberate /security demo routes. Every confirmation restores exact SQLite seed; committed records must be read after real server restart.",
+  "backend": {
+    "python": "/REPLACE_WITH_REVIEWED_VENV/bin/python",
+    "reset": "seed-copy-per-confirmation",
+    "restartCampaign": {
+      "schemaVersion": 1,
+      "question": "Committed article survives process restart",
+      "target": "http://127.0.0.1:8080/",
+      "budget": {
+        "maxRequests": 1,
+        "maxDurationMs": 60000
+      },
+      "branches": [
+        {
+          "id": "read-after-restart",
+          "engine": "api",
+          "hypothesis": "Read the committed retained article after process restart",
+          "config": {
+            "maxRequests": 1,
+            "timeoutMs": 5000,
+            "allowRequests": [
+              {
+                "method": "GET",
+                "path": "/api/articles/persistent-healthy-article"
+              }
+            ],
+            "steps": [
+              {
+                "method": "GET",
+                "path": "/api/articles/persistent-healthy-article",
+                "expectStatus": [
+                  200
+                ],
+                "assert": [
+                  {
+                    "pointer": "/article/body",
+                    "equals": "Preserve this record"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "campaign": {
+    "schemaVersion": 1,
+    "question": "JWT article boundary regression suite",
+    "target": "http://127.0.0.1:8080/",
+    "budget": {
+      "maxRequests": 19,
+      "maxDurationMs": 60000
+    },
+    "branches": [
+      {
+        "id": "auth-crud",
+        "engine": "api",
+        "hypothesis": "JWT positive control, anonymous denial and owner CRUD remain correct",
+        "config": {
+          "maxRequests": 8,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "GET",
+              "path": "/api/user"
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles"
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}"
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "healthy-owner",
+                  "email": "healthy-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/user",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/user",
+              "expectStatus": [
+                401
+              ]
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Healthy transient article",
+                  "description": "Synthetic reviewed contract",
+                  "body": "Preserve this record",
+                  "tagList": []
+                }
+              },
+              "capture": {
+                "slug": "/article/slug"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                200
+              ],
+              "assert": [
+                {
+                  "pointer": "/article/body",
+                  "equals": "Preserve this record"
+                }
+              ]
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                404
+              ]
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Persistent healthy article",
+                  "description": "Synthetic reviewed contract",
+                  "body": "Preserve this record",
+                  "tagList": []
+                }
+              },
+              "capture": {
+                "retained": "/article/slug"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "anonymous-delete",
+        "engine": "api",
+        "hypothesis": "Anonymous deletion is denied and owner data retained",
+        "config": {
+          "maxRequests": 4,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles"
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}"
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "anonymous-owner",
+                  "email": "anonymous-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Anonymous boundary article",
+                  "description": "Synthetic reviewed contract",
+                  "body": "Preserve this record",
+                  "tagList": []
+                }
+              },
+              "capture": {
+                "slug": "/article/slug"
+              }
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                401
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                200
+              ],
+              "assert": [
+                {
+                  "pointer": "/article/body",
+                  "equals": "Preserve this record"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "nonowner-delete",
+        "engine": "api",
+        "hypothesis": "Other-user deletion is denied without server error or mutation",
+        "config": {
+          "maxRequests": 5,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles"
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}"
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "boundary-owner",
+                  "email": "boundary-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "boundary-other",
+                  "email": "boundary-other@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "other": "/user/token"
+              }
+            },
+            {
+              "method": "POST",
+              "path": "/api/articles",
+              "expectStatus": [
+                200
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              },
+              "json": {
+                "article": {
+                  "title": "Other owner boundary article",
+                  "description": "Synthetic reviewed contract",
+                  "body": "Preserve this record",
+                  "tagList": []
+                }
+              },
+              "capture": {
+                "slug": "/article/slug"
+              }
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                403,
+                404
+              ],
+              "headers": {
+                "Authorization": "Token {{other}}"
+              }
+            },
+            {
+              "method": "GET",
+              "path": "/api/articles/{{slug}}",
+              "expectStatus": [
+                200
+              ],
+              "assert": [
+                {
+                  "pointer": "/article/body",
+                  "equals": "Preserve this record"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "missing-delete",
+        "engine": "api",
+        "hypothesis": "Authenticated missing article deletion returns404",
+        "config": {
+          "maxRequests": 2,
+          "timeoutMs": 5000,
+          "allowRequests": [
+            {
+              "method": "POST",
+              "path": "/api/users"
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/missing-synthetic-article"
+            }
+          ],
+          "steps": [
+            {
+              "method": "POST",
+              "path": "/api/users",
+              "expectStatus": [
+                200
+              ],
+              "json": {
+                "user": {
+                  "username": "missing-owner",
+                  "email": "missing-owner@example.invalid",
+                  "password": "synthetic-password"
+                }
+              },
+              "capture": {
+                "owner": "/user/token"
+              }
+            },
+            {
+              "method": "DELETE",
+              "path": "/api/articles/missing-synthetic-article",
+              "expectStatus": [
+                404
+              ],
+              "headers": {
+                "Authorization": "Token {{owner}}"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "operators": {
+    "statuses": [],
+    "delaysMs": [],
+    "abort": false,
+    "viewports": [],
+    "locales": [],
+    "timezones": [],
+    "reducedMotion": [],
+    "vus": [],
+    "paceMs": [],
+    "repeatClicks": [],
+    "interactionDepth": 1
+  },
+  "budget": {
+    "maxEpochs": 2,
+    "maxCalls": 8,
+    "maxDurationMs": 900000,
+    "callTimeoutMs": 120000,
+    "maxInputChars": 100000,
+    "maxOutputBytes": 262144,
+    "maxRequests": 4000,
+    "maxReportedTokens": 350000
+  }
+}

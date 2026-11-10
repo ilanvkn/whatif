@@ -1,3 +1,4 @@
+import {validateAPI} from './api.mjs';
 import {targetURL} from '../core.mjs';
 export const must=(v,m)=>{if(!v)throw Error(m);};
 export function integer(v,min,max,name){must(Number.isInteger(v)&&v>=min&&v<=max,`${name} must be ${min}..${max}`);}
@@ -11,9 +12,10 @@ export function validateCampaign(p){
  for(const b of p.branches){
  must(/^[a-z][a-z0-9-]{0,39}$/.test(b.id)&&!ids.has(b.id),'Invalid or duplicate branch ID');if(b.parentId!==undefined)must(ids.has(b.parentId),'Parent must name an earlier branch');ids.add(b.id);
  must(typeof b.hypothesis==='string'&&b.hypothesis.length>0&&b.hypothesis.length<=2000,'Branch hypothesis required');
- must(['browser','k6','security'].includes(b.engine),'Unknown engine');const c=b.config;must(c&&typeof c==='object','Engine config required');
+ must(['browser','k6','security','api'].includes(b.engine),'Unknown engine');const c=b.config;must(c&&typeof c==='object','Engine config required');
  integer(c.maxRequests,1,10000,'branch request budget');integer(c.timeoutMs,100,10000,'request/step timeout');total+=c.maxRequests;
- if(b.engine==='browser'){
+ if(b.engine==='api'){validateAPI(c);
+ }else if(b.engine==='browser'){
  if(c.storageFault!==undefined)must(c.storageFault==='quota-exceeded','Unsupported storage fault');
  if(c.storage!==undefined){must(c.storage!==null&&typeof c.storage==='object'&&!Array.isArray(c.storage)&&[Object.prototype,null].includes(Object.getPrototypeOf(c.storage)),'Storage must be a synthetic key/value object');must(Object.keys(c.storage).length<=20,'At most 20 storage entries');for(const [key,value]of Object.entries(c.storage)){must(key.length>0&&key.length<=128,'Storage key must be 1..128 characters');must(typeof value==='string'&&value.length<=4096,'Storage value must be a string of at most 4096 characters');}}
  if(c.viewport){integer(c.viewport.width,320,3840,'viewport width');integer(c.viewport.height,320,2160,'viewport height');}
