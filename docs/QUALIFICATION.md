@@ -1,5 +1,7 @@
 # WhatIF V2 qualification
 
+For the current independent-agent release, see [V2.1 qualification](V2.1-QUALIFICATION.md). The following records the earlier 2.0 release.
+
 Date: 2026-11-10 (Asia/Kuala_Lumpur). Local Node 22.23.3; existing optional Playwright 1.65.0, Chrome 157.0.8103.40 and k6 2.3.0. No remote app or company infrastructure tested.
 
 ## Verified implementation

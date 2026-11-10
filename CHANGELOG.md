@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.1.0 — 2026-11-10
+
+- Fresh independent Codex red, blue and critic sessions with schema-constrained proposals, provider receipts and reported usage.
+- Isolated macOS Node fixture repair with exact base hashes, immutable host/oracles, repeated browser/security checks, semantic regression checks, rollback and accepted-fix Git commits.
+- Cumulative call/request/time limits and between-call token thresholds; no hard token or dollar cap.
+- Three team CLI/MCP tools (24 total), nested evidence verification and explicit incomplete-run handling.
+- Qualified six actual model sessions over two epochs, one accepted source repair and 112 observed HTTP requests.
+- Installer retry/rollback preservation, shipped tests and path-safe package validation.
+- Automatic repair is qualified for the disposable included fixture only; see docs/V2.1-QUALIFICATION.md.
+
 ## 2.0.0 — 2026-11-10
 
 - Generate bounded, deduplicated scenario spaces from reviewed campaigns, including second-order fault/context and load/pacing combinations.

@@ -18,13 +18,13 @@ export async function createCampaign({question,target,out}){
  validateCampaign(p);await fs.mkdir(out,{recursive:false});await fs.writeFile(path.join(out,'campaign.json'),json(p),{flag:'wx'});
  return {campaignDirectory:path.resolve(out),execution:'not-started',next:'Review real browser actions, exact request allowlist, budgets and invariants; add synthetic security checks before execution.'};
 }
-export async function runCampaign(dir,{ackTarget}={}){
+export async function runCampaign(dir,{ackTarget,credentialEnv=process.env}={}){
  dir=path.resolve(dir);const raw=await fs.readFile(path.join(dir,'campaign.json')),p=validateCampaign(JSON.parse(raw));
  must(ackTarget===p.target,'Acknowledgement must match the exact campaign target');
  const runtime=await runtimeConfig();
  for(const b of p.branches){if(b.engine==='browser')must(runtime.playwrightModule&&path.isAbsolute(runtime.playwrightModule),'Configure an absolute Playwright module path');if(b.engine==='k6')must(runtime.k6Binary&&path.isAbsolute(runtime.k6Binary),'Configure an absolute k6 binary path');}
- for(const name of secretNames(p))must(process.env[name],'Missing synthetic credential environment variable: '+name);
- for(const b of p.branches)if(b.engine==='security')for(const c of b.config.checks)if(c.type==='object-isolation')must(process.env[c.ownerTokenEnv]!==process.env[c.otherTokenEnv],'Distinct synthetic identities required');
+ for(const name of secretNames(p))must(credentialEnv[name],'Missing synthetic credential environment variable: '+name);
+ for(const b of p.branches)if(b.engine==='security')for(const c of b.config.checks)if(c.type==='object-isolation')must(credentialEnv[c.ownerTokenEnv]!==credentialEnv[c.otherTokenEnv],'Distinct synthetic identities required');
  const run=path.join(dir,'run');await fs.mkdir(run);await fs.writeFile(path.join(run,'status.json'),json({status:'running',campaignSha256:sha(raw)}));
  const started=performance.now(),results=[],files=['engines.json'];
  try{
@@ -33,7 +33,7 @@ export async function runCampaign(dir,{ackTarget}={}){
  const remaining=p.budget.maxDurationMs-(performance.now()-started);if(remaining<=0)break;
  must(sha(await fs.readFile(path.join(dir,'campaign.json')))===sha(raw),'Campaign changed during execution');
  const dest=path.join(run,b.id);await fs.mkdir(dest);await fs.writeFile(path.join(dest,'input.json'),json({target:p.target,branch:b,runtime}),{flag:'wx'});
- const env=cleanEnv();for(const name of secretNames({branches:[b]}))env[name]=process.env[name];
+ const env=cleanEnv();for(const name of secretNames({branches:[b]}))env[name]=credentialEnv[name];
  const proc=await runProcess(process.execPath,[worker,path.join(dest,'input.json')],{cwd:dest,env,timeoutMs:Math.max(1,remaining)});
  // Playwright intentionally uses a separate browser process group. Clean up that
  // exact owned group after abnormal worker exit, not arbitrary browser processes.
@@ -46,7 +46,7 @@ export async function runCampaign(dir,{ackTarget}={}){
  if(proc.timedOut||proc.cancelled||proc.overflow||result.status==='interrupted'||result.status==='engine-failed')break;
  }
  must(sha(await fs.readFile(path.join(dir,'campaign.json')))===sha(raw),'Campaign changed during execution');
- const summary={schemaVersion:1,version:'2.0.0',status:'completed',campaignSha256:sha(raw),elapsedMs:performance.now()-started,results,skipped:p.branches.slice(results.length).map(b=>b.id),requests:results.some(r=>r.requests===null)?null:results.reduce((n,r)=>n+r.requests,0),passed:results.length===p.branches.length&&results.every(r=>r.passed),capacityVerdict:'ONLY_MEASURED_WORKLOAD',securityVerdict:'ONLY_DECLARED_CHECKS'};
+ const summary={schemaVersion:1,version:'2.1.0',status:'completed',campaignSha256:sha(raw),elapsedMs:performance.now()-started,results,skipped:p.branches.slice(results.length).map(b=>b.id),requests:results.some(r=>r.requests===null)?null:results.reduce((n,r)=>n+r.requests,0),passed:results.length===p.branches.length&&results.every(r=>r.passed),capacityVerdict:'ONLY_MEASURED_WORKLOAD',securityVerdict:'ONLY_DECLARED_CHECKS'};
  await fs.writeFile(path.join(run,'summary.json'),json(summary));await fs.writeFile(path.join(run,'report.md'),campaignReport(summary));await fs.writeFile(path.join(run,'status.json'),json({status:'completed'}));files.push('summary.json','report.md','status.json');
  await fs.writeFile(path.join(run,'evidence.json'),json({schemaVersion:1,campaignSha256:sha(raw),files:await Promise.all(files.sort().map(async file=>({file,sha256:sha(await fs.readFile(path.join(run,file)))})))}));return summary;
  }catch(e){await fs.writeFile(path.join(run,'status.json'),json({status:'failed',error:e.message}));throw e;}
