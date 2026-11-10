@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0 — 2026-11-10
+
+- Real optional Playwright and k6 adapters; original synthetic-account security runner.
+- Branching campaigns with explicit hypotheses, route allowlists, aggregate budgets, process-group deadlines and hash-indexed evidence.
+- Browser form/click/assertions, local status/delay/abort injection, viewport, reduced motion, locale and timezone.
+- k6 fixed-request/VU workloads, pacing, per-route thresholds and observed metric summaries; no cloud output.
+- Owner/other/anonymous GET controls with canary checks and environment-only credential references.
+- Verified campaign comparison and 16 scenario cards labeled executable or planning-only; 15 MCP tools total.
+- Fixed a discovered browser redirect escape by fetching without redirects and rejecting redirect responses before delivery.
+- Qualified failure/correction fixture and controls for budget, cancellation, credential redaction and corrupted evidence.
+
 ## 1.0.0 — 2026-11-10
 
 - Nine CLI/MCP capabilities, adding workload sensitivity, suite planning/execution/verification and verified comparisons.

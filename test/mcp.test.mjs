@@ -14,7 +14,7 @@ test('MCP discovery and real plan/run/verify lifecycle',async t=>{
  t.after(async()=>{child.stdin.end();await new Promise(r=>child.once('exit',r));rl.close();});
  const call=(method,params)=>new Promise((resolve,reject)=>{const next=++id;const timer=setTimeout(()=>reject(Error('MCP timeout')),10000);pending.set(next,m=>{clearTimeout(timer);resolve(m);});child.stdin.write(JSON.stringify({jsonrpc:'2.0',id:next,method,params})+'\n');});
  const init=await call('initialize',{protocolVersion:'2024-11-05',capabilities:{},clientInfo:{name:'test',version:'1'}});assert.equal(init.result.serverInfo.name,'whatif');
- const list=await call('tools/list');assert.equal(list.result.tools.length,9);
+ const list=await call('tools/list');assert.equal(list.result.tools.length,15);
  const tool=async(name,args)=>{const r=await call('tools/call',{name,arguments:args});assert.equal(r.result.isError,false);return JSON.parse(r.result.content[0].text);};
  const target=`http://127.0.0.1:${s.address().port}/`,dir=path.join(root,'case');
  await tool('whatif_plan',{question:'one million users',target,out:dir});
@@ -27,5 +27,12 @@ test('MCP discovery and real plan/run/verify lifecycle',async t=>{
  await tool('whatif_suite_plan',{question:'1000 users',target,out:suite});
  assert.equal((await tool('whatif_suite_run',{suiteDirectory:suite,ackTarget:target})).requests,60);
  assert.equal((await tool('whatif_suite_verify',{suiteDirectory:suite})).verified,true);
+ assert.equal((await tool('whatif_explore',{})).scenarios.length,16);
+ assert.ok((await tool('whatif_engine_doctor',{})).configuration);
+ const campaign=path.join(root,'campaign');await tool('whatif_campaign_plan',{question:'Protect anonymous boundary',target,out:campaign});
+ const cp=JSON.parse(await fs.readFile(path.join(campaign,'campaign.json')));cp.branches=[{id:'anonymous',engine:'security',hypothesis:'Anonymous users denied',config:{maxRequests:1,timeoutMs:1000,checks:[{type:'anonymous-denial',path:'/'}]}}];await fs.writeFile(path.join(campaign,'campaign.json'),JSON.stringify(cp));
+ assert.equal((await tool('whatif_campaign_run',{campaignDirectory:campaign,ackTarget:target})).passed,false);
+ assert.equal((await tool('whatif_campaign_verify',{campaignDirectory:campaign})).verified,true);
+ assert.equal((await tool('whatif_campaign_compare',{baseline:campaign,candidate:campaign})).comparable,true);
  const bad=await call('tools/call',{name:'whatif_run',arguments:{caseDirectory:dir,ackTarget:7}});assert.equal(bad.result.isError,true);
 });

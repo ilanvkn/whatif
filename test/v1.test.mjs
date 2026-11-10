@@ -16,7 +16,7 @@ async function fixture(t){
  const server=http.createServer((req,res)=>{hits++;res.statusCode=fail||req.url==='/broken'?503:200;res.end('synthetic body not retained');});
  await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>{server.closeAllConnections();server.close(r);}));
  const target=`http://127.0.0.1:${server.address().port}/`;
- return {root,target,hits:()=>hits,fail:()=>{fail=true;},plan:()=>{const p=makePlan({question:'1 million users',target,kind:'daily-active'});p.budget.maxRequests=6;return p;}};
+ return {root,target,hits:()=>hits,fail:()=>{fail=true;},plan:()=>{const p=makePlan({question:'1 million users',target,kind:'daily-active'});p.budget.maxRequests=6;p.budget.timeoutMs=10000;p.slo.p95Ms=10000;return p;}};
 }
 test('suite executes exact aggregate budget and verifies in fresh process',async t=>{const f=await fixture(t),d=path.join(f.root,'suite');await createSuite(f.plan(),d);const r=await runSuite(d,{ackTarget:f.target});assert.equal(r.requests,18);assert.equal(f.hits(),18);assert.equal(r.passed,true);assert.equal(r.results.length,3);const v=await exec(process.execPath,['src/cli.mjs','suite-verify','--suite',d]);assert.equal(JSON.parse(v.stdout).verified,true);await assert.rejects(runSuite(d,{ackTarget:f.target}),/EEXIST/);});
 test('suite stops after failed stage and preserves skipped stages',async t=>{const f=await fixture(t),d=path.join(f.root,'suite');await createSuite(f.plan(),d);f.fail();const r=await runSuite(d,{ackTarget:f.target});assert.equal(f.hits(),6);assert.deepEqual(r.skipped,['parallel','recovery']);assert.equal(r.passed,false);assert.equal((await verifySuite(d)).verified,true);});

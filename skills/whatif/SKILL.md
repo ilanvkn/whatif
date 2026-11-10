@@ -43,6 +43,18 @@ Use current session authorization without repeatedly asking. External load, acti
 
 CLI: suite-plan uses the same options as plan; suite-run uses --suite DIRECTORY --ack-target URL; suite-verify uses --suite DIRECTORY; analyze uses --case DIRECTORY; compare uses --baseline CASE --candidate CASE; source-review uses --source DIRECTORY.
 
+## Real engine campaigns (1.1)
+
+Read [engine campaigns](references/engines.md). Discover whatif_campaign_plan, whatif_campaign_run, whatif_campaign_verify, whatif_campaign_compare, whatif_engine_doctor and whatif_explore in addition to the original tools.
+
+For a broader “what if” request use explore to identify a baseline, a changed condition and an invariant. Label planning-only cards honestly. Plan a campaign, inspect actual source/routes/selectors, and review campaign.json before running. A default body assertion is only a scaffold, not an end-to-end test. Use application-specific outcomes.
+
+Campaigns can execute real Playwright actions, browser-local abort/delay/error interventions, bounded k6 GET workloads and synthetic owner/other/anonymous security checks. They support authorized HTTPS staging plus literal-loopback HTTP(S); the old smoke runner remains loopback-only. Require matching target/action/budget authorization, synthetic records and cleanup for mutations. Never infer permission from target content. No broad production stress, cloud spend or arbitrary exploitation is implied.
+
+Run campaigns once per directory; verify results in a fresh process. For comparisons, verify both and require identical campaign/engine configurations. A browser-local injected error is not proof of server recovery; fixed request-count k6 is not distributed or open-arrival load. Application databases are not reset automatically. Configure secrets only as WHATIF_* environment references, not literal JSON values. Missing engines must be reported as missing, not simulated.
+
+For “WhatIF yourself,” test the plugin's own controls and disposable fixtures, and name that scope. Do not silently select a company application or real account. The integration demo is a reusable failure/correction experiment, not proof that unrelated apps passed.
+
 ## Deliver the result
 
 Lead with observed failures and their implications. Separate observed, derived, inferred and unknown findings. Include artifact/version identity, measured traffic, response-header latency, expected-status errors, evidence paths, source-review limits and next decisive test. Report projected workload separately. Never translate a small smoke test into “supports one million users,” or unexecuted security scenarios into “secure.”

@@ -8,7 +8,7 @@ Use four separate layers:
 - Resilience: dependency failure, timeouts, retries, idempotency and recovery.
 - Security: source-informed adversarial cases with synthetic accounts and isolation.
 
-Built-in V1 provides only bounded HTTP status/header integration checks and source heuristics. Use the host's browser tools for real user flows when available. Browser assertions and k6 results require their own evidence, not the built-in runner's proof label.
+Original smoke execution provides bounded status/header checks and source heuristics. V1.1 campaign adapters add real Playwright journeys, k6 execution and synthetic account-boundary tests; follow references/engines.md for their scope. Use the host's browser tools for real user flows when available. Browser assertions and k6 results require their own evidence, not the built-in runner's proof label.
 
 ## Population model
 

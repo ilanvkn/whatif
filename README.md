@@ -8,11 +8,15 @@ WhatIF is a V1 plugin for turning an application question into a scoped test and
 
 WhatIF separates population assumptions from traffic actually measured. It helps define user journeys, capacity and security boundaries, runs bounded local checks, and prepares the next tests. It never turns a small test into a million-user capacity claim.
 
-## V1 ships
+## V1.1 ships
 
 - A WhatIF skill and Claude-compatible `/whatif:whatif` command (the exact shortcut shown depends on the host).
-- Nine MCP tools covering planning, analysis, suites, comparison, source review and verification.
-- A dependency-free Node 22+ CLI.
+- Fifteen MCP tools covering planning, actual engine campaigns, branching experiments, comparison and verification.
+- A dependency-free Node 22+ core CLI with separately installed Playwright and k6 engines.
+- Real browser form/click/assertion journeys and browser-local dependency failures.
+- Actual bounded k6 execution with route metrics and request-count verification.
+- Owner/other/anonymous synthetic-account security checks.
+- Branching campaigns, verified before/after transitions and 16 scenario cards.
 - Registered/DAU/concurrent population models with explicit illustrative assumptions.
 - Bounded HTTP GET probes, per-route latency/error diagnostics and failure evidence IDs.
 - Sequential baseline/parallel/recovery suites with aggregate budgets and stop-on-failure.
@@ -30,7 +34,7 @@ Use an existing working Node 22+ runtime:
 node scripts/install.mjs
 ```
 
-Version 1.0.0 uses a new versioned staging directory and preserves the old staged plugin. It backs up the marketplace descriptor before selecting the new release.
+Each release uses a new versioned staging directory and preserves the old staged plugin. It backs up the marketplace descriptor before selecting the new release.
 
 The installer stages only this plugin's release files, writes its exact runtime path, registers a local marketplace and installs WhatIF using the Codex CLI. It does not install upstream research repositories, dependencies or external engines. Open a new chat or refresh plugins to discover the skill and MCP tools. Use `$whatif` or select WhatIF in the host's skill picker; a literal `/whatif` alias is host-dependent.
 
@@ -75,9 +79,26 @@ npm run demo
 
 The demo starts and stops its own loopback HTTP fixture. It includes a protected endpoint and a deliberately unavailable dependency; success means WhatIF detects the failing route, not that all routes pass. A fresh process verifies the resulting evidence. This is integration evidence for the plugin, not a benchmark of a production application.
 
+## Real journeys, load and security
+
+See the [engine guide](docs/ENGINE-GUIDE.md) for optional engine setup, reviewed campaign configuration and execution. Explore [branching experiments](docs/BRANCHING-EXPERIMENTS.md) for the broader WhatIF design.
+
+```sh
+node src/cli.mjs explore
+node src/cli.mjs engine-doctor
+node src/cli.mjs campaign-plan --question "What if checkout loses payment?" --target http://127.0.0.1:8080/ --out /tmp/checkout
+# Review campaign.json; configure actual selectors, request allowlists and fixtures.
+node src/cli.mjs campaign-run --campaign /tmp/checkout --ack-target http://127.0.0.1:8080/
+node src/cli.mjs campaign-verify --campaign /tmp/checkout
+node src/cli.mjs campaign-compare --baseline /path/to/before --candidate /path/to/after
+node scripts/integration-demo.mjs
+```
+
+Campaigns support authorized HTTPS staging as well as loopback. The original smoke runner remains loopback-only. Each browser uses a fresh isolated context, blocks redirects and non-reviewed requests, and retains neither credentials nor response bodies. k6 runs locally with no cloud output. Security checks require synthetic account tokens through environment references.
+
 ## What is not implemented yet
 
-Distributed million-user execution, browser journeys, automatic exploit reproduction, tenant-auth fixtures, social/persona simulations, causal analysis and forecasting engines are not bundled. The skill can prepare and coordinate those workflows using separately available tools, with matching target authorization. Their results must have their own evidence. See [integration status](docs/INTEGRATIONS.md) and [V1 qualification](docs/QUALIFICATION.md).
+Distributed million-user execution, open-arrival load, arbitrary exploit reproduction, external OAuth journeys, transaction rollback, social/persona simulations, causal analysis and forecasting engines are not implemented. The security adapter reproduces declared account-boundary failures; it is not an autonomous penetration tester. The skill can prepare and coordinate those workflows using separately available tools, with matching target authorization. Their results must have their own evidence. See [integration status](docs/INTEGRATIONS.md) and [V1 qualification](docs/QUALIFICATION.md).
 
 Latency from the built-in probe ends at response headers; it does not measure full response bodies or page rendering. Source scanning is heuristic and incomplete. A passing smoke test does not establish capacity or security. Evidence hashes detect later byte changes; they are not signed attestations.
 

@@ -1,34 +1,20 @@
-# V1 capability and integration contract
+# Integration status — 1.1.0
 
-## Implemented and tested
-
-| Capability | Execution | Evidence |
+| Capability | Status | What executes |
 |---|---|---|
-| Scenario/workload planning | Original Node runtime and MCP | Plan, illustrative workload math, security matrix |
-| Loopback HTTP smoke | Original capped runner | Status/header observations and response-header latency |
-| Source review leads | Original bounded heuristic scanner | File digest, relative path, line and rule |
-| Evidence integrity | Original verifier | Fresh-process hash checks; corruption rejection |
-| k6 smoke preparation | Generated script | Requires separate installed k6 and exact target acknowledgement; not executed by the core |
-| Host workflow | Skill and MCP | Plan/run/verify integration tested; local Codex install qualified separately |
+| Original local smoke | Implemented | Literal-loopback GET status/header checks, source leads, verified suites |
+| Browser journeys | Implemented optional adapter | Isolated Playwright browser, declarative actions/assertions, exact origin/path/method scope |
+| Browser counterfactuals | Implemented | Local response abort/delay/error; viewport, locale, timezone and reduced-motion contexts |
+| Actual k6 load | Implemented optional adapter | Fixed total GET requests across bounded VUs, pacing, duration, route thresholds and metrics |
+| Synthetic security boundaries | Implemented | Anonymous denial and owner/other-account GET checks with a positive-control marker |
+| Campaign comparison | Implemented | Verified per-branch transitions with campaign/engine compatibility gates |
+| Branch exploration | Implemented planning catalog | 16 cards, each labeled executable or planning-only |
+| Semgrep / ZAP | Not integrated | Existing source heuristics are not these engines |
+| Distributed load / open-arrival RPS | Not integrated | Requires generator topology, telemetry, cost/traffic limits and cancellation |
+| Transaction races / real fault injection | Not integrated | Requires application-specific ledger assertions, cleanup and recovery |
+| MiroFish / OASIS / TinyTroupe | Not integrated | Research references only; no persona execution |
+| Causal / forecasting / event simulation | Not integrated | Requires data, assumptions and validation |
 
-## Reference engines, not bundled runtime integrations
+See [engine guide](ENGINE-GUIDE.md) for concrete schemas and limitations and [branching experiments](BRANCHING-EXPERIMENTS.md) for scenario design.
 
-The following repositories are cloned for study. Their execution environments have not been installed or qualified as part of WhatIF V1. This distinction is deliberate: source availability does not mean interchangeable APIs, compatible licenses, or valid outputs.
-
-| Area | Candidates | Integration gate |
-|---|---|---|
-| Document/web evidence | Docling, Scrapling, Crawl4AI, Local Deep Research | Source spans, timestamps, provenance; controlled collection and extraction benchmark |
-| Social/persona simulation | MiroFish, OASIS, TinyTroupe, AgentSociety | Fixed population, model identity, repeatability and held-out validation |
-| Statistical/causal models | Mesa, DoWhy, NeuralForecast, Metaculus forecasting-tools | Question-specific assumptions, numerical baselines and scoring |
-| Memory/observability/durable execution | Graphiti, Langfuse, Temporal | Data-destination review, explicit schema, cancellation and recovery proof |
-| Load | k6, Locust | Qualified generator, budgets, allowed target/paths, server telemetry and dropped-work accounting |
-| Security | Semgrep, ZAP | Reviewed rules/scope, synthetic data, passive/active distinction, reproduced evidence |
-| Watchlist/research only | DeepAgentForecast, claude-mem, t3code, impeccable, Kronos | No automatic integration merely because a project is popular |
-
-## Adapter contract for the next release
-
-Each adapter must declare name, version, license scope, availability, required secrets by locator only, target scope, possible side effects, budget dimensions, cancellation behavior and output format. It receives a reviewed scenario and run ID, returns raw artifact paths and normalized observations, and never silently converts a forecast into measured behavior.
-
-Required observations: timestamp, artifact identity, exact workload actually performed, success/failure counts, relevant timing units, skipped/dropped work and unresolved limitations. A tool unavailable or stopped early must return partial/unexecuted status. The report must preserve that status.
-
-No connector uploads application source or case artifacts automatically. User authorization for a test does not imply publication of its data. Preserve upstream notices when future adapters incorporate actual third-party code.
+Playwright and k6 remain separately installed tools with their own licenses. WhatIF's adapters are original code; neither upstream source nor browser executables are copied into this repository. Qualification uses the recorded local versions, not an assertion that all future releases work.
