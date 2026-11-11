@@ -36,7 +36,7 @@ Automatic repair supports **static web applications and reviewed Python/SQLite/P
 Use a working Node22+ runtime and an authenticated compatible Codex CLI:
 
 ```sh
-git clone https://github.com/ilanvkn/whatif.git
+git clone https://github.com/starkfiber/whatif.git
 cd whatif
 node scripts/install.mjs
 ```
